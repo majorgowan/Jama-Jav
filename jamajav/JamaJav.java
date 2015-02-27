@@ -44,7 +44,7 @@ public class JamaJav implements ActionListener {
         Metronome metronome = new Metronome();
         controlPanel.add(metronome);
 
-        Clock clock = new Clock();
+        Clock clock = new Clock(4, 100);
         controlPanel.add(clock);
 
         JPanel mainPanel = new JPanel();
