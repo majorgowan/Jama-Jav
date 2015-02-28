@@ -25,15 +25,13 @@ class Clock extends JPanel implements ActionListener {
     public void actionPerformed(ActionEvent ae) {
 
         String comStr = ae.getActionCommand();
+        DecimalFormat df = new DecimalFormat("##0.0");
 
         if (ae.getSource() == timer) {
             theTime += 0.001*precision;
 
-            DecimalFormat df = new DecimalFormat("##.#");
-
             timeLabel.setText(df.format(theTime));
             repaint();
-
 
         } else if (comStr.equals("start")) {
             timer.start();
@@ -42,6 +40,8 @@ class Clock extends JPanel implements ActionListener {
         } else if (comStr.equals("stop")) {
             timer.stop();
             theTime = (double)(-countInSeconds);
+            timeLabel.setText(df.format(theTime));
+            repaint();
         }
     }
 
@@ -65,15 +65,21 @@ class Clock extends JPanel implements ActionListener {
         buttonPanel.add(stopButton);
 
         timerPanel = new JPanel(new FlowLayout());
-        timeLabel = new JLabel("-" + countInSeconds);
+        timeLabel = new JLabel("    ");
         timeLabel.setFont(new Font("SansSerif",Font.BOLD,30));
         // a Timer object which triggers a listener every precision milliseconds
         timer = new Timer(precision, this);
         timerPanel.add(timeLabel);
 
+        JLabel titleLabel = new JLabel("Timer");
+        titleLabel.setFont(new Font("SansSerif",Font.BOLD,13));
+
         this.setLayout(new BorderLayout());
+        this.add(titleLabel,BorderLayout.NORTH);
         this.add(timerPanel,BorderLayout.CENTER);
-        this.add(buttonPanel,BorderLayout.NORTH);
+        this.add(buttonPanel,BorderLayout.SOUTH);
+
+        this.setBorder(BorderFactory.createRaisedBevelBorder());
     }
 
 }

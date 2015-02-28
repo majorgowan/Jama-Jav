@@ -41,11 +41,11 @@ public class JamaJav implements ActionListener {
         JPanel controlPanel = new JPanel();
         controlPanel.setLayout(new BoxLayout(controlPanel,BoxLayout.PAGE_AXIS));
 
-        Metronome metronome = new Metronome();
-        controlPanel.add(metronome);
-
         Clock clock = new Clock(4, 100);
         controlPanel.add(clock);
+
+        Metronome metronome = new Metronome(100, 4);
+        controlPanel.add(metronome);
 
         JPanel mainPanel = new JPanel();
         JScrollPane scrollPane = new JScrollPane(mainPanel);
