@@ -27,8 +27,12 @@ public class JamaJav implements ActionListener {
 
     private ArrayList<JCheckBox> trackCheckBox;
 
-
     public void actionPerformed(ActionEvent ae) {
+        String comStr = ae.getActionCommand();
+
+        if (comStr.equals("metroset")) {
+            metronome.getSettings();
+        }
     }
 
     JamaJav(String[] args) {
@@ -41,10 +45,10 @@ public class JamaJav implements ActionListener {
         JPanel controlPanel = new JPanel();
         controlPanel.setLayout(new BoxLayout(controlPanel,BoxLayout.PAGE_AXIS));
 
-        Clock clock = new Clock(4, 100);
+        clock = new Clock(4, 100);
         controlPanel.add(clock);
 
-        Metronome metronome = new Metronome(100, 4);
+        metronome = new Metronome(100, 4);
         controlPanel.add(metronome);
 
         JPanel mainPanel = new JPanel();
@@ -52,6 +56,52 @@ public class JamaJav implements ActionListener {
 
         contentPane.add(controlPanel,BorderLayout.WEST);
         contentPane.add(mainPanel,BorderLayout.CENTER);
+
+        // Menus!!
+        JMenuBar menuBar = new JMenuBar();
+        JMenu fileMenu = new JMenu("File");
+        JMenu playMenu = new JMenu("Play");
+        JMenu helpMenu = new JMenu("Help");
+
+        // File menu
+        fileMenu.setMnemonic('F');
+        JMenuItem fileNewItem = new JMenuItem("New");
+        fileNewItem.addActionListener(this);
+        JMenuItem fileOpenItem = new JMenuItem("Open ...");
+        fileOpenItem.setActionCommand("Open");
+        fileOpenItem.addActionListener(this);
+        JMenuItem fileSaveItem = new JMenuItem("Save as ...");
+        fileSaveItem.setActionCommand("Save");
+        fileSaveItem.addActionListener(this);
+        JMenuItem fileWebOpenItem = new JMenuItem("Open from Web ...");
+        fileWebOpenItem.setActionCommand("WWW");
+        fileWebOpenItem.addActionListener(this);
+        JMenuItem fileExitItem = new JMenuItem("Exit");
+        fileExitItem.addActionListener(this);
+        fileMenu.add(fileNewItem);
+        fileMenu.add(fileOpenItem);
+        fileMenu.add(fileSaveItem);
+        fileMenu.addSeparator();
+        fileMenu.add(fileWebOpenItem);
+        fileMenu.addSeparator();
+        fileMenu.add(fileExitItem);
+
+        // Play menu
+        playMenu.setMnemonic('P');
+        JMenuItem metronomeItem = new JMenuItem("Metronome settings ...");
+        metronomeItem.setActionCommand("metroset");
+        metronomeItem.addActionListener(this);
+        playMenu.add(metronomeItem);
+
+        // Help menu
+        helpMenu.setMnemonic('H');
+
+
+        menuBar.add(fileMenu);
+        menuBar.add(playMenu);
+        menuBar.add(helpMenu);
+
+        jfrm.setJMenuBar(menuBar);
 
         jfrm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         jfrm.pack();
