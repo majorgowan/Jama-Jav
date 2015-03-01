@@ -22,8 +22,10 @@ import javax.sound.sampled.*;
 public class JamaJav implements ActionListener {
 
     private JFrame jfrm;
-    private Metronome metronome;
     private Clock clock;
+    private Metronome metronome;
+    private NotesPanel notesPanel;
+    private TrackPanel mainPanel;
 
     private ArrayList<JCheckBox> trackCheckBox;
 
@@ -46,12 +48,19 @@ public class JamaJav implements ActionListener {
         controlPanel.setLayout(new BoxLayout(controlPanel,BoxLayout.PAGE_AXIS));
 
         clock = new Clock(4, 100);
+        clock.setBorder(BorderFactory.createRaisedBevelBorder());
         controlPanel.add(clock);
 
         metronome = new Metronome(100, 4);
+        metronome.setBorder(BorderFactory.createRaisedBevelBorder());
         controlPanel.add(metronome);
 
-        JPanel mainPanel = new JPanel();
+        notesPanel = new NotesPanel();
+        notesPanel.setBorder(BorderFactory.createRaisedBevelBorder());
+        controlPanel.add(notesPanel);
+
+        mainPanel = new TrackPanel();
+        mainPanel.setBorder(BorderFactory.createRaisedBevelBorder());
         JScrollPane scrollPane = new JScrollPane(mainPanel);
 
         contentPane.add(controlPanel,BorderLayout.WEST);
@@ -95,7 +104,6 @@ public class JamaJav implements ActionListener {
 
         // Help menu
         helpMenu.setMnemonic('H');
-
 
         menuBar.add(fileMenu);
         menuBar.add(playMenu);

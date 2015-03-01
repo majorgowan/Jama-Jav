@@ -78,8 +78,6 @@ class Clock extends JPanel implements ActionListener {
         this.add(titleLabel,BorderLayout.NORTH);
         this.add(timerPanel,BorderLayout.CENTER);
         this.add(buttonPanel,BorderLayout.SOUTH);
-
-        this.setBorder(BorderFactory.createRaisedBevelBorder());
     }
 
 }
