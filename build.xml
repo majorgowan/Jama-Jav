@@ -18,7 +18,11 @@
         <echo>
             Making a jar.
         </echo>
-        <jar jarfile="JamaJav.jar" basedir="." includes="jamajav/*.class" />
+        <jar jarfile="JamaJav.jar" basedir="." includes="jamajav/*.class">
+            <manifest>
+                <attribute name="Main-Class" value="jamajav.JamaJav"/>
+            </manifest>
+        </jar>
     </target>
 
     <target name="zip" depends="compile, jar">

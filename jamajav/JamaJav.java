@@ -61,7 +61,6 @@ public class JamaJav implements ActionListener {
 
         mainPanel = new TrackPanel();
         mainPanel.setBorder(BorderFactory.createRaisedBevelBorder());
-        JScrollPane scrollPane = new JScrollPane(mainPanel);
 
         contentPane.add(controlPanel,BorderLayout.WEST);
         contentPane.add(mainPanel,BorderLayout.CENTER);

@@ -10,6 +10,9 @@ import java.text.DecimalFormat;
 
 class Clock extends JPanel implements ActionListener {
 
+    final private int DEFAULT_WIDTH = 200;
+    final private int DEFAULT_HEIGHT = 100;
+
     private int countInSeconds;
     private double theTime;
     private int precision;  // in milliseconds
@@ -18,6 +21,12 @@ class Clock extends JPanel implements ActionListener {
     private Timer timer;
     private JLabel timeLabel;
 
+    private final DecimalFormat df = new DecimalFormat("##0.0");
+
+    public Dimension getPreferredSize() {
+        return (new Dimension(DEFAULT_WIDTH, DEFAULT_HEIGHT));
+    }
+
     public double getTime() {
         return theTime;
     }
@@ -25,7 +34,6 @@ class Clock extends JPanel implements ActionListener {
     public void actionPerformed(ActionEvent ae) {
 
         String comStr = ae.getActionCommand();
-        DecimalFormat df = new DecimalFormat("##0.0");
 
         if (ae.getSource() == timer) {
             theTime += 0.001*precision;
@@ -34,10 +42,11 @@ class Clock extends JPanel implements ActionListener {
             repaint();
 
         } else if (comStr.equals("start")) {
-            timer.start();
-        } else if (comStr.equals("pause")) {
-            timer.stop();
-        } else if (comStr.equals("stop")) {
+            if (timer.isRunning())
+                timer.stop();
+            else
+                timer.start();
+        } else if (comStr.equals("reset")) {
             timer.stop();
             theTime = (double)(-countInSeconds);
             timeLabel.setText(df.format(theTime));
@@ -50,22 +59,19 @@ class Clock extends JPanel implements ActionListener {
         theTime = (double)(-countInSeconds);
         precision = p;
 
-        // start, pause and stop buttons:
+        // start and reset buttons:
         JButton startButton = new JButton("start");
-        JButton pauseButton = new JButton("pause");
-        JButton stopButton = new JButton("stop");
+        JButton resetButton = new JButton("reset");
 
         startButton.addActionListener(this);
-        pauseButton.addActionListener(this);
-        stopButton.addActionListener(this);
+        resetButton.addActionListener(this);
 
         JPanel buttonPanel = new JPanel(new FlowLayout());
         buttonPanel.add(startButton);
-        buttonPanel.add(pauseButton);
-        buttonPanel.add(stopButton);
+        buttonPanel.add(resetButton);
 
         timerPanel = new JPanel(new FlowLayout());
-        timeLabel = new JLabel("    ");
+        timeLabel = new JLabel(df.format(theTime));
         timeLabel.setFont(new Font("SansSerif",Font.BOLD,30));
         // a Timer object which triggers a listener every precision milliseconds
         timer = new Timer(precision, this);
@@ -74,10 +80,10 @@ class Clock extends JPanel implements ActionListener {
         JLabel titleLabel = new JLabel("Timer");
         titleLabel.setFont(new Font("SansSerif",Font.BOLD,13));
 
-        this.setLayout(new BorderLayout());
-        this.add(titleLabel,BorderLayout.NORTH);
-        this.add(timerPanel,BorderLayout.CENTER);
-        this.add(buttonPanel,BorderLayout.SOUTH);
+        setLayout(new BorderLayout());
+        add(titleLabel,BorderLayout.NORTH);
+        add(timerPanel,BorderLayout.CENTER);
+        add(buttonPanel,BorderLayout.SOUTH);
     }
 
 }

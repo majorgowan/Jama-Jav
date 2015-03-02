@@ -11,6 +11,9 @@ import javax.sound.sampled.*;
 
 class Metronome extends JPanel implements ActionListener {
 
+    final private int DEFAULT_WIDTH = 200;
+    final private int DEFAULT_HEIGHT = 120;
+
     private JPanel signalPanel;
     private JLabel signalLabel; // to be replaced by a picture and sounds
 
@@ -24,15 +27,19 @@ class Metronome extends JPanel implements ActionListener {
 
     private Clip tick, tock;
 
+    public Dimension getPreferredSize() {
+        return (new Dimension(DEFAULT_WIDTH, DEFAULT_HEIGHT));
+    }
+
     public void getSettings() {
         JPanel mainPanel = new JPanel(new GridLayout(2,1));
 
-        JTextField bpMinField = new JTextField("" + bpMin);
+        JTextField bpMinField = new JTextField("" + bpMin,4);
         JPanel line1 = new JPanel();
         line1.add(new JLabel("Beats per minute: "));
         line1.add(bpMinField);
 
-        JTextField bpMeasField = new JTextField("" + bpMeas);
+        JTextField bpMeasField = new JTextField("" + bpMeas,2);
         JPanel line2 = new JPanel();
         line2.add(new JLabel("Beats per measure: "));
         line2.add(bpMeasField);
@@ -64,7 +71,7 @@ class Metronome extends JPanel implements ActionListener {
         if (ae.getSource() == timer) {
             beat++;
             if (beat == 5*bpMeas) {
-                signalLabel.setText(" Boo ");
+                signalLabel.setText(" BOO ");
                 beat = 0;
                 if (soundCheckBox.isSelected()) {
                     if (tock.isRunning())
@@ -73,7 +80,7 @@ class Metronome extends JPanel implements ActionListener {
                     tock.start();     // Start playing
                 }
             } else if (beat%5 == 0) {
-                signalLabel.setText(" " + (beat/5+1) + " ");
+                signalLabel.setText("   " + (beat/5+1) + "   ");
                 if (soundCheckBox.isSelected()) {
                     if (tick.isRunning())
                         tick.stop();   // Stop the player if it is still running
@@ -81,12 +88,13 @@ class Metronome extends JPanel implements ActionListener {
                     tick.start();     // Start playing
                 }
             } else {
-                signalLabel.setText("     ");
+                signalLabel.setText("           ");
             }
         } else if (comStr.equals("start")) {
             timer.start();
         } else if (comStr.equals("stop")) {
             timer.stop();
+            signalLabel.setText("    ---    ");
         }
     }
 
@@ -130,22 +138,23 @@ class Metronome extends JPanel implements ActionListener {
         JPanel buttonPanel = new JPanel(new FlowLayout());
         buttonPanel.add(startButton);
         buttonPanel.add(stopButton);
-        buttonPanel.add(soundCheckBox);
+//        buttonPanel.add(soundCheckBox);
 
         signalPanel = new JPanel(new FlowLayout());
-        signalLabel = new JLabel("    ");
+        signalLabel = new JLabel("    ---    ");
         signalLabel.setFont(new Font("SansSerif",Font.BOLD,30));
         // a Timer object which triggers a listener every beat
         timer = new Timer((int)(60000/(bpMin*5)), this);
         signalPanel.add(signalLabel);
+        signalPanel.add(soundCheckBox);
 
         JLabel titleLabel = new JLabel("Metronome");
         titleLabel.setFont(new Font("SansSerif",Font.BOLD,13));
 
-        this.setLayout(new BorderLayout());
-        this.add(titleLabel,BorderLayout.NORTH);
-        this.add(signalPanel,BorderLayout.CENTER);
-        this.add(buttonPanel,BorderLayout.SOUTH);
+        setLayout(new BorderLayout());
+        add(titleLabel,BorderLayout.NORTH);
+        add(signalPanel,BorderLayout.CENTER);
+        add(buttonPanel,BorderLayout.SOUTH);
     }
 
 }
