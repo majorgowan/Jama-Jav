@@ -55,6 +55,8 @@ class Clock extends JPanel implements ActionListener {
     }
 
     Clock(int countIn, int p) {
+        setBackground(new Color(0.75f,0.6f,0.1f));
+
         countInSeconds = countIn;
         theTime = (double)(-countInSeconds);
         precision = p;
@@ -79,9 +81,11 @@ class Clock extends JPanel implements ActionListener {
 
         JLabel titleLabel = new JLabel("Timer");
         titleLabel.setFont(new Font("SansSerif",Font.BOLD,13));
+        JPanel titlePanel = new JPanel();
+        titlePanel.add(titleLabel);
 
         setLayout(new BorderLayout());
-        add(titleLabel,BorderLayout.NORTH);
+        add(titlePanel,BorderLayout.NORTH);
         add(timerPanel,BorderLayout.CENTER);
         add(buttonPanel,BorderLayout.SOUTH);
     }

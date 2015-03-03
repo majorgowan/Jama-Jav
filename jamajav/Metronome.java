@@ -17,6 +17,8 @@ class Metronome extends JPanel implements ActionListener {
     private JPanel signalPanel;
     private JLabel signalLabel; // to be replaced by a picture and sounds
 
+    private JLabel infoLabel;
+
     private JCheckBox soundCheckBox;
 
     private int bpMin;       // beats per minute
@@ -60,8 +62,10 @@ class Metronome extends JPanel implements ActionListener {
 
     public void setParam(int beatspermin, int beatspermeasure) {
         bpMin = beatspermin;
-        bpMeas = beatspermeasure;
+        bpMeas = beatspermeasure;  
         beat = 0;
+
+        infoLabel.setText("" + bpMin + " bpm "); 
     }
 
     public void actionPerformed(ActionEvent ae) {
@@ -94,11 +98,14 @@ class Metronome extends JPanel implements ActionListener {
             timer.start();
         } else if (comStr.equals("stop")) {
             timer.stop();
+            beat = 0;
             signalLabel.setText("    ---    ");
         }
     }
 
     Metronome(int beatspermin, int beatspermeasure) {
+
+        setBackground(new Color(0.75f,0.6f,0.1f));
 
         beat = 0;
         bpMin = beatspermin;
@@ -148,11 +155,18 @@ class Metronome extends JPanel implements ActionListener {
         signalPanel.add(signalLabel);
         signalPanel.add(soundCheckBox);
 
+        JPanel titlePanel = new JPanel();
+        titlePanel.setLayout(new BoxLayout(titlePanel,BoxLayout.LINE_AXIS));
         JLabel titleLabel = new JLabel("Metronome");
+        infoLabel = new JLabel("" + bpMin + " bpm "); 
         titleLabel.setFont(new Font("SansSerif",Font.BOLD,13));
+        infoLabel.setFont(new Font("SansSerif",Font.BOLD,13));
+        titlePanel.add(titleLabel);
+        titlePanel.add(Box.createHorizontalGlue());
+        titlePanel.add(infoLabel);
 
         setLayout(new BorderLayout());
-        add(titleLabel,BorderLayout.NORTH);
+        add(titlePanel,BorderLayout.NORTH);
         add(signalPanel,BorderLayout.CENTER);
         add(buttonPanel,BorderLayout.SOUTH);
     }

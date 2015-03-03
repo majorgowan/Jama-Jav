@@ -30,6 +30,7 @@ class TrackPanel extends JPanel implements ActionListener {
     }
 
     TrackPanel() {
+        setBackground(new Color(0.75f,0.6f,0.1f));
         setLayout(new BorderLayout());
 
         JPanel mainPanel = new JPanel();

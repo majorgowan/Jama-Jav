@@ -18,6 +18,7 @@ class NotesPanel extends JPanel {
     }
 
     NotesPanel() {
+        setBackground(new Color(0.75f,0.6f,0.1f));
 
         JLabel titleLabel = new JLabel("Notes");
         titleLabel.setFont(new Font("SansSerif",Font.BOLD,13));
