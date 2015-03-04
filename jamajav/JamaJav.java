@@ -27,8 +27,6 @@ public class JamaJav implements ActionListener {
     private NotesPanel notesPanel;
     private TrackPanel mainPanel;
 
-    private ArrayList<JCheckBox> trackCheckBox;
-
     public void actionPerformed(ActionEvent ae) {
         String comStr = ae.getActionCommand();
 
@@ -59,7 +57,7 @@ public class JamaJav implements ActionListener {
         notesPanel.setBorder(BorderFactory.createRaisedBevelBorder());
         controlPanel.add(notesPanel);
 
-        mainPanel = new TrackPanel();
+        mainPanel = new TrackPanel(metronome, clock);
         mainPanel.setBorder(BorderFactory.createRaisedBevelBorder());
 
         contentPane.add(controlPanel,BorderLayout.WEST);

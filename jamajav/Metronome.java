@@ -103,6 +103,10 @@ class Metronome extends JPanel implements ActionListener {
         }
     }
 
+    public void start() {
+        timer.start();
+    }
+
     Metronome(int beatspermin, int beatspermeasure) {
 
         setBackground(new Color(0.75f,0.6f,0.1f));

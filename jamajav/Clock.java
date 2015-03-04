@@ -54,6 +54,12 @@ class Clock extends JPanel implements ActionListener {
         }
     }
 
+    public void restart() {
+        timer.stop();
+        theTime = (double)(-countInSeconds);
+        timer.start();
+    }
+
     Clock(int countIn, int p) {
         setBackground(new Color(0.75f,0.6f,0.1f));
 
