@@ -75,7 +75,8 @@ class Metronome extends JPanel implements ActionListener {
         if (ae.getSource() == timer) {
             beat++;
             if (beat == 5*bpMeas) {
-                signalLabel.setText(" BOO ");
+                signalLabel.setForeground(Color.RED);
+                signalLabel.setText("   1   ");
                 beat = 0;
                 if (soundCheckBox.isSelected()) {
                     if (tock.isRunning())
@@ -84,6 +85,7 @@ class Metronome extends JPanel implements ActionListener {
                     tock.start();     // Start playing
                 }
             } else if (beat%5 == 0) {
+                signalLabel.setForeground(Color.BLACK);
                 signalLabel.setText("   " + (beat/5+1) + "   ");
                 if (soundCheckBox.isSelected()) {
                     if (tick.isRunning())
@@ -105,6 +107,10 @@ class Metronome extends JPanel implements ActionListener {
 
     public void start() {
         timer.start();
+    }
+
+    public void stop() {
+        timer.stop();
     }
 
     Metronome(int beatspermin, int beatspermeasure) {

@@ -45,11 +45,11 @@ public class JamaJav implements ActionListener {
         JPanel controlPanel = new JPanel();
         controlPanel.setLayout(new BoxLayout(controlPanel,BoxLayout.PAGE_AXIS));
 
-        clock = new Clock(4, 100);
+        clock = new Clock(2, 100);
         clock.setBorder(BorderFactory.createRaisedBevelBorder());
         controlPanel.add(clock);
 
-        metronome = new Metronome(100, 4);
+        metronome = new Metronome(120, 3);
         metronome.setBorder(BorderFactory.createRaisedBevelBorder());
         controlPanel.add(metronome);
 

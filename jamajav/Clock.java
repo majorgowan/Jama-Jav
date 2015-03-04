@@ -60,6 +60,13 @@ class Clock extends JPanel implements ActionListener {
         timer.start();
     }
 
+    public void reset() {
+        timer.stop();
+        theTime = (double)(-countInSeconds);
+        timeLabel.setText(df.format(theTime));
+        repaint();
+    }
+
     Clock(int countIn, int p) {
         setBackground(new Color(0.75f,0.6f,0.1f));
 

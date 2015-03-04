@@ -47,6 +47,8 @@ class Track extends JPanel implements ActionListener {
             record();
         } else if (comStr.equals("Stop")) {
             stopRecording();
+            metronome.stop();
+            clock.reset();
         } else if (comStr.equals("Play")) {
             playback();
         }
@@ -151,6 +153,7 @@ class Track extends JPanel implements ActionListener {
                     }
                 }
                 byteArrayOutputStream.close();
+                visualPanel.setData(byteArrayOutputStream.toByteArray());
 
             } catch (Exception e) {
                 System.out.println(e);
