@@ -24,16 +24,17 @@ class TrackPanel extends JPanel implements ActionListener {
 
     private Metronome metronome;
     private Clock clock;
+    private NotesPanel notesPanel;
 
     public void actionPerformed(ActionEvent ae) {
         String comStr = ae.getActionCommand();
 
         if (comStr.equals("New Track")) {
-            tracks.add(new Track(metronome, clock));
+            tracks.add(new Track(metronome, clock, notesPanel));
             linePanel.add(new JPanel());
             ntracks++;
 
-            System.out.println("adding track ... now " + ntracks + " tracks");
+            //System.out.println("adding track ... now " + ntracks + " tracks");
 
             tracks.get(ntracks-1)
                 .setBorder(BorderFactory.createRaisedBevelBorder());
@@ -45,13 +46,16 @@ class TrackPanel extends JPanel implements ActionListener {
             mainPanel.add(linePanel.get(ntracks-1));
             revalidate();
         } else if (comStr.equals("Remove Selected")) {
-            for (int i = tracks.size() - 1; i >= 0; i--)
+            for (int i = tracks.size() - 1; i >= 0; i--) {
+                //System.out.println("track " + i + " is " + tracks.get(i).isSelected());
                 if (tracks.get(i).isSelected()) {
                     mainPanel.remove(linePanel.get(i));
                     tracks.remove(i);
                     linePanel.remove(i);
                     ntracks--;
+                    //System.out.println("   Removing track " + i);
                 }
+            }
             refreshMainPanel();
             revalidate();
         }
@@ -66,10 +70,11 @@ class TrackPanel extends JPanel implements ActionListener {
         }
     }
 
-    TrackPanel(Metronome m, Clock c) {
+    TrackPanel(Metronome m, Clock c, NotesPanel np) {
 
         metronome = m;
         clock = c;
+        notesPanel = np;
 
         tracks = new ArrayList<Track>(0);
         linePanel = new ArrayList<JPanel>(0);

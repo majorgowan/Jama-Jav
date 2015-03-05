@@ -33,6 +33,7 @@ class Track extends JPanel implements ActionListener {
 
     private Metronome metronome;
     private Clock clock;
+    private NotesPanel notesPanel;
 
     private Visualizer visualPanel;
     private JCheckBox trackCheckBox;
@@ -87,10 +88,11 @@ class Track extends JPanel implements ActionListener {
 
     // will put more things in the constructor later (probably
     // a Notes object will be involved
-    Track(Metronome m, Clock c) {
+    Track(Metronome m, Clock c, NotesPanel np) {
 
         metronome = m;
         clock = c;
+        notesPanel = np;
 
         clickedColor = Color.LIGHT_GRAY;
         unclickedColor = getBackground();
@@ -137,6 +139,7 @@ class Track extends JPanel implements ActionListener {
                 }    else {
                     isClicked = true;
                     setBackground(clickedColor);
+                    notesPanel.showNotes(notes);
                 }
             }
         });

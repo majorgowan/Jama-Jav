@@ -57,7 +57,7 @@ public class JamaJav implements ActionListener {
         notesPanel.setBorder(BorderFactory.createRaisedBevelBorder());
         controlPanel.add(notesPanel);
 
-        mainPanel = new TrackPanel(metronome, clock);
+        mainPanel = new TrackPanel(metronome, clock, notesPanel);
         mainPanel.setBorder(BorderFactory.createRaisedBevelBorder());
 
         contentPane.add(controlPanel,BorderLayout.WEST);

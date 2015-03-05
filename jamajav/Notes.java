@@ -13,6 +13,10 @@ class Notes {
         comments += "<li>" + c;
     }
 
+    public String getText() {
+        return comments;
+    }
+
     Notes() {
         comments = "<html><list>";
     }
