@@ -95,7 +95,9 @@ class Clock extends JPanel implements ActionListener {
         JLabel titleLabel = new JLabel("Timer");
         titleLabel.setFont(new Font("SansSerif",Font.BOLD,13));
         JPanel titlePanel = new JPanel();
+        titlePanel.setLayout(new BoxLayout(titlePanel,BoxLayout.LINE_AXIS));
         titlePanel.add(titleLabel);
+        titlePanel.add(Box.createHorizontalGlue());
 
         setLayout(new BorderLayout());
         add(titlePanel,BorderLayout.NORTH);

@@ -76,7 +76,7 @@ class Metronome extends JPanel implements ActionListener {
             beat++;
             if (beat == 5*bpMeas) {
                 signalLabel.setForeground(Color.RED);
-                signalLabel.setText("   1   ");
+                signalLabel.setText("     1     ");
                 beat = 0;
                 if (soundCheckBox.isSelected()) {
                     if (tock.isRunning())
@@ -86,7 +86,7 @@ class Metronome extends JPanel implements ActionListener {
                 }
             } else if (beat%5 == 0) {
                 signalLabel.setForeground(Color.BLACK);
-                signalLabel.setText("   " + (beat/5+1) + "   ");
+                signalLabel.setText("     " + (beat/5+1) + "     ");
                 if (soundCheckBox.isSelected()) {
                     if (tick.isRunning())
                         tick.stop();   // Stop the player if it is still running
@@ -101,6 +101,7 @@ class Metronome extends JPanel implements ActionListener {
         } else if (comStr.equals("stop")) {
             timer.stop();
             beat = 0;
+            signalLabel.setForeground(Color.BLACK);
             signalLabel.setText("    ---    ");
         }
     }
@@ -155,7 +156,7 @@ class Metronome extends JPanel implements ActionListener {
         JPanel buttonPanel = new JPanel(new FlowLayout());
         buttonPanel.add(startButton);
         buttonPanel.add(stopButton);
-//        buttonPanel.add(soundCheckBox);
+        //        buttonPanel.add(soundCheckBox);
 
         signalPanel = new JPanel(new FlowLayout());
         signalLabel = new JLabel("    ---    ");

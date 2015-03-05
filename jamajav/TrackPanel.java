@@ -17,7 +17,6 @@ import java.io.*;
 class TrackPanel extends JPanel implements ActionListener {
 
     private ArrayList<Track> tracks;
-    private ArrayList<JCheckBox> trackCheckBoxes;
     private ArrayList<JPanel> linePanel;
     private int ntracks = 0;
 
@@ -31,7 +30,6 @@ class TrackPanel extends JPanel implements ActionListener {
 
         if (comStr.equals("New Track")) {
             tracks.add(new Track(metronome, clock));
-            trackCheckBoxes.add(new JCheckBox("",true));
             linePanel.add(new JPanel());
             ntracks++;
 
@@ -40,21 +38,31 @@ class TrackPanel extends JPanel implements ActionListener {
             tracks.get(ntracks-1)
                 .setBorder(BorderFactory.createRaisedBevelBorder());
 
-            linePanel.get(ntracks-1).add(trackCheckBoxes.get(ntracks-1));
             linePanel.get(ntracks-1).add(tracks.get(ntracks-1));
+            linePanel.get(ntracks-1)
+                .setBorder(BorderFactory.createEmptyBorder(0,0,0,10));
+
             mainPanel.add(linePanel.get(ntracks-1));
-            mainPanel.add(Box.createRigidArea(new Dimension(0,10)));
             revalidate();
         } else if (comStr.equals("Remove Selected")) {
             for (int i = tracks.size() - 1; i >= 0; i--)
-                if (trackCheckBoxes.get(i).isSelected()) {
+                if (tracks.get(i).isSelected()) {
                     mainPanel.remove(linePanel.get(i));
                     tracks.remove(i);
-                    trackCheckBoxes.remove(i);
                     linePanel.remove(i);
                     ntracks--;
                 }
-            repaint();
+            refreshMainPanel();
+            revalidate();
+        }
+    }
+
+    private void refreshMainPanel() {
+
+        mainPanel.removeAll();
+
+        for (int i=0; i<ntracks; i++) {
+            mainPanel.add(linePanel.get(i));
         }
     }
 
@@ -64,7 +72,6 @@ class TrackPanel extends JPanel implements ActionListener {
         clock = c;
 
         tracks = new ArrayList<Track>(0);
-        trackCheckBoxes = new ArrayList<JCheckBox>(0);
         linePanel = new ArrayList<JPanel>(0);
 
         setBackground(new Color(0.75f,0.6f,0.1f));

@@ -19,11 +19,17 @@ class Track extends JPanel implements ActionListener {
     final private int DEFAULT_HEIGHT = 120;
 
     private boolean stopCapture = false;
+    private boolean isCapturing = false;
+
     private ByteArrayOutputStream byteArrayOutputStream;
     private AudioFormat audioFormat;
     private TargetDataLine targetDataLine;
     private AudioInputStream audioInputStream;
     private SourceDataLine sourceDataLine;
+
+    private Notes notes;
+    private boolean isClicked = false;
+    private Color clickedColor, unclickedColor;
 
     private Metronome metronome;
     private Clock clock;
@@ -31,9 +37,10 @@ class Track extends JPanel implements ActionListener {
     private Visualizer visualPanel;
     private JCheckBox trackCheckBox;
     private JButton recordButton;
-    private JButton stopButton;
+    private JButton noteButton;
     private JButton playButton;
-    
+    private VolumeSlider slider;
+
     public Dimension getPreferredSize() {
         return (new Dimension(DEFAULT_WIDTH, DEFAULT_HEIGHT));
     }
@@ -41,17 +48,41 @@ class Track extends JPanel implements ActionListener {
     public void actionPerformed(ActionEvent ae) {
         String comStr = ae.getActionCommand();
 
-        if (comStr.equals("Record")) {
-            clock.restart();
-            metronome.start();
-            record();
-        } else if (comStr.equals("Stop")) {
-            stopRecording();
-            metronome.stop();
-            clock.reset();
+        if (comStr.equals("Rec/Stop")) {
+            if (!isCapturing) {
+                clock.restart();
+                metronome.start();
+                record();
+            } else {
+                stopRecording();
+                metronome.stop();
+                clock.reset();
+                isCapturing = false;
+            }
         } else if (comStr.equals("Play")) {
             playback();
+        } else if (comStr.equals("Add note")) {
+            String newNote = getNote();
+            if (!newNote.equals("no comment"))
+                notes.addComment(newNote);
         }
+    }
+
+    public boolean isSelected() {
+        return isClicked;
+    }
+
+    private String getNote() {
+        JTextArea noteArea = new JTextArea(5,40);
+        JScrollPane jsp = new JScrollPane(noteArea);
+
+        int result = JOptionPane.showConfirmDialog(null, jsp, 
+                "Add a note", JOptionPane.OK_CANCEL_OPTION);
+        if (result == JOptionPane.OK_OPTION)
+            return noteArea.getText();
+        else
+            return "no comment";
+
     }
 
     // will put more things in the constructor later (probably
@@ -61,27 +92,55 @@ class Track extends JPanel implements ActionListener {
         metronome = m;
         clock = c;
 
+        clickedColor = Color.LIGHT_GRAY;
+        unclickedColor = getBackground();
+
+        notes = new Notes();
+
         setLayout(new FlowLayout());
 
         visualPanel = new Visualizer();
 
-        recordButton = new JButton("Record");
-        stopButton = new JButton("Stop");
+        Font buttonFont = new Font("SansSerif",Font.BOLD,10);
+
+        recordButton = new JButton("Rec/Stop");
+        noteButton = new JButton("Add note");
         playButton = new JButton("Play");
 
+        slider = new VolumeSlider(JSlider.HORIZONTAL, 0, 10, 10);
         recordButton.addActionListener(this);
-        stopButton.addActionListener(this);
+        noteButton.addActionListener(this);
         playButton.addActionListener(this);
 
+        recordButton.setFont(buttonFont);
+        noteButton.setFont(buttonFont);
+        playButton.setFont(buttonFont);
+        slider.setFont(buttonFont);
+
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new BoxLayout(buttonPanel,BoxLayout.PAGE_AXIS));
+        buttonPanel.setLayout(new GridLayout(4,1));
 
         buttonPanel.add(recordButton);
-        buttonPanel.add(stopButton);
+        buttonPanel.add(noteButton);
         buttonPanel.add(playButton);
+        buttonPanel.add(slider);
 
         add(buttonPanel);
+        add(Box.createRigidArea(new Dimension(5,0)));
         add(visualPanel);
+
+        addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent me) {
+                if (isClicked) {
+                    isClicked = false;
+                    setBackground(unclickedColor);
+                }    else {
+                    isClicked = true;
+                    setBackground(clickedColor);
+                }
+            }
+        });
+
     }
 
     public void stopRecording() {
@@ -114,7 +173,7 @@ class Track extends JPanel implements ActionListener {
             // Get everything set up for recording
             audioFormat = getAudioFormat();
             DataLine.Info dataLineInfo = new DataLine.Info(
-                        TargetDataLine.class, audioFormat);
+                    TargetDataLine.class, audioFormat);
 
             targetDataLine = (TargetDataLine)AudioSystem.getLine(dataLineInfo);
             targetDataLine.open(audioFormat);
@@ -126,6 +185,7 @@ class Track extends JPanel implements ActionListener {
             // the Stop button is clicked.
             Thread RecordThread = new Thread(new RecordThread());
             RecordThread.start();
+            isCapturing = true;
         } catch (Exception e) {
             System.out.println(e);
             System.exit(0);
@@ -216,7 +276,7 @@ class Track extends JPanel implements ActionListener {
                         // to the speaker.
                         sourceDataLine.write(tempBuffer, 0, cnt);
                     }
-                }
+                                }
 
                 // Block and wait for internal
                 // buffer of the data line to
