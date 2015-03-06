@@ -198,7 +198,7 @@ class Track extends JPanel implements ActionListener {
             isCapturing = true;
         } catch (Exception e) {
             System.out.println(e);
-            System.exit(0);
+            // System.exit(0);   // Don't have to exit, just do nothing!
         }
     }
 
@@ -227,9 +227,11 @@ class Track extends JPanel implements ActionListener {
                 visualPanel.setData(byteArrayOutputStream.toByteArray(),
                         targetDataLine.getFormat().getFrameSize());
 
+                targetDataLine.close();
+
             } catch (Exception e) {
                 System.out.println(e);
-                System.exit(0);
+                // System.exit(0);
             }
         }
     }
@@ -262,7 +264,7 @@ class Track extends JPanel implements ActionListener {
 
             FloatControl volume_control = 
                 (FloatControl)sourceDataLine.getControl(FloatControl.Type.MASTER_GAIN);
-            
+
             //System.out.println("Old volume is " 
             //        + Math.pow(10.0,volume_control.getValue()));
             //volume_control.setValue((float)(
@@ -271,7 +273,7 @@ class Track extends JPanel implements ActionListener {
 
             volume_control.setValue((float)(
                         -2.5*(10.0-slider.getValue())));
-            
+
             //System.out.println("New volume is " 
             //        + Math.pow(10.0,volume_control.getValue()));
 
@@ -299,7 +301,8 @@ class Track extends JPanel implements ActionListener {
                 // empty stream.
                 while ((cnt = audioInputStream.read(
                                 tempBuffer, 0,
-                                tempBuffer.length)) != -1) {
+                                tempBuffer.length)) != -1)
+                {
                     if (cnt > 0) {
                         // Write data to the internal
                         // buffer of the data line
@@ -307,7 +310,7 @@ class Track extends JPanel implements ActionListener {
                         // to the speaker.
                         sourceDataLine.write(tempBuffer, 0, cnt);
                     }
-                                }
+                }
 
                 // Block and wait for internal
                 // buffer of the data line to
