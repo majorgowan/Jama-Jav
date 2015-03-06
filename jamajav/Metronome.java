@@ -151,7 +151,7 @@ class Metronome extends JPanel implements ActionListener {
         stopButton.addActionListener(this);
 
         // checkbox to enable/disable sound
-        soundCheckBox = new JCheckBox("sound enabled", true);
+        soundCheckBox = new JCheckBox("sound enabled", false);
 
         JPanel buttonPanel = new JPanel(new FlowLayout());
         buttonPanel.add(startButton);

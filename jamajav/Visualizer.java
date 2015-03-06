@@ -9,7 +9,7 @@ class Visualizer extends JPanel {
     final private int DEFAULT_WIDTH = 250;
     final private int DEFAULT_HEIGHT = 80;
 
-    private double[] data;
+    private int[] data;
     private double maxValue;
 
     public Dimension getPreferredSize() {
@@ -42,8 +42,8 @@ class Visualizer extends JPanel {
     // based on http://codeidol.com/java/swing/Audio/Build-an-Audio-Waveform-Display/
     public void setData(byte[] bytes, int frameSize) {
 
-        System.out.println(bytes.length + " " + frameSize);
-        int[] toReturn = new int[bytes.length];
+        // System.out.println(bytes.length + " " + frameSize);
+        int[] toReturn = new int[bytes.length/2];
 
         int sampleIndex = 0;
         for (int t = 0; t < bytes.length;) {
@@ -56,10 +56,17 @@ class Visualizer extends JPanel {
             sampleIndex++;
         }
 
-        double factor = toReturn.length / data.length;
+        // System.out.println("sample length: " + toReturn.length);
+        // System.out.println("image length: " + data.length);
 
-        for (int i=0; i < data.length; i++)
-            data[i] = (int)toReturn[(int)(factor*i)];
+        int binSize = toReturn.length/data.length; 
+
+        for (int i=0; i < data.length; i++) {
+            data[i] = 0;
+            for (int j=0; j < binSize; j++) {
+                data[i] += toReturn[binSize*i+j];
+            }
+        }
 
         maxValue = 0.0;
         for (int i=0; i<data.length; i++)
@@ -71,10 +78,10 @@ class Visualizer extends JPanel {
 
     Visualizer() {
         setBackground(Color.BLACK);
-        data = new double[DEFAULT_WIDTH];
+        data = new int[DEFAULT_WIDTH];
 
         for (int i=0; i<data.length; i++)
-            data[i] = 0.0;
-        maxValue = 0.0;
+            data[i] = 0;
+        maxValue = 0;
     }
 }
