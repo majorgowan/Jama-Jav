@@ -8,6 +8,7 @@ import java.awt.event.*;
 // For sound samples
 import java.io.*;
 import javax.sound.sampled.*;
+import java.net.URL;
 
 class Metronome extends JPanel implements ActionListener {
 
@@ -124,13 +125,19 @@ class Metronome extends JPanel implements ActionListener {
 
         // load sound files
         try {
-            AudioInputStream audioInputStream1 = AudioSystem.getAudioInputStream(
-                    new File("Sounds/junhui.wav"));
+            // get sounds from jar file (not sure why URL is appropriate but it works)
+            ClassLoader cl = this.getClass().getClassLoader();
+            URL sound1 = cl.getResource("Sounds/junhui.wav");
+            URL sound2 = cl.getResource("Sounds/ding.wav");
+
+            AudioInputStream audioInputStream1 
+                = AudioSystem.getAudioInputStream(sound1);
+
             tick = AudioSystem.getClip();
             tick.open(audioInputStream1);
 
-            AudioInputStream audioInputStream2 = AudioSystem.getAudioInputStream(
-                    new File("Sounds/ding.wav"));
+            AudioInputStream audioInputStream2 
+                = AudioSystem.getAudioInputStream(sound2);
 
             tock = AudioSystem.getClip();
             tock.open(audioInputStream2);
