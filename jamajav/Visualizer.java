@@ -35,18 +35,31 @@ class Visualizer extends JPanel {
 
     }
 
-    public void setData(byte[] audioData) {
-        // convert byte array to doubles for graphical
-        // representation of sample
+    private int getSixteenBitSample(int high, int low) {
+        return (high << 8) + (low & 0x00ff);            
+    }
 
-        // since just for entertainment, lets just pick closest
-        // neighbour values rather than anything formal
+    // based on http://codeidol.com/java/swing/Audio/Build-an-Audio-Waveform-Display/
+    public void setData(byte[] bytes, int frameSize) {
 
-        double factor = (double)(audioData.length)
-            /(double)(data.length);
+        System.out.println(bytes.length + " " + frameSize);
+        int[] toReturn = new int[bytes.length];
 
-        for (int i=0; i<data.length; i++)
-            data[i] = (int)audioData[(int)(factor*i)];
+        int sampleIndex = 0;
+        for (int t = 0; t < bytes.length;) {
+            int low = (int) bytes[t];
+            t++;
+            int high = (int) bytes[t];
+            t++;
+            int sample = getSixteenBitSample(high, low);
+            toReturn[sampleIndex] = sample;
+            sampleIndex++;
+        }
+
+        double factor = toReturn.length / data.length;
+
+        for (int i=0; i < data.length; i++)
+            data[i] = (int)toReturn[(int)(factor*i)];
 
         maxValue = 0.0;
         for (int i=0; i<data.length; i++)

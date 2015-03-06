@@ -20,6 +20,7 @@ class Track extends JPanel implements ActionListener {
 
     private boolean stopCapture = false;
     private boolean isCapturing = false;
+    private boolean notEmpty = false;
 
     private ByteArrayOutputStream byteArrayOutputStream;
     private AudioFormat audioFormat;
@@ -54,6 +55,7 @@ class Track extends JPanel implements ActionListener {
                 clock.restart();
                 metronome.start();
                 record();
+                notEmpty = true;
             } else {
                 stopRecording();
                 metronome.stop();
@@ -61,7 +63,8 @@ class Track extends JPanel implements ActionListener {
                 isCapturing = false;
             }
         } else if (comStr.equals("Play")) {
-            playback();
+            if (notEmpty)
+                playback();
         } else if (comStr.equals("Add note")) {
             String newNote = getNote();
             if (!newNote.equals("no comment"))
@@ -71,6 +74,10 @@ class Track extends JPanel implements ActionListener {
 
     public boolean isSelected() {
         return isClicked;
+    }
+
+    public boolean isNotEmpty() {
+        return notEmpty;
     }
 
     private String getNote() {
@@ -171,7 +178,7 @@ class Track extends JPanel implements ActionListener {
     }
 
     public void record() {
-        System.out.println("Recording . . . ");
+        // System.out.println("Recording . . . ");
         try{
             // Get everything set up for recording
             audioFormat = getAudioFormat();
@@ -216,7 +223,9 @@ class Track extends JPanel implements ActionListener {
                     }
                 }
                 byteArrayOutputStream.close();
-                visualPanel.setData(byteArrayOutputStream.toByteArray());
+
+                visualPanel.setData(byteArrayOutputStream.toByteArray(),
+                        targetDataLine.getFormat().getFrameSize());
 
             } catch (Exception e) {
                 System.out.println(e);
@@ -226,7 +235,7 @@ class Track extends JPanel implements ActionListener {
     }
 
     public void playback() {
-        System.out.println("Playing back . . . ");
+        // System.out.println("Playing back . . . ");
         try {
             byte audioData[] = byteArrayOutputStream.toByteArray();
 
@@ -246,6 +255,25 @@ class Track extends JPanel implements ActionListener {
             sourceDataLine = (SourceDataLine) AudioSystem.getLine(dataLineInfo);
             sourceDataLine.open(audioFormat);
             sourceDataLine.start();
+
+            //Control[] ccc = sourceDataLine.getControls();
+            //for (int jj = 0; jj < ccc.length; jj++)
+            //    System.out.println("Control " + ccc[jj].getType());
+
+            FloatControl volume_control = 
+                (FloatControl)sourceDataLine.getControl(FloatControl.Type.MASTER_GAIN);
+            
+            //System.out.println("Old volume is " 
+            //        + Math.pow(10.0,volume_control.getValue()));
+            //volume_control.setValue((float)(
+            //            Math.log(0.1*slider.getValue()
+            //                *Math.pow(10.0,volume))));
+
+            volume_control.setValue((float)(
+                        -2.5*(10.0-slider.getValue())));
+            
+            //System.out.println("New volume is " 
+            //        + Math.pow(10.0,volume_control.getValue()));
 
             // Create a thread to play back the data and start it running.  
             // It will run until all the data has been played back.

@@ -57,7 +57,11 @@ class TrackPanel extends JPanel implements ActionListener {
                 }
             }
             refreshMainPanel();
-            revalidate();
+        } else if (comStr.equals("Play Selected")) {
+            for (int i = 0; i < tracks.size(); i++) 
+                if (tracks.get(i).isSelected() &&
+                        tracks.get(i).isNotEmpty()) 
+                    tracks.get(i).playback();
         }
     }
 
@@ -68,6 +72,8 @@ class TrackPanel extends JPanel implements ActionListener {
         for (int i=0; i<ntracks; i++) {
             mainPanel.add(linePanel.get(i));
         }
+        mainPanel.revalidate();
+        repaint();
     }
 
     TrackPanel(Metronome m, Clock c, NotesPanel np) {
@@ -97,9 +103,13 @@ class TrackPanel extends JPanel implements ActionListener {
         JButton removeSelectedButton = new JButton("Remove Selected");
         removeSelectedButton.addActionListener(this);
 
+        JButton saveButton = new JButton("Save");
+        saveButton.addActionListener(this);
+
         buttonPanel.add(newTrackButton);
         buttonPanel.add(playSelectedButton);
         buttonPanel.add(removeSelectedButton);
+        buttonPanel.add(saveButton);
 
         mainPanel.setBorder(BorderFactory.createRaisedBevelBorder());
         buttonPanel.setBorder(BorderFactory.createRaisedBevelBorder());

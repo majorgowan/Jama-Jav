@@ -11,7 +11,7 @@ import java.text.DecimalFormat;
 class NotesPanel extends JPanel {
 
     final private int DEFAULT_WIDTH = 200;
-    final private int DEFAULT_HEIGHT = 300;
+    final private int DEFAULT_HEIGHT = 250;
 
     private JLabel text;
 
