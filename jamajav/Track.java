@@ -227,6 +227,7 @@ class Track extends JPanel implements ActionListener {
                 visualPanel.setData(byteArrayOutputStream.toByteArray(),
                         targetDataLine.getFormat().getFrameSize());
 
+                System.out.println("Closing targetDataLine . . . ");
                 targetDataLine.close();
 
             } catch (Exception e) {
@@ -285,7 +286,7 @@ class Track extends JPanel implements ActionListener {
 
         } catch (Exception e) {
             System.out.println(e);
-            System.exit(0);
+            // System.exit(0);
         }
     }
 
@@ -320,7 +321,7 @@ class Track extends JPanel implements ActionListener {
 
             } catch (Exception e) {
                 System.out.println(e);
-                System.exit(0);
+                // System.exit(0);
             }
         }
 
