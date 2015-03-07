@@ -30,21 +30,7 @@ class TrackPanel extends JPanel implements ActionListener {
         String comStr = ae.getActionCommand();
 
         if (comStr.equals("New Track")) {
-            tracks.add(new Track(metronome, clock, notesPanel));
-            linePanel.add(new JPanel());
-            ntracks++;
-
-            //System.out.println("adding track ... now " + ntracks + " tracks");
-
-            tracks.get(ntracks-1)
-                .setBorder(BorderFactory.createRaisedBevelBorder());
-
-            linePanel.get(ntracks-1).add(tracks.get(ntracks-1));
-            linePanel.get(ntracks-1)
-                .setBorder(BorderFactory.createEmptyBorder(0,0,0,10));
-
-            mainPanel.add(linePanel.get(ntracks-1));
-            revalidate();
+            addNewTrack();
         } else if (comStr.equals("Remove Selected")) {
             for (int i = tracks.size() - 1; i >= 0; i--) {
                 //System.out.println("track " + i + " is " + tracks.get(i).isSelected());
@@ -62,6 +48,19 @@ class TrackPanel extends JPanel implements ActionListener {
                 if (tracks.get(i).isSelected() &&
                         tracks.get(i).isNotEmpty()) 
                     tracks.get(i).playback();
+        } else if (comStr.equals("playrecord")) {
+            // add new track:
+            addNewTrack();
+
+            // start selected tracks playing:
+            for (int i = 0; i < tracks.size(); i++) 
+                if (tracks.get(i).isSelected())
+                    tracks.get(i).startPlaying();
+
+            // start new track recording
+            tracks.get(tracks.size()-1).startRecording();
+        } else if (comStr.equals("allstop")) {
+            allStop();
         }
     }
 
@@ -74,6 +73,31 @@ class TrackPanel extends JPanel implements ActionListener {
         }
         mainPanel.revalidate();
         repaint();
+    }
+
+    private void addNewTrack() {
+        tracks.add(new Track(metronome, clock, notesPanel));
+        linePanel.add(new JPanel());
+        ntracks++;
+
+        //System.out.println("adding track ... now " + ntracks + " tracks");
+
+        tracks.get(ntracks-1)
+            .setBorder(BorderFactory.createRaisedBevelBorder());
+
+        linePanel.get(ntracks-1).add(tracks.get(ntracks-1));
+        linePanel.get(ntracks-1)
+            .setBorder(BorderFactory.createEmptyBorder(0,0,0,10));
+
+        mainPanel.add(linePanel.get(ntracks-1));
+        revalidate();
+    }
+
+    private void allStop() {
+            for (int i = 0; i < tracks.size(); i++) { 
+                tracks.get(i).stopPlaying();
+                tracks.get(i).stopRecording();
+            }
     }
 
     TrackPanel(Metronome m, Clock c, NotesPanel np) {
@@ -90,15 +114,23 @@ class TrackPanel extends JPanel implements ActionListener {
 
         mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel,BoxLayout.PAGE_AXIS));
-        //mainPanel.setLayout(new FlowLayout());
-        
-        JPanel buttonPanel = new JPanel(new FlowLayout());
+
+        // create and add buttons to buttonPanel:
+        JPanel buttonPanel = new JPanel(new GridLayout(2,4));
 
         JButton newTrackButton = new JButton("New Track");
         newTrackButton.addActionListener(this);
 
         JButton playSelectedButton = new JButton("Play Selected");
         playSelectedButton.addActionListener(this);
+
+        JButton playRecordButton = new JButton("Play Sel / Rec new");
+        playRecordButton.setActionCommand("playrecord");
+        playRecordButton.addActionListener(this);
+
+        JButton allStopButton = new JButton("All Stop!");
+        allStopButton.setActionCommand("allstop");
+        allStopButton.addActionListener(this);
 
         JButton removeSelectedButton = new JButton("Remove Selected");
         removeSelectedButton.addActionListener(this);
@@ -108,8 +140,10 @@ class TrackPanel extends JPanel implements ActionListener {
 
         buttonPanel.add(newTrackButton);
         buttonPanel.add(playSelectedButton);
+        buttonPanel.add(playRecordButton);
         buttonPanel.add(removeSelectedButton);
         buttonPanel.add(saveButton);
+        buttonPanel.add(allStopButton);
 
         mainPanel.setBorder(BorderFactory.createRaisedBevelBorder());
         buttonPanel.setBorder(BorderFactory.createRaisedBevelBorder());

@@ -18,6 +18,7 @@ class Track extends JPanel implements ActionListener {
     final private int DEFAULT_WIDTH = 400;
     final private int DEFAULT_HEIGHT = 120;
 
+    private boolean stopPlay = false;
     private boolean stopCapture = false;
     private boolean isCapturing = false;
     private boolean notEmpty = false;
@@ -52,19 +53,12 @@ class Track extends JPanel implements ActionListener {
 
         if (comStr.equals("Rec/Stop")) {
             if (!isCapturing) {
-                clock.restart();
-                metronome.start();
-                record();
-                notEmpty = true;
+                startRecording();
             } else {
                 stopRecording();
-                metronome.stop();
-                clock.reset();
-                isCapturing = false;
             }
         } else if (comStr.equals("Play")) {
-            if (notEmpty)
-                playback();
+            startPlaying();
         } else if (comStr.equals("Add note")) {
             String newNote = getNote();
             if (!newNote.equals("no comment"))
@@ -78,6 +72,32 @@ class Track extends JPanel implements ActionListener {
 
     public boolean isNotEmpty() {
         return notEmpty;
+    }
+
+    public void startRecording() {
+        clock.restart();
+        metronome.start();
+        record();
+        notEmpty = true;
+    }
+
+    public void stopRecording() {
+        System.out.println("Stopping recording . . .");
+        stopCapture = true;
+        metronome.stop();
+        clock.reset();
+        isCapturing = false;
+    }
+
+    public void startPlaying() {
+        if (notEmpty) {
+            stopPlay = false;
+            playback();
+        }
+    }
+
+    public void stopPlaying() {
+        stopPlay = true;
     }
 
     private String getNote() {
@@ -153,11 +173,6 @@ class Track extends JPanel implements ActionListener {
 
     }
 
-    public void stopRecording() {
-        System.out.println("Stopping recording . . .");
-        stopCapture = true;
-    }
-
     // Create and return an AudioFormat object for a given set
     // of format parameters.  If these parameters don't work well for
     // you, try some of the other allowable parameter values, which
@@ -178,8 +193,8 @@ class Track extends JPanel implements ActionListener {
     }
 
     public void record() {
-        // System.out.println("Recording . . . ");
         try{
+            System.out.println("Recording . . . ");
             // Get everything set up for recording
             audioFormat = getAudioFormat();
             DataLine.Info dataLineInfo = new DataLine.Info(
@@ -300,9 +315,9 @@ class Track extends JPanel implements ActionListener {
                 // Keep looping until the input
                 // read method returns -1 for
                 // empty stream.
-                while ((cnt = audioInputStream.read(
+                while (((cnt = audioInputStream.read(
                                 tempBuffer, 0,
-                                tempBuffer.length)) != -1)
+                                tempBuffer.length)) != -1) && (!stopPlay))
                 {
                     if (cnt > 0) {
                         // Write data to the internal
@@ -318,6 +333,7 @@ class Track extends JPanel implements ActionListener {
                 // empty.
                 sourceDataLine.drain();
                 sourceDataLine.close();
+                stopPlay = false;
 
             } catch (Exception e) {
                 System.out.println(e);
