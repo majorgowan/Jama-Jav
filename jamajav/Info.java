@@ -3,8 +3,13 @@ package jamajav;
 // For resizable arrays
 import java.util.ArrayList;
 
+// For date
+import java.util.Calendar;
+import java.text.*;
+
 class Info {
 
+    private Calendar date;
     private String contributor;
     private String title;
     private ArrayList<String> notes;
@@ -38,14 +43,22 @@ class Info {
         return title;
     }
 
+    public String getDate() {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        return dateFormat.format(date.getTime());
+    }
+
     Info() {
         notes = new ArrayList<String>(0);
         title = "Track";
+        contributor = "You, that's who.";
+        date = Calendar.getInstance();
     }
 
     Info(String tit) {
         notes = new ArrayList<String>(0);
         title = tit;
+        date = Calendar.getInstance();
     }
 }
 

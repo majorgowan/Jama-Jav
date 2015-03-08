@@ -58,6 +58,7 @@ class Metronome extends JPanel implements ActionListener {
                     Integer.parseInt(bpMeasField.getText()));
             // reinit Timer
             timer.setDelay((int)(60000/(bpMin*5)));
+            signalLabel.setText("   0" + " / " + bpMeas + "   ");
         }
     }
 
@@ -77,7 +78,7 @@ class Metronome extends JPanel implements ActionListener {
             beat++;
             if (beat == 5*bpMeas) {
                 signalLabel.setForeground(Color.RED);
-                signalLabel.setText("     1     ");
+                signalLabel.setText("   1" + " / " + bpMeas + "   ");
                 beat = 0;
                 if (soundCheckBox.isSelected()) {
                     if (tock.isRunning())
@@ -87,7 +88,7 @@ class Metronome extends JPanel implements ActionListener {
                 }
             } else if (beat%5 == 0) {
                 signalLabel.setForeground(Color.BLACK);
-                signalLabel.setText("     " + (beat/5+1) + "     ");
+                signalLabel.setText("   " + (beat/5+1) + " / " + bpMeas + "   ");
                 if (soundCheckBox.isSelected()) {
                     if (tick.isRunning())
                         tick.stop();   // Stop the player if it is still running
@@ -95,7 +96,7 @@ class Metronome extends JPanel implements ActionListener {
                     tick.start();     // Start playing
                 }
             } else {
-                signalLabel.setText("           ");
+                signalLabel.setText("     " + " / " + bpMeas + "   ");
             }
         } else if (comStr.equals("start")) {
             timer.start();
@@ -110,16 +111,16 @@ class Metronome extends JPanel implements ActionListener {
 
     public void stop() {
         timer.stop();
-        beat = 0;
+        beat = -1;
         signalLabel.setForeground(Color.BLACK);
-        signalLabel.setText("    ---    ");
+        signalLabel.setText("   0" + " / " + bpMeas + "   ");
     }
 
     Metronome(int beatspermin, int beatspermeasure) {
 
         setBackground(new Color(0.75f,0.6f,0.1f));
 
-        beat = 0;
+        beat = -1;
         bpMin = beatspermin;
         bpMeas = beatspermeasure;
 
@@ -163,10 +164,9 @@ class Metronome extends JPanel implements ActionListener {
         JPanel buttonPanel = new JPanel(new FlowLayout());
         buttonPanel.add(startButton);
         buttonPanel.add(stopButton);
-        //        buttonPanel.add(soundCheckBox);
 
         signalPanel = new JPanel(new FlowLayout());
-        signalLabel = new JLabel("    ---    ");
+        signalLabel = new JLabel("   0" + " / " + bpMeas + "   ");
         signalLabel.setFont(new Font("SansSerif",Font.BOLD,30));
         // a Timer object which triggers a listener every beat
         timer = new Timer((int)(60000/(bpMin*5)), this);

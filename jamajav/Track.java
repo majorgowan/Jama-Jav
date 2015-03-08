@@ -119,6 +119,8 @@ class Track extends JPanel implements ActionListener {
 
         toolTip += info.getNotes();
 
+        toolTip += "</list><br><br>" + info.getDate();
+
         visualPanel.setToolTipText(toolTip);
     }
 
