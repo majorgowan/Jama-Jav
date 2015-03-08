@@ -100,10 +100,7 @@ class Metronome extends JPanel implements ActionListener {
         } else if (comStr.equals("start")) {
             timer.start();
         } else if (comStr.equals("stop")) {
-            timer.stop();
-            beat = 0;
-            signalLabel.setForeground(Color.BLACK);
-            signalLabel.setText("    ---    ");
+            stop();
         }
     }
 
@@ -113,6 +110,9 @@ class Metronome extends JPanel implements ActionListener {
 
     public void stop() {
         timer.stop();
+        beat = 0;
+        signalLabel.setForeground(Color.BLACK);
+        signalLabel.setText("    ---    ");
     }
 
     Metronome(int beatspermin, int beatspermeasure) {

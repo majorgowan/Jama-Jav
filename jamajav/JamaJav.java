@@ -24,7 +24,6 @@ public class JamaJav implements ActionListener {
     private JFrame jfrm;
     private Clock clock;
     private Metronome metronome;
-    private NotesPanel notesPanel;
     private TrackPanel mainPanel;
 
     public void actionPerformed(ActionEvent ae) {
@@ -53,11 +52,7 @@ public class JamaJav implements ActionListener {
         metronome.setBorder(BorderFactory.createRaisedBevelBorder());
         controlPanel.add(metronome);
 
-        notesPanel = new NotesPanel();
-        notesPanel.setBorder(BorderFactory.createRaisedBevelBorder());
-        controlPanel.add(notesPanel);
-
-        mainPanel = new TrackPanel(metronome, clock, notesPanel);
+        mainPanel = new TrackPanel(metronome, clock);
         mainPanel.setBorder(BorderFactory.createRaisedBevelBorder());
 
         contentPane.add(controlPanel,BorderLayout.WEST);
@@ -111,6 +106,8 @@ public class JamaJav implements ActionListener {
         jfrm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         jfrm.pack();
         jfrm.setVisible(true);
+
+        metronome.getSettings();
     }
 
     public static void main(String[] args) {

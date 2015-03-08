@@ -29,13 +29,12 @@ class Track extends JPanel implements ActionListener {
     private AudioInputStream audioInputStream;
     private SourceDataLine sourceDataLine;
 
-    private Notes notes;
+    private Info info;
     private boolean isClicked = false;
     private Color clickedColor, unclickedColor;
 
     private Metronome metronome;
     private Clock clock;
-    private NotesPanel notesPanel;
 
     private Visualizer visualPanel;
     private JCheckBox trackCheckBox;
@@ -62,7 +61,8 @@ class Track extends JPanel implements ActionListener {
         } else if (comStr.equals("Add note")) {
             String newNote = getNote();
             if (!newNote.equals("no comment"))
-                notes.addComment(newNote);
+                info.addNote(newNote);
+            setToolTip();
         }
     }
 
@@ -110,21 +110,29 @@ class Track extends JPanel implements ActionListener {
             return noteArea.getText();
         else
             return "no comment";
+    }
 
+    private void setToolTip() {
+        String toolTip = "<html><h3>" + info.getTitle() + "<br>";
+        
+        toolTip += "by: " + info.getContributor() + "</h3>";
+
+        toolTip += info.getNotes();
+
+        visualPanel.setToolTipText(toolTip);
     }
 
     // will put more things in the constructor later (probably
-    // a Notes object will be involved
-    Track(Metronome m, Clock c, NotesPanel np) {
+    // an Info object will be involved
+    Track(Metronome m, Clock c) {
 
         metronome = m;
         clock = c;
-        notesPanel = np;
 
         clickedColor = Color.LIGHT_GRAY;
         unclickedColor = getBackground();
 
-        notes = new Notes();
+        info = new Info();
 
         setLayout(new FlowLayout());
 
@@ -166,7 +174,6 @@ class Track extends JPanel implements ActionListener {
                 }    else {
                     isClicked = true;
                     setBackground(clickedColor);
-                    notesPanel.showNotes(notes);
                 }
             }
         });

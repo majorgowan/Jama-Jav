@@ -24,7 +24,6 @@ class TrackPanel extends JPanel implements ActionListener {
 
     private Metronome metronome;
     private Clock clock;
-    private NotesPanel notesPanel;
 
     public void actionPerformed(ActionEvent ae) {
         String comStr = ae.getActionCommand();
@@ -35,6 +34,8 @@ class TrackPanel extends JPanel implements ActionListener {
             for (int i = tracks.size() - 1; i >= 0; i--) {
                 //System.out.println("track " + i + " is " + tracks.get(i).isSelected());
                 if (tracks.get(i).isSelected()) {
+                    tracks.get(i).stopRecording();
+                    tracks.get(i).stopPlaying();
                     mainPanel.remove(linePanel.get(i));
                     tracks.remove(i);
                     linePanel.remove(i);
@@ -76,7 +77,7 @@ class TrackPanel extends JPanel implements ActionListener {
     }
 
     private void addNewTrack() {
-        tracks.add(new Track(metronome, clock, notesPanel));
+        tracks.add(new Track(metronome, clock));
         linePanel.add(new JPanel());
         ntracks++;
 
@@ -100,11 +101,10 @@ class TrackPanel extends JPanel implements ActionListener {
             }
     }
 
-    TrackPanel(Metronome m, Clock c, NotesPanel np) {
+    TrackPanel(Metronome m, Clock c) {
 
         metronome = m;
         clock = c;
-        notesPanel = np;
 
         tracks = new ArrayList<Track>(0);
         linePanel = new ArrayList<JPanel>(0);
