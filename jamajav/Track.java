@@ -23,7 +23,7 @@ class Track extends JPanel implements ActionListener {
     private boolean isCapturing = false;
     private boolean notEmpty = false;
 
-    private ByteArrayOutputStream byteArrayOutputStream;
+    private byte[] audioData;
     private AudioFormat audioFormat;
     private TargetDataLine targetDataLine;
     private AudioInputStream audioInputStream;
@@ -74,6 +74,15 @@ class Track extends JPanel implements ActionListener {
         return notEmpty;
     }
 
+    public void setSelected(boolean b) {
+        isClicked = b;
+        if (isClicked)
+            setBackground(clickedColor);
+        else
+            setBackground(unclickedColor);
+        repaint();
+    }
+
     public void startRecording() {
         clock.restart();
         metronome.start();
@@ -114,7 +123,7 @@ class Track extends JPanel implements ActionListener {
 
     private void setToolTip() {
         String toolTip = "<html><h3>" + info.getTitle() + "<br>";
-        
+
         toolTip += "by: " + info.getContributor() + "</h3>";
 
         toolTip += info.getNotes();
@@ -124,8 +133,9 @@ class Track extends JPanel implements ActionListener {
         visualPanel.setToolTipText(toolTip);
     }
 
-    // will put more things in the constructor later (probably
-    // an Info object will be involved
+
+
+    // constructor
     Track(Metronome m, Clock c) {
 
         metronome = m;
@@ -170,16 +180,31 @@ class Track extends JPanel implements ActionListener {
 
         addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent me) {
-                if (isClicked) {
-                    isClicked = false;
-                    setBackground(unclickedColor);
-                }    else {
-                    isClicked = true;
-                    setBackground(clickedColor);
+                if (isSelected()) {
+                    setSelected(false);
+                } else {
+                    setSelected(true);
                 }
             }
         });
 
+    }
+
+    public Info getInfo() {
+        return info;
+    }
+
+    public void putInfo(Info in) {
+        info = in;
+    }
+
+    public byte[] getBytes() {
+        return audioData;
+    }
+
+    public void putBytes(byte[] bytes) {
+        audioData = bytes;
+        visualPanel.setData(audioData, getAudioFormat().getFrameSize());
     }
 
     // Create and return an AudioFormat object for a given set
@@ -231,7 +256,7 @@ class Track extends JPanel implements ActionListener {
         // An arbitrary-size temporary holding buffer
         byte tempBuffer[] = new byte[10000];
         public void run(){
-            byteArrayOutputStream = new ByteArrayOutputStream();
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             stopCapture = false;
             try{
                 // Loop until stopCapture is set by another thread that
@@ -248,7 +273,8 @@ class Track extends JPanel implements ActionListener {
                 }
                 byteArrayOutputStream.close();
 
-                visualPanel.setData(byteArrayOutputStream.toByteArray(),
+                audioData = byteArrayOutputStream.toByteArray();
+                visualPanel.setData(audioData,
                         targetDataLine.getFormat().getFrameSize());
 
                 System.out.println("Closing targetDataLine . . . ");
@@ -264,8 +290,6 @@ class Track extends JPanel implements ActionListener {
     public void playback() {
         // System.out.println("Playing back . . . ");
         try {
-            byte audioData[] = byteArrayOutputStream.toByteArray();
-
             InputStream byteArrayInputStream 
                 = new ByteArrayInputStream(audioData);
 
@@ -325,8 +349,8 @@ class Track extends JPanel implements ActionListener {
                 // read method returns -1 for
                 // empty stream.
                 while (((cnt = audioInputStream.read(
-                                tempBuffer, 0,
-                                tempBuffer.length)) != -1) && (!stopPlay))
+                                    tempBuffer, 0,
+                                    tempBuffer.length)) != -1) && (!stopPlay))
                 {
                     if (cnt > 0) {
                         // Write data to the internal

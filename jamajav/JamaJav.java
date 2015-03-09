@@ -19,20 +19,12 @@ import java.util.Arrays;
 import javax.sound.sampled.*;
 
 
-public class JamaJav implements ActionListener {
+public class JamaJav {
 
     private JFrame jfrm;
     private Clock clock;
     private Metronome metronome;
     private TrackPanel mainPanel;
-
-    public void actionPerformed(ActionEvent ae) {
-        String comStr = ae.getActionCommand();
-
-        if (comStr.equals("metroset")) {
-            metronome.getSettings();
-        }
-    }
 
     JamaJav(String[] args) {
 
@@ -67,18 +59,18 @@ public class JamaJav implements ActionListener {
         // File menu
         fileMenu.setMnemonic('F');
         JMenuItem fileNewItem = new JMenuItem("New");
-        fileNewItem.addActionListener(this);
+        fileNewItem.addActionListener(mainPanel);
         JMenuItem fileOpenItem = new JMenuItem("Open ...");
         fileOpenItem.setActionCommand("Open");
-        fileOpenItem.addActionListener(this);
+        fileOpenItem.addActionListener(mainPanel);
         JMenuItem fileSaveItem = new JMenuItem("Save as ...");
         fileSaveItem.setActionCommand("Save");
-        fileSaveItem.addActionListener(this);
+        fileSaveItem.addActionListener(mainPanel);
         JMenuItem fileWebOpenItem = new JMenuItem("Open from Web ...");
         fileWebOpenItem.setActionCommand("WWW");
-        fileWebOpenItem.addActionListener(this);
+        fileWebOpenItem.addActionListener(mainPanel);
         JMenuItem fileExitItem = new JMenuItem("Exit");
-        fileExitItem.addActionListener(this);
+        fileExitItem.addActionListener(mainPanel);
         fileMenu.add(fileNewItem);
         fileMenu.add(fileOpenItem);
         fileMenu.add(fileSaveItem);
@@ -91,7 +83,7 @@ public class JamaJav implements ActionListener {
         playMenu.setMnemonic('P');
         JMenuItem metronomeItem = new JMenuItem("Metronome settings ...");
         metronomeItem.setActionCommand("metroset");
-        metronomeItem.addActionListener(this);
+        metronomeItem.addActionListener(mainPanel);
         playMenu.add(metronomeItem);
 
         // Help menu
