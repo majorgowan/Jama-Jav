@@ -27,6 +27,8 @@ class TrackPanel extends JPanel implements ActionListener {
     private Clock clock;
     private Prefs prefs;
 
+    private JFrame parent;
+
     public void actionPerformed(ActionEvent ae) {
         String comStr = ae.getActionCommand();
 
@@ -44,7 +46,14 @@ class TrackPanel extends JPanel implements ActionListener {
                 break;
 
             case ("editprefs") :
-                // open JOptionPane with a prefspanel
+                // open dialog with a prefspanel
+                final JDialog prefsDialog = new JDialog(parent, "Edit preferences", true);
+                prefsDialog.getContentPane().setLayout(new BorderLayout());
+                prefsDialog.getContentPane().add(
+                        new PrefsPanel(prefs), BorderLayout.CENTER);
+                prefsDialog.revalidate();
+                prefsDialog.pack();
+                prefsDialog.setVisible(true);
                 break;
 
             case ("exit") :
@@ -53,10 +62,6 @@ class TrackPanel extends JPanel implements ActionListener {
 
             case ("New Track") :
                 addNewTrack();
-                break;
-
-            case ("metroset") :
-                metronome.getSettings();
                 break;
 
             case ("Remove Selected") :
@@ -278,8 +283,9 @@ class TrackPanel extends JPanel implements ActionListener {
         repaint();
     }
 
-    TrackPanel(Metronome m, Clock c, Prefs p) {
+    TrackPanel(JFrame jfrm, Metronome m, Clock c, Prefs p) {
 
+        parent = jfrm;
         metronome = m;
         clock = c;
         prefs = p;

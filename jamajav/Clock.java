@@ -67,15 +67,31 @@ class Clock extends JPanel implements ActionListener {
         repaint();
     }
 
-    Clock(int countIn, int p) {
+    public int[] getParam() {
+        int[] cparam = new int[2];
+        cparam[0] = countInSeconds;
+        cparam[1] = precision;
+        return cparam;
+    }
+
+    public void setParam(int countIn, int p) {
+        countInSeconds = countIn;
+        precision = p;
+        theTime = (double)(-countInSeconds);
+        timeLabel.setText(df.format(theTime));
+    }
+
+    Clock() {
         setBackground(new Color(0.75f,0.6f,0.1f));
 
-        countInSeconds = countIn;
-        theTime = (double)(-countInSeconds);
-        precision = p;
+        timeLabel = new JLabel();
+
+        // default (never used ... fix)
+        setParam(2, 100);
 
         // start and reset buttons:
-        JButton startButton = new JButton("start");
+        JButton startButton = new JButton("start/stop");
+        startButton.setActionCommand("start");
         JButton resetButton = new JButton("reset");
 
         startButton.addActionListener(this);
@@ -86,7 +102,6 @@ class Clock extends JPanel implements ActionListener {
         buttonPanel.add(resetButton);
 
         timerPanel = new JPanel(new FlowLayout());
-        timeLabel = new JLabel(df.format(theTime));
         timeLabel.setFont(new Font("SansSerif",Font.BOLD,30));
         // a Timer object which triggers a listener every precision milliseconds
         timer = new Timer(precision, this);

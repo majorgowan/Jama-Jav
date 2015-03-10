@@ -6,15 +6,18 @@ import java.io.*;
 class Prefs {
 
     private String filename;
-    private int[] metroset = new int[2];
+    private Metronome metronome;
+    private Clock clock;
     private String userName;
     private String userCity;
 
     private void setDefaults() {
 
         // default Metronome
-        metroset[0] = 120;
-        metroset[1] = 4;
+        metronome.setParam(120,4);
+
+        // default Clock
+        clock.setParam(0,100);
 
         // default username
         userName = "auser";
@@ -24,20 +27,25 @@ class Prefs {
 
     }
 
-    private int[] getMetroSet() {
-        return metroset;
+    public int[] getMetroSet() {
+        return metronome.getParam();
     }
 
-    private String getUserName() {
+    public int[] getClockParam() {
+        return clock.getParam();
+    }
+
+    public String getUserName() {
         return userName;
     }
 
-    private String getUserCity() {
+    public String getUserCity() {
         return userCity;
     }
 
-    public void setPrefs(int[] ms, String un, String uc) {
-        metroset = ms;
+    public void setPrefs(int[] ms, int[] cparam, String un, String uc) {
+        metronome.setParam(ms[0],ms[1]);
+        clock.setParam(cparam[0],cparam[1]);
         userName = un;
         userCity = uc;
     }
@@ -53,16 +61,24 @@ class Prefs {
             ms[1] = Integer.parseInt(words[3]);
             br.readLine();
 
-            // read userName
+            // read clock settings
+            words = br.readLine().split(" ");
+            int[] cparam = new int[2];
+            cparam[0] = Integer.parseInt(words[2]);
+            cparam[1] = Integer.parseInt(words[4]);
             br.readLine();
+
+            // read userName
+            br.readLine();  // discard "User Name:"
             String un = br.readLine();
+            br.readLine();  // discard blank line
 
             // read userCity
-            br.readLine();
+            br.readLine(); // discard "User City:"
             String uc = br.readLine();
-            br.readLine();
+            br.readLine();  // discard blank line
 
-            setPrefs(ms, un, uc);
+            setPrefs(ms, cparam, un, uc);
 
         } catch (IOException ie) {
             System.out.println("No valid preferences file found, using defaults.");
@@ -70,12 +86,18 @@ class Prefs {
         }
     }
 
-    private void writePrefsFile() {
+    public void writePrefsFile() {
         try (FileWriter fw = new FileWriter(filename)) {
 
+            int[] metroset = metronome.getParam();
             fw.write("Metronome: " 
                     + metroset[0] + " bpMin "
                     + metroset[1] + " bpMeas\n\n");
+
+            int[] cparam = clock.getParam();
+            fw.write("Clock: " 
+                    + "count-in: " + cparam[0] + " "
+                    + "precision: " + cparam[1] + "\n\n");
 
             fw.write("User Name:\n");
             fw.write(userName + "\n\n");
@@ -87,8 +109,11 @@ class Prefs {
         }
     }
 
-    Prefs(String fn) {
+    Prefs(String fn, Metronome m, Clock c) {
+
         filename = fn;
+        metronome = m;
+        clock = c;
         readPrefsFile();
     }
 }

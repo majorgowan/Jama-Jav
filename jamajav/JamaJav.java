@@ -37,17 +37,17 @@ public class JamaJav {
         JPanel controlPanel = new JPanel();
         controlPanel.setLayout(new BoxLayout(controlPanel,BoxLayout.PAGE_AXIS));
 
-        clock = new Clock(2, 100);
+        clock = new Clock();
         clock.setBorder(BorderFactory.createRaisedBevelBorder());
         controlPanel.add(clock);
 
-        metronome = new Metronome(120, 3);
+        metronome = new Metronome();
         metronome.setBorder(BorderFactory.createRaisedBevelBorder());
         controlPanel.add(metronome);
 
-        prefs = new Prefs("jamajav.cfg");
+        prefs = new Prefs("jamajav.cfg", metronome, clock);
 
-        trackPanel = new TrackPanel(metronome, clock, prefs);
+        trackPanel = new TrackPanel(jfrm, metronome, clock, prefs);
         trackPanel.setBorder(BorderFactory.createRaisedBevelBorder());
 
         contentPane.add(controlPanel,BorderLayout.WEST);
@@ -91,10 +91,6 @@ public class JamaJav {
 
         // Play menu
         playMenu.setMnemonic('P');
-        JMenuItem metronomeItem = new JMenuItem("Metronome settings ...");
-        metronomeItem.setActionCommand("metroset");
-        metronomeItem.addActionListener(trackPanel);
-        playMenu.add(metronomeItem);
 
         // Help menu
         helpMenu.setMnemonic('H');

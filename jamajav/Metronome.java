@@ -34,32 +34,8 @@ class Metronome extends JPanel implements ActionListener {
         return (new Dimension(DEFAULT_WIDTH, DEFAULT_HEIGHT));
     }
 
-    public void getSettings() {
-        JPanel mainPanel = new JPanel(new GridLayout(2,1));
-
-        JTextField bpMinField = new JTextField("" + bpMin,4);
-        JPanel line1 = new JPanel();
-        line1.add(new JLabel("Beats per minute: "));
-        line1.add(bpMinField);
-
-        JTextField bpMeasField = new JTextField("" + bpMeas,2);
-        JPanel line2 = new JPanel();
-        line2.add(new JLabel("Beats per measure: "));
-        line2.add(bpMeasField);
-
-        mainPanel.add(line1);
-        mainPanel.add(line2);
-
-        int result = JOptionPane.showConfirmDialog(null, mainPanel, 
-                "Metronome Settings", JOptionPane.OK_CANCEL_OPTION);
-        if (result == JOptionPane.OK_OPTION) {
-            // set new parameters
-            setParam(Integer.parseInt(bpMinField.getText()),
-                    Integer.parseInt(bpMeasField.getText()));
-        }
-    }
-
     public void setParam(int beatspermin, int beatspermeasure) {
+        //System.out.println("Setting parameters " + beatspermin + " " + beatspermeasure);
         bpMin = beatspermin;
         bpMeas = beatspermeasure;  
         beat = 0;
@@ -125,13 +101,18 @@ class Metronome extends JPanel implements ActionListener {
         signalLabel.setText("   0" + " / " + bpMeas + "   ");
     }
 
-    Metronome(int beatspermin, int beatspermeasure) {
+    Metronome() {
 
         setBackground(new Color(0.75f,0.6f,0.1f));
 
-        beat = -1;
-        bpMin = beatspermin;
-        bpMeas = beatspermeasure;
+        signalLabel = new JLabel();
+        infoLabel = new JLabel(); 
+
+        // a Timer object which triggers a listener every beat
+        timer = new Timer(100, this);
+
+        // defaults (never used ... fix)
+        setParam(120, 4);
 
         // load sound files
         try {
@@ -175,17 +156,13 @@ class Metronome extends JPanel implements ActionListener {
         buttonPanel.add(stopButton);
 
         signalPanel = new JPanel(new FlowLayout());
-        signalLabel = new JLabel("   0" + " / " + bpMeas + "   ");
         signalLabel.setFont(new Font("SansSerif",Font.BOLD,30));
-        // a Timer object which triggers a listener every beat
-        timer = new Timer((int)(60000/(bpMin*5)), this);
         signalPanel.add(signalLabel);
         signalPanel.add(soundCheckBox);
 
         JPanel titlePanel = new JPanel();
         titlePanel.setLayout(new BoxLayout(titlePanel,BoxLayout.LINE_AXIS));
         JLabel titleLabel = new JLabel("Metronome");
-        infoLabel = new JLabel("" + bpMin + " bpm "); 
         titleLabel.setFont(new Font("SansSerif",Font.BOLD,13));
         infoLabel.setFont(new Font("SansSerif",Font.BOLD,13));
         titlePanel.add(titleLabel);
