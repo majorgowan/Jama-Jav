@@ -151,6 +151,7 @@ class Track extends JPanel implements ActionListener {
         setLayout(new FlowLayout());
 
         visualPanel = new Visualizer();
+        setToolTip();
 
         Font buttonFont = new Font("SansSerif",Font.BOLD,10);
 
@@ -291,7 +292,6 @@ class Track extends JPanel implements ActionListener {
 
     public void playback() {
         // System.out.println("Playing back . . . ");
-        System.out.println("About to try playback!");
         try {
             InputStream byteArrayInputStream 
                 = new ByteArrayInputStream(audioData);
@@ -310,32 +310,17 @@ class Track extends JPanel implements ActionListener {
             sourceDataLine.open(audioFormat);
             sourceDataLine.start();
 
-            //Control[] ccc = sourceDataLine.getControls();
-            //for (int jj = 0; jj < ccc.length; jj++)
-            //    System.out.println("Control " + ccc[jj].getType());
-
             FloatControl volume_control = 
                 (FloatControl)sourceDataLine.getControl(FloatControl.Type.MASTER_GAIN);
-
-            //System.out.println("Old volume is " 
-            //        + Math.pow(10.0,volume_control.getValue()));
-            //volume_control.setValue((float)(
-            //            Math.log(0.1*slider.getValue()
-            //                *Math.pow(10.0,volume))));
 
             volume_control.setValue((float)(
                         -2.5*(10.0-slider.getValue())));
 
-            //System.out.println("New volume is " 
-            //        + Math.pow(10.0,volume_control.getValue()));
-
             // Create a thread to play back the data and start it running.  
             // It will run until all the data has been played back.
-
             Thread playThread = new Thread(new PlayThread());
             playThread.start();
 
-            System.out.println("Just launched playThread!");
         } catch (Exception e) {
             System.out.println(e);
             // System.exit(0);

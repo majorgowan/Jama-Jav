@@ -24,7 +24,8 @@ public class JamaJav {
     private JFrame jfrm;
     private Clock clock;
     private Metronome metronome;
-    private TrackPanel mainPanel;
+    private Prefs prefs;
+    private TrackPanel trackPanel;
 
     JamaJav(String[] args) {
 
@@ -44,11 +45,13 @@ public class JamaJav {
         metronome.setBorder(BorderFactory.createRaisedBevelBorder());
         controlPanel.add(metronome);
 
-        mainPanel = new TrackPanel(metronome, clock);
-        mainPanel.setBorder(BorderFactory.createRaisedBevelBorder());
+        prefs = new Prefs("jamajav.cfg");
+
+        trackPanel = new TrackPanel(metronome, clock, prefs);
+        trackPanel.setBorder(BorderFactory.createRaisedBevelBorder());
 
         contentPane.add(controlPanel,BorderLayout.WEST);
-        contentPane.add(mainPanel,BorderLayout.CENTER);
+        contentPane.add(trackPanel,BorderLayout.CENTER);
 
         // Menus!!
         JMenuBar menuBar = new JMenuBar();
@@ -59,23 +62,30 @@ public class JamaJav {
         // File menu
         fileMenu.setMnemonic('F');
         JMenuItem fileNewItem = new JMenuItem("New");
-        fileNewItem.addActionListener(mainPanel);
+        fileNewItem.setActionCommand("new");
+        fileNewItem.addActionListener(trackPanel);
         JMenuItem fileOpenItem = new JMenuItem("Open ...");
         fileOpenItem.setActionCommand("open");
-        fileOpenItem.addActionListener(mainPanel);
+        fileOpenItem.addActionListener(trackPanel);
         JMenuItem fileSaveItem = new JMenuItem("Save as ...");
         fileSaveItem.setActionCommand("save");
-        fileSaveItem.addActionListener(mainPanel);
+        fileSaveItem.addActionListener(trackPanel);
         JMenuItem fileWebOpenItem = new JMenuItem("Open from Web ...");
         fileWebOpenItem.setActionCommand("WWW");
-        fileWebOpenItem.addActionListener(mainPanel);
+        fileWebOpenItem.addActionListener(trackPanel);
+        JMenuItem fileEditPrefsItem = new JMenuItem("Edit preferences ...");
+        fileEditPrefsItem.setActionCommand("editprefs");
+        fileEditPrefsItem.addActionListener(trackPanel);
         JMenuItem fileExitItem = new JMenuItem("Exit");
-        fileExitItem.addActionListener(mainPanel);
+        fileSaveItem.setActionCommand("exit");
+        fileExitItem.addActionListener(trackPanel);
         fileMenu.add(fileNewItem);
         fileMenu.add(fileOpenItem);
         fileMenu.add(fileSaveItem);
         fileMenu.addSeparator();
         fileMenu.add(fileWebOpenItem);
+        fileMenu.addSeparator();
+        fileMenu.add(fileEditPrefsItem);
         fileMenu.addSeparator();
         fileMenu.add(fileExitItem);
 
@@ -83,7 +93,7 @@ public class JamaJav {
         playMenu.setMnemonic('P');
         JMenuItem metronomeItem = new JMenuItem("Metronome settings ...");
         metronomeItem.setActionCommand("metroset");
-        metronomeItem.addActionListener(mainPanel);
+        metronomeItem.addActionListener(trackPanel);
         playMenu.add(metronomeItem);
 
         // Help menu
@@ -99,7 +109,7 @@ public class JamaJav {
         jfrm.pack();
         jfrm.setVisible(true);
 
-        metronome.getSettings();
+        //metronome.getSettings();
     }
 
     public static void main(String[] args) {

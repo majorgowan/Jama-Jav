@@ -25,12 +25,13 @@ class TrackPanel extends JPanel implements ActionListener {
 
     private Metronome metronome;
     private Clock clock;
+    private Prefs prefs;
 
     public void actionPerformed(ActionEvent ae) {
         String comStr = ae.getActionCommand();
 
         switch (comStr) {
-            case ("New") :
+            case ("new") :
                 newDoc();
                 break;
 
@@ -40,6 +41,14 @@ class TrackPanel extends JPanel implements ActionListener {
 
             case ("open") :
                 open();
+                break;
+
+            case ("editprefs") :
+                // open JOptionPane with a prefspanel
+                break;
+
+            case ("exit") :
+                System.exit(0);
                 break;
 
             case ("New Track") :
@@ -269,10 +278,11 @@ class TrackPanel extends JPanel implements ActionListener {
         repaint();
     }
 
-    TrackPanel(Metronome m, Clock c) {
+    TrackPanel(Metronome m, Clock c, Prefs p) {
 
         metronome = m;
         clock = c;
+        prefs = p;
 
         tracks = new ArrayList<Track>(0);
         linePanel = new ArrayList<JPanel>(0);
