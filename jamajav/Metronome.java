@@ -56,9 +56,6 @@ class Metronome extends JPanel implements ActionListener {
             // set new parameters
             setParam(Integer.parseInt(bpMinField.getText()),
                     Integer.parseInt(bpMeasField.getText()));
-            // reinit Timer
-            timer.setDelay((int)(60000/(bpMin*5)));
-            signalLabel.setText("   0" + " / " + bpMeas + "   ");
         }
     }
 
@@ -68,6 +65,18 @@ class Metronome extends JPanel implements ActionListener {
         beat = 0;
 
         infoLabel.setText("" + bpMin + " bpm "); 
+        signalLabel.setText("   0" + " / " + bpMeas + "   ");
+        
+        // reinit Timer
+        timer.setDelay((int)(60000/(bpMin*5)));
+    }
+
+    public int[] getParam() {
+        int[] params = new int[2];
+        params[0] = bpMin;
+        params[1] = bpMeas;
+
+        return params;
     }
 
     public void actionPerformed(ActionEvent ae) {

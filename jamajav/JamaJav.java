@@ -61,10 +61,10 @@ public class JamaJav {
         JMenuItem fileNewItem = new JMenuItem("New");
         fileNewItem.addActionListener(mainPanel);
         JMenuItem fileOpenItem = new JMenuItem("Open ...");
-        fileOpenItem.setActionCommand("Open");
+        fileOpenItem.setActionCommand("open");
         fileOpenItem.addActionListener(mainPanel);
         JMenuItem fileSaveItem = new JMenuItem("Save as ...");
-        fileSaveItem.setActionCommand("Save");
+        fileSaveItem.setActionCommand("save");
         fileSaveItem.addActionListener(mainPanel);
         JMenuItem fileWebOpenItem = new JMenuItem("Open from Web ...");
         fileWebOpenItem.setActionCommand("WWW");

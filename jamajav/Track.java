@@ -141,6 +141,8 @@ class Track extends JPanel implements ActionListener {
         metronome = m;
         clock = c;
 
+        audioFormat = getAudioFormat();
+
         clickedColor = Color.LIGHT_GRAY;
         unclickedColor = getBackground();
 
@@ -204,6 +206,7 @@ class Track extends JPanel implements ActionListener {
 
     public void putBytes(byte[] bytes) {
         audioData = bytes;
+        notEmpty = true;
         visualPanel.setData(audioData, getAudioFormat().getFrameSize());
     }
 
@@ -230,7 +233,6 @@ class Track extends JPanel implements ActionListener {
         try{
             System.out.println("Recording . . . ");
             // Get everything set up for recording
-            audioFormat = getAudioFormat();
             DataLine.Info dataLineInfo = new DataLine.Info(
                     TargetDataLine.class, audioFormat);
 
@@ -289,6 +291,7 @@ class Track extends JPanel implements ActionListener {
 
     public void playback() {
         // System.out.println("Playing back . . . ");
+        System.out.println("About to try playback!");
         try {
             InputStream byteArrayInputStream 
                 = new ByteArrayInputStream(audioData);
@@ -332,6 +335,7 @@ class Track extends JPanel implements ActionListener {
             Thread playThread = new Thread(new PlayThread());
             playThread.start();
 
+            System.out.println("Just launched playThread!");
         } catch (Exception e) {
             System.out.println(e);
             // System.exit(0);
