@@ -44,6 +44,9 @@ class Track extends JPanel implements ActionListener {
     private JButton infoButton;
     private JButton playButton;
     private VolumeSlider slider;
+    private JPanel mainPanel;
+    private JPanel titlePanel;
+    private JLabel titleLabel;
 
     public Dimension getPreferredSize() {
         return (new Dimension(DEFAULT_WIDTH, DEFAULT_HEIGHT));
@@ -82,10 +85,13 @@ class Track extends JPanel implements ActionListener {
 
     public void setSelected(boolean b) {
         isClicked = b;
-        if (isClicked)
-            setBackground(clickedColor);
-        else
-            setBackground(unclickedColor);
+        if (isClicked) {
+            mainPanel.setBackground(clickedColor);
+            titlePanel.setBackground(clickedColor);
+        } else {
+            mainPanel.setBackground(unclickedColor);
+            titlePanel.setBackground(unclickedColor);
+        }
         repaint();
     }
 
@@ -139,6 +145,9 @@ class Track extends JPanel implements ActionListener {
         toolTip += ", " + info.getLocation();
 
         visualPanel.setToolTipText(toolTip);
+                
+        // probably bad form to put this here, but ...
+        titleLabel.setText(info.getTitle());
     }
 
     // constructor
@@ -158,7 +167,11 @@ class Track extends JPanel implements ActionListener {
         info.setContributor(prefs.getUserName());
         info.setLocation(prefs.getUserCity());
 
-        setLayout(new FlowLayout());
+        setLayout(new BorderLayout());
+        mainPanel = new JPanel(new FlowLayout());
+        titlePanel = new JPanel(new FlowLayout());
+        titleLabel = new JLabel(info.getTitle());
+        titlePanel.add(titleLabel);
 
         visualPanel = new Visualizer();
         setToolTip();
@@ -188,9 +201,12 @@ class Track extends JPanel implements ActionListener {
         buttonPanel.add(playButton);
         buttonPanel.add(slider);
 
-        add(buttonPanel);
-        add(Box.createRigidArea(new Dimension(5,0)));
-        add(visualPanel);
+        mainPanel.add(buttonPanel);
+        mainPanel.add(Box.createRigidArea(new Dimension(5,0)));
+        mainPanel.add(visualPanel);
+
+        add(mainPanel,BorderLayout.CENTER);
+        add(titlePanel,BorderLayout.SOUTH);
 
         addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent me) {
