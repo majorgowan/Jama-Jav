@@ -86,10 +86,8 @@ class Track extends JPanel implements ActionListener {
     public void setSelected(boolean b) {
         isClicked = b;
         if (isClicked) {
-            mainPanel.setBackground(clickedColor);
             titlePanel.setBackground(clickedColor);
         } else {
-            mainPanel.setBackground(unclickedColor);
             titlePanel.setBackground(unclickedColor);
         }
         repaint();
@@ -167,8 +165,10 @@ class Track extends JPanel implements ActionListener {
         info.setContributor(prefs.getUserName());
         info.setLocation(prefs.getUserCity());
 
-        setLayout(new BorderLayout());
-        mainPanel = new JPanel(new FlowLayout());
+        setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
+
+        mainPanel = new JPanel();
+        mainPanel.setLayout(new BoxLayout(mainPanel,BoxLayout.PAGE_AXIS));
         titlePanel = new JPanel(new FlowLayout());
         titleLabel = new JLabel(info.getTitle());
         titlePanel.add(titleLabel);
@@ -176,6 +176,12 @@ class Track extends JPanel implements ActionListener {
         visualPanel = new Visualizer();
         setToolTip();
 
+        JPanel outerVisualPanel = new JPanel(new FlowLayout());
+        outerVisualPanel.add(visualPanel);
+        mainPanel.add(outerVisualPanel);
+        mainPanel.add(titlePanel);
+
+        // Buttons
         Font buttonFont = new Font("SansSerif",Font.BOLD,10);
 
         recordButton = new JButton("Rec/Stop");
@@ -200,13 +206,11 @@ class Track extends JPanel implements ActionListener {
         buttonPanel.add(infoButton);
         buttonPanel.add(playButton);
         buttonPanel.add(slider);
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
 
-        mainPanel.add(buttonPanel);
-        mainPanel.add(Box.createRigidArea(new Dimension(5,0)));
-        mainPanel.add(visualPanel);
-
-        add(mainPanel,BorderLayout.CENTER);
-        add(titlePanel,BorderLayout.SOUTH);
+        add(buttonPanel);
+        add(Box.createRigidArea(new Dimension(5,0)));
+        add(mainPanel);
 
         addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent me) {
