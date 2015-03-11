@@ -9,7 +9,7 @@ import java.text.*;
 
 class Info {
 
-    private Calendar date;
+    private String date;
     private String contributor;
     private String location;
     private String title;
@@ -17,6 +17,10 @@ class Info {
 
     public void setTitle(String c) {
         title = c;
+    }
+
+    public void setDate(String d) {
+        date = d;
     }
 
     public void setContributor(String c) {
@@ -27,11 +31,23 @@ class Info {
         location = l;
     }
 
+    public void clearNotes() {
+        notes.clear();
+    }
+
     public void addNote(String c) {
         notes.add(new String(c));
     }
 
-    public String getNotes() {
+    public int getNotesSize() {
+        return notes.size();
+    }
+
+    public String getNote(int i) {
+        return notes.get(i);
+    }
+
+    public String getAllNotes() {
         String notesString = "<list>";
 
         for (int i=0; i<notes.size(); i++)
@@ -53,21 +69,16 @@ class Info {
     }
 
     public String getDate() {
-        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-        return dateFormat.format(date.getTime());
+        return date;
     }
 
     Info() {
         notes = new ArrayList<String>(0);
         title = "Track";
         contributor = "You, that's who.";
-        date = Calendar.getInstance();
-    }
-
-    Info(String tit) {
-        notes = new ArrayList<String>(0);
-        title = tit;
-        date = Calendar.getInstance();
+        Calendar d = Calendar.getInstance();
+        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        date = dateFormat.format(d.getTime());
     }
 }
 

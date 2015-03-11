@@ -33,14 +33,15 @@ class Track extends JPanel implements ActionListener {
     private boolean isClicked = false;
     private Color clickedColor, unclickedColor;
 
+    private JFrame jfrm;
+
     private Prefs prefs;
     private Metronome metronome;
-    private Clock clock;
+    private Clock clock; 
 
     private Visualizer visualPanel;
-    private JCheckBox trackCheckBox;
     private JButton recordButton;
-    private JButton noteButton;
+    private JButton infoButton;
     private JButton playButton;
     private VolumeSlider slider;
 
@@ -51,19 +52,23 @@ class Track extends JPanel implements ActionListener {
     public void actionPerformed(ActionEvent ae) {
         String comStr = ae.getActionCommand();
 
-        if (comStr.equals("Rec/Stop")) {
-            if (!isCapturing) {
-                startRecording();
-            } else {
-                stopRecording();
-            }
-        } else if (comStr.equals("Play")) {
-            startPlaying();
-        } else if (comStr.equals("Add note")) {
-            String newNote = getNote();
-            if (!newNote.equals("no comment"))
-                info.addNote(newNote);
-            setToolTip();
+        switch (comStr) {
+            case ("Rec/Stop") :
+                if (!isCapturing) {
+                    startRecording();
+                } else {
+                    stopRecording();
+                }
+                break;
+
+            case ("Play") :
+                startPlaying();
+                break;
+
+            case ("editinfo") :
+                editInfo();
+                setToolTip();
+                break;
         }
     }
 
@@ -110,16 +115,16 @@ class Track extends JPanel implements ActionListener {
         stopPlay = true;
     }
 
-    private String getNote() {
-        JTextArea noteArea = new JTextArea(5,40);
-        JScrollPane jsp = new JScrollPane(noteArea);
-
-        int result = JOptionPane.showConfirmDialog(null, jsp, 
-                "Add a note", JOptionPane.OK_CANCEL_OPTION);
-        if (result == JOptionPane.OK_OPTION)
-            return noteArea.getText();
-        else
-            return "no comment";
+    private void editInfo() {
+        // open dialog with a infopanel
+        final JDialog infoDialog = new JDialog(jfrm, "Edit track info", true);
+        infoDialog.setLocationRelativeTo(jfrm);
+        infoDialog.getContentPane().setLayout(new BorderLayout());
+        infoDialog.getContentPane().add(
+                new InfoPanel(info), BorderLayout.CENTER);
+        infoDialog.revalidate();
+        infoDialog.pack();
+        infoDialog.setVisible(true);
     }
 
     private void setToolTip() {
@@ -127,18 +132,19 @@ class Track extends JPanel implements ActionListener {
 
         toolTip += "by: " + info.getContributor() + "</h3>";
 
-        toolTip += info.getNotes();
+        toolTip += info.getAllNotes();
 
         toolTip += "</list><br><br>" + info.getDate();
+
+        toolTip += ", " + info.getLocation();
 
         visualPanel.setToolTipText(toolTip);
     }
 
-
-
     // constructor
-    Track(Metronome m, Clock c, Prefs p) {
+    Track(JFrame frm, Metronome m, Clock c, Prefs p) {
 
+        jfrm = frm;
         metronome = m;
         clock = c;
         prefs = p;
@@ -160,16 +166,17 @@ class Track extends JPanel implements ActionListener {
         Font buttonFont = new Font("SansSerif",Font.BOLD,10);
 
         recordButton = new JButton("Rec/Stop");
-        noteButton = new JButton("Add note");
+        infoButton = new JButton("Edit info");
+        infoButton.setActionCommand("editinfo");
         playButton = new JButton("Play");
 
         slider = new VolumeSlider(JSlider.HORIZONTAL, 0, 10, 10);
         recordButton.addActionListener(this);
-        noteButton.addActionListener(this);
+        infoButton.addActionListener(this);
         playButton.addActionListener(this);
 
         recordButton.setFont(buttonFont);
-        noteButton.setFont(buttonFont);
+        infoButton.setFont(buttonFont);
         playButton.setFont(buttonFont);
         slider.setFont(buttonFont);
 
@@ -177,7 +184,7 @@ class Track extends JPanel implements ActionListener {
         buttonPanel.setLayout(new GridLayout(4,1));
 
         buttonPanel.add(recordButton);
-        buttonPanel.add(noteButton);
+        buttonPanel.add(infoButton);
         buttonPanel.add(playButton);
         buttonPanel.add(slider);
 

@@ -25,7 +25,7 @@ class PrefsPanel extends JPanel implements ActionListener {
 
         String comStr = ae.getActionCommand();
         switch (comStr) {
-            case ("Save") :
+            case ("save") :
                 metroset[0] = Integer.parseInt(bpMinField.getText());
                 metroset[1] = Integer.parseInt(bpMeasField.getText());
                 cparam[0] = Integer.parseInt(countInField.getText());
@@ -104,7 +104,8 @@ class PrefsPanel extends JPanel implements ActionListener {
         JPanel buttonPanel = new JPanel(new FlowLayout());
         JButton okButton = new JButton("Ok");
         okButton.addActionListener(this);
-        JButton saveButton = new JButton("Save");
+        JButton saveButton = new JButton("Save as Default");
+        saveButton.setActionCommand("save");
         saveButton.addActionListener(this);
         JButton cancelButton = new JButton("Cancel");
         cancelButton.addActionListener(this);

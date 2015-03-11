@@ -48,6 +48,7 @@ class TrackPanel extends JPanel implements ActionListener {
             case ("editprefs") :
                 // open dialog with a prefspanel
                 final JDialog prefsDialog = new JDialog(parent, "Edit preferences", true);
+                prefsDialog.setLocationRelativeTo(parent);
                 prefsDialog.getContentPane().setLayout(new BorderLayout());
                 prefsDialog.getContentPane().add(
                         new PrefsPanel(prefs), BorderLayout.CENTER);
@@ -93,12 +94,12 @@ class TrackPanel extends JPanel implements ActionListener {
                     if (tracks.get(i).isSelected())
                         getState = true;
 
-                if (getState)               // if any are selected, select-all
-                    for (int i = 0; i < tracks.size(); i++)
-                        tracks.get(i).setSelected(true);
-                else                        // else unselect-all
+                if (getState)               // if any are selected, unselect-all
                     for (int i = 0; i < tracks.size(); i++)
                         tracks.get(i).setSelected(false);
+                else                        // else unselect-all
+                    for (int i = 0; i < tracks.size(); i++)
+                        tracks.get(i).setSelected(true);
                 break;
 
             case ("playrecord") :
@@ -123,6 +124,46 @@ class TrackPanel extends JPanel implements ActionListener {
                 for (int i = 0; i < tracks.size(); i++) 
                     tracks.get(i).startPlaying();
                 break;
+
+            case ("Instructions") :
+
+                JDialog helpDialog = new JDialog(parent,"How to use Jama Jav");
+
+                JLabel helpText = new JLabel("<html><p align=left>"
+                        + "Have fun.<br><br>"
+                        );
+
+                helpDialog.setLayout(new BorderLayout());
+
+                helpDialog.add(helpText);
+                helpDialog.setLocationRelativeTo(parent);
+                helpDialog.getRootPane().setBorder(
+                        BorderFactory.createEmptyBorder(30,30,30,30));
+                helpDialog.pack();
+                helpDialog.setVisible(true);
+
+                break;
+
+            case ("About") :
+
+                JDialog aboutDialog = new JDialog(parent,"About Jama Jav");
+
+                JLabel aboutText = new JLabel("<html><p align=center>"
+                        + "The Major's Jama Jav<br><br><br>"
+                        + "Copyright (c) 2015<br>"
+                        + "by Mark D. Fruman<br>"
+                        );
+
+                aboutDialog.setLayout(new BorderLayout());
+
+                aboutDialog.add(aboutText);
+                aboutDialog.setLocationRelativeTo(parent);
+                aboutDialog.getRootPane().setBorder(
+                        BorderFactory.createEmptyBorder(30,30,30,30));
+                aboutDialog.pack();
+                aboutDialog.setVisible(true);
+                break;
+
         }
     }
 
@@ -138,7 +179,7 @@ class TrackPanel extends JPanel implements ActionListener {
     }
 
     private void addNewTrack() {
-        tracks.add(new Track(metronome, clock, prefs));
+        tracks.add(new Track(parent, metronome, clock, prefs));
         linePanel.add(new JPanel());
         ntracks++;
 
@@ -163,6 +204,7 @@ class TrackPanel extends JPanel implements ActionListener {
     }
 
     private void save() {
+        System.out.println("WHY CAN'T I SAVE ANYMORE??!!");
         // get filename root
         String filename = JOptionPane.showInputDialog(
                 "Please enter a filename");
@@ -183,8 +225,15 @@ class TrackPanel extends JPanel implements ActionListener {
 
             // loop over tracks
             for (int i = 0; i < tracks.size(); i++) {
-                asciifw.write("Track " + i + " info\n");
-                // getInfo(), write to jj file (TO DO)
+                Info in = tracks.get(i).getInfo();
+                asciifw.write("TRACK_" + i + "_INFO_BEGIN\n");
+                asciifw.write(in.getTitle() + "\n");
+                asciifw.write(in.getContributor() + "\n");
+                asciifw.write(in.getDate() + "\n");
+                asciifw.write(in.getLocation() + "\n");
+                asciifw.write(in.getNotesSize() + " notes\n");
+                for (int j = 0; j < in.getNotesSize(); j++)
+                    asciifw.write(in.getNote(j) + "\n");
                 asciifw.write("INFO_END\n");
 
                 // get byte array from track
@@ -254,12 +303,20 @@ class TrackPanel extends JPanel implements ActionListener {
 
                 // loop over tracks
                 for (int i = 0; i < ntracks; i++) {
+                    Info in = tracks.get(i).getInfo();
+                    br.readLine(); // INFO_BEGIN
+                    in.setTitle(br.readLine());
+                    in.setContributor(br.readLine());
+                    in.setDate(br.readLine());
+                    in.setLocation(br.readLine());
 
-                    // construct Info object with information from jj file
-                    // tracks.get(i).putInfo(info); (TO DO)
-                    do {   // skip through INFO section
-                    } while (!(br.readLine().equals("INFO_END")));
+                    words = br.readLine().split(" ");
+                    int numNotes = Integer.parseInt(words[0]);
+                    for (int j = 0; j < numNotes; j++)
+                        in.addNote(br.readLine());
 
+                    br.readLine(); // INFO_END
+                                
                     // read number of bytes
                     words = br.readLine().split(" ");
                     int nbytes = Integer.parseInt(words[1]);

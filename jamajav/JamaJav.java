@@ -120,6 +120,14 @@ public class JamaJav {
 
         // Help menu
         helpMenu.setMnemonic('H');
+        JMenuItem helpInstItem = new JMenuItem("Instructions");
+        helpInstItem.addActionListener(trackPanel);
+        JMenuItem helpAboutItem = new JMenuItem("About Jama Jav");
+        helpAboutItem.setActionCommand("About");
+        helpAboutItem.addActionListener(trackPanel);
+        helpMenu.add(helpInstItem);
+        helpMenu.addSeparator();
+        helpMenu.add(helpAboutItem);
 
         menuBar.add(fileMenu);
         menuBar.add(playMenu);
