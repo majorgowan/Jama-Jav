@@ -5,9 +5,12 @@ import javax.swing.*;
 import javax.swing.filechooser.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.*;
 
 // For reading and writing files
 import java.io.*;
+import javax.imageio.*;
+import java.net.URL;
 
 // For resizable arrays
 import java.util.ArrayList;
@@ -45,6 +48,25 @@ public class JamaJav {
         metronome.setBorder(BorderFactory.createRaisedBevelBorder());
         controlPanel.add(metronome);
 
+        // add logo to app
+        try {
+            JPanel logoPanel = new JPanel();
+            ClassLoader cl = this.getClass().getClassLoader();
+            URL logoURL = cl.getResource("Images/logo.png");
+            BufferedImage logoImage;
+            logoImage = ImageIO.read(logoURL);
+            JPanel imagePanel = new JPanel(new BorderLayout());
+            imagePanel.add(new JLabel(new ImageIcon(logoImage)),
+                    BorderLayout.CENTER);
+            JPanel imageBackPanel = new JPanel(new BorderLayout());
+            imageBackPanel.add(imagePanel,BorderLayout.CENTER);
+            imageBackPanel.setBackground(new Color(0.75f,0.6f,0.1f));
+            imageBackPanel.setBorder(BorderFactory.createRaisedBevelBorder());
+            controlPanel.add(imageBackPanel);
+        } catch (IOException e) {
+            System.out.println("Logo image not found!");
+        }
+
         prefs = new Prefs("jamajav.cfg", metronome, clock);
 
         trackPanel = new TrackPanel(jfrm, metronome, clock, prefs);
@@ -61,8 +83,8 @@ public class JamaJav {
 
         // File menu
         fileMenu.setMnemonic('F');
-        JMenuItem fileNewItem = new JMenuItem("New");
-        fileNewItem.setActionCommand("new");
+        JMenuItem fileNewItem = new JMenuItem("New Jam");
+        fileNewItem.setActionCommand("newjam");
         fileNewItem.addActionListener(trackPanel);
         JMenuItem fileOpenItem = new JMenuItem("Open ...");
         fileOpenItem.setActionCommand("open");
@@ -91,6 +113,10 @@ public class JamaJav {
 
         // Play menu
         playMenu.setMnemonic('P');
+        JMenuItem playAllItem = new JMenuItem("Play all");
+        playAllItem.setActionCommand("playall");
+        playAllItem.addActionListener(trackPanel);
+        playMenu.add(playAllItem);
 
         // Help menu
         helpMenu.setMnemonic('H');

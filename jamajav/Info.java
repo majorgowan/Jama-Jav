@@ -11,6 +11,7 @@ class Info {
 
     private Calendar date;
     private String contributor;
+    private String location;
     private String title;
     private ArrayList<String> notes;
 
@@ -20,6 +21,10 @@ class Info {
 
     public void setContributor(String c) {
         contributor = c;
+    }
+
+    public void setLocation(String l) {
+        location = l;
     }
 
     public void addNote(String c) {
@@ -37,6 +42,10 @@ class Info {
 
     public String getContributor() {
         return contributor;
+    }
+
+    public String getLocation() {
+        return location;
     }
 
     public String getTitle() {

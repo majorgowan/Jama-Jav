@@ -33,7 +33,7 @@ class TrackPanel extends JPanel implements ActionListener {
         String comStr = ae.getActionCommand();
 
         switch (comStr) {
-            case ("new") :
+            case ("newjam") :
                 newDoc();
                 break;
 
@@ -93,12 +93,12 @@ class TrackPanel extends JPanel implements ActionListener {
                     if (tracks.get(i).isSelected())
                         getState = true;
 
-                if (getState)               // if any are selected, unselect-all
-                    for (int i = 0; i < tracks.size(); i++)
-                        tracks.get(i).setSelected(false);
-                else                        // else select-all
+                if (getState)               // if any are selected, select-all
                     for (int i = 0; i < tracks.size(); i++)
                         tracks.get(i).setSelected(true);
+                else                        // else unselect-all
+                    for (int i = 0; i < tracks.size(); i++)
+                        tracks.get(i).setSelected(false);
                 break;
 
             case ("playrecord") :
@@ -117,6 +117,12 @@ class TrackPanel extends JPanel implements ActionListener {
             case ("allstop") :
                 allStop();
                 break;
+
+            case ("playall") :
+                // start all tracks playing:
+                for (int i = 0; i < tracks.size(); i++) 
+                    tracks.get(i).startPlaying();
+                break;
         }
     }
 
@@ -132,7 +138,7 @@ class TrackPanel extends JPanel implements ActionListener {
     }
 
     private void addNewTrack() {
-        tracks.add(new Track(metronome, clock));
+        tracks.add(new Track(metronome, clock, prefs));
         linePanel.add(new JPanel());
         ntracks++;
 
@@ -275,10 +281,11 @@ class TrackPanel extends JPanel implements ActionListener {
     }
 
     private void newDoc() {
-        for (int i = tracks.size()-1; i >= 0; i++) {
-            remove(linePanel.get(i));
+        for (int i = tracks.size()-1; i >= 0; i--) {
+            mainPanel.remove(linePanel.get(i));
             linePanel.remove(i);
             tracks.remove(i);
+            ntracks--;
         }
         repaint();
     }

@@ -33,6 +33,7 @@ class Track extends JPanel implements ActionListener {
     private boolean isClicked = false;
     private Color clickedColor, unclickedColor;
 
+    private Prefs prefs;
     private Metronome metronome;
     private Clock clock;
 
@@ -136,10 +137,11 @@ class Track extends JPanel implements ActionListener {
 
 
     // constructor
-    Track(Metronome m, Clock c) {
+    Track(Metronome m, Clock c, Prefs p) {
 
         metronome = m;
         clock = c;
+        prefs = p;
 
         audioFormat = getAudioFormat();
 
@@ -147,6 +149,8 @@ class Track extends JPanel implements ActionListener {
         unclickedColor = getBackground();
 
         info = new Info();
+        info.setContributor(prefs.getUserName());
+        info.setLocation(prefs.getUserCity());
 
         setLayout(new FlowLayout());
 
