@@ -204,7 +204,6 @@ class TrackPanel extends JPanel implements ActionListener {
     }
 
     private void save() {
-        System.out.println("WHY CAN'T I SAVE ANYMORE??!!");
         // get filename root
         String filename = JOptionPane.showInputDialog(
                 "Please enter a filename");
@@ -303,6 +302,8 @@ class TrackPanel extends JPanel implements ActionListener {
 
                 // loop over tracks
                 for (int i = 0; i < ntracks; i++) {
+                    addNewTrack();
+
                     Info in = tracks.get(i).getInfo();
                     br.readLine(); // INFO_BEGIN
                     in.setTitle(br.readLine());
@@ -316,6 +317,7 @@ class TrackPanel extends JPanel implements ActionListener {
                         in.addNote(br.readLine());
 
                     br.readLine(); // INFO_END
+                    tracks.get(i).setToolTip();
                                 
                     // read number of bytes
                     words = br.readLine().split(" ");
@@ -327,8 +329,6 @@ class TrackPanel extends JPanel implements ActionListener {
                     System.out.println("Track " + i + ":"
                             + " read " + bytesread
                             + " bytes");
-
-                    addNewTrack();
                     tracks.get(i).putBytes(bytes);
                 }
             } catch (IOException e) {

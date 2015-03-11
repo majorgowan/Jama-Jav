@@ -99,7 +99,7 @@ public class JamaJav {
         fileEditPrefsItem.setActionCommand("editprefs");
         fileEditPrefsItem.addActionListener(trackPanel);
         JMenuItem fileExitItem = new JMenuItem("Exit");
-        fileSaveItem.setActionCommand("exit");
+        fileExitItem.setActionCommand("exit");
         fileExitItem.addActionListener(trackPanel);
         fileMenu.add(fileNewItem);
         fileMenu.add(fileOpenItem);

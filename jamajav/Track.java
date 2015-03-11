@@ -127,7 +127,7 @@ class Track extends JPanel implements ActionListener {
         infoDialog.setVisible(true);
     }
 
-    private void setToolTip() {
+    public void setToolTip() {
         String toolTip = "<html><h3>" + info.getTitle() + "<br>";
 
         toolTip += "by: " + info.getContributor() + "</h3>";
