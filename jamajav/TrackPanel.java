@@ -21,13 +21,16 @@ class TrackPanel extends JPanel implements ActionListener {
     private ArrayList<JPanel> linePanel;
     private int ntracks = 0;
 
+    private JFrame parent;
+
     private JPanel mainPanel;
 
+    private JButton allStopButton;   // must be global to receive focus!
+    
     private Metronome metronome;
     private Clock clock;
     private Prefs prefs;
 
-    private JFrame parent;
 
     public void actionPerformed(ActionEvent ae) {
         String comStr = ae.getActionCommand();
@@ -113,6 +116,7 @@ class TrackPanel extends JPanel implements ActionListener {
 
                 // start new track recording
                 tracks.get(tracks.size()-1).startRecording();
+                allStopButton.requestFocusInWindow();
                 break;
 
             case ("allstop") :
@@ -230,6 +234,7 @@ class TrackPanel extends JPanel implements ActionListener {
                 asciifw.write(in.getContributor() + "\n");
                 asciifw.write(in.getDate() + "\n");
                 asciifw.write(in.getLocation() + "\n");
+                asciifw.write(in.getRunningTime() + " seconds\n");
                 asciifw.write(in.getNotesSize() + " notes\n");
                 for (int j = 0; j < in.getNotesSize(); j++)
                     asciifw.write(in.getNote(j) + "\n");
@@ -312,6 +317,9 @@ class TrackPanel extends JPanel implements ActionListener {
                     in.setLocation(br.readLine());
 
                     words = br.readLine().split(" ");
+                    in.setRunningTime(Integer.parseInt(words[0]));
+
+                    words = br.readLine().split(" ");
                     int numNotes = Integer.parseInt(words[0]);
                     for (int j = 0; j < numNotes; j++)
                         in.addNote(br.readLine());
@@ -376,11 +384,11 @@ class TrackPanel extends JPanel implements ActionListener {
         JButton playSelectedButton = new JButton("Play Selected");
         playSelectedButton.addActionListener(this);
 
-        JButton playRecordButton = new JButton("Play Sel / Rec new");
+        JButton playRecordButton = new JButton("Play Sel + Rec new");
         playRecordButton.setActionCommand("playrecord");
         playRecordButton.addActionListener(this);
 
-        JButton allStopButton = new JButton("All Stop!");
+        allStopButton = new JButton("All Stop!");
         allStopButton.setActionCommand("allstop");
         allStopButton.addActionListener(this);
 

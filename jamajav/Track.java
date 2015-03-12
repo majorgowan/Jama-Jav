@@ -30,6 +30,7 @@ class Track extends JPanel implements ActionListener {
     private SourceDataLine sourceDataLine;
 
     private Info info;
+
     private boolean isClicked = false;
     private Color clickedColor, unclickedColor;
 
@@ -143,7 +144,7 @@ class Track extends JPanel implements ActionListener {
         toolTip += ", " + info.getLocation();
 
         visualPanel.setToolTipText(toolTip);
-                
+
         // probably bad form to put this here, but ...
         titleLabel.setText(info.getTitle());
     }
@@ -308,6 +309,15 @@ class Track extends JPanel implements ActionListener {
                 byteArrayOutputStream.close();
 
                 audioData = byteArrayOutputStream.toByteArray();
+
+                int runningTime = (int) 
+                    ((double)(audioData.length) / 
+                    (double)( 
+                        audioFormat.getFrameSize() 
+                        * audioFormat.getFrameRate() ) ); 
+                System.out.println("Running time " + runningTime);
+                info.setRunningTime(runningTime);
+
                 visualPanel.setData(audioData,
                         targetDataLine.getFormat().getFrameSize());
 

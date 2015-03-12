@@ -47,6 +47,7 @@ class InfoPanel extends JPanel implements ActionListener {
             notesPanel.add(noteLine.get(newNoteNum));
 
             notesPanel.revalidate();
+            noteField.get(newNoteNum).requestFocusInWindow();
         }
 
         for (int i = 0; i < noteLine.size(); i++) {
@@ -121,6 +122,8 @@ class InfoPanel extends JPanel implements ActionListener {
         add(titlePanel, BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
+
+        titleField.requestFocusInWindow();
     }
 
 }
