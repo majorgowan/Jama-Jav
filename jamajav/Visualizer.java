@@ -7,7 +7,7 @@ import java.awt.*;
 class Visualizer extends JPanel {
 
     final private int DEFAULT_WIDTH = 250;
-    final private int DEFAULT_HEIGHT = 80;
+    final private int DEFAULT_HEIGHT = 60;
 
     private int[] data;
     private double maxValue;
@@ -69,7 +69,7 @@ class Visualizer extends JPanel {
         }
 
         maxValue = 0.0;
-        for (int i=0; i<data.length; i++)
+        for (int i=100; i<data.length; i++)
             if (Math.abs(data[i]) > maxValue)
                 maxValue = Math.abs(data[i]);
 

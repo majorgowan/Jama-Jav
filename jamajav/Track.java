@@ -40,11 +40,13 @@ class Track extends JPanel implements ActionListener {
     private Metronome metronome;
     private Clock clock; 
 
-    private Visualizer visualPanel;
     private JButton recordButton;
     private JButton infoButton;
     private JButton playButton;
     private VolumeSlider slider;
+
+    private TimeLine timeLine;
+    private Visualizer visualPanel;
     private JPanel mainPanel;
     private JPanel titlePanel;
     private JLabel titleLabel;
@@ -135,7 +137,9 @@ class Track extends JPanel implements ActionListener {
     public void setToolTip() {
         String toolTip = "<html><h3>" + info.getTitle() + "<br>";
 
-        toolTip += "by: " + info.getContributor() + "</h3>";
+        toolTip += "by: " + info.getContributor() + "<br>";
+        
+        toolTip += "length: " + info.getRunningTime() + "s" + "</h3>";
 
         toolTip += info.getAllNotes();
 
@@ -168,8 +172,11 @@ class Track extends JPanel implements ActionListener {
 
         setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
 
+        timeLine = new TimeLine();
+
         mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel,BoxLayout.PAGE_AXIS));
+
         titlePanel = new JPanel(new FlowLayout());
         titleLabel = new JLabel(info.getTitle());
         titlePanel.add(titleLabel);
@@ -179,6 +186,9 @@ class Track extends JPanel implements ActionListener {
 
         JPanel outerVisualPanel = new JPanel(new FlowLayout());
         outerVisualPanel.add(visualPanel);
+        JPanel outerTimePanel = new JPanel(new FlowLayout());
+        outerTimePanel.add(timeLine);
+        mainPanel.add(outerTimePanel);
         mainPanel.add(outerVisualPanel);
         mainPanel.add(titlePanel);
 
@@ -277,8 +287,8 @@ class Track extends JPanel implements ActionListener {
             // microphone data and start it
             // running.  It will run until
             // the Stop button is clicked.
-            Thread RecordThread = new Thread(new RecordThread());
-            RecordThread.start();
+            Thread recordThread = new Thread(new RecordThread());
+            recordThread.start();
             isCapturing = true;
         } catch (Exception e) {
             System.out.println(e);
@@ -318,8 +328,12 @@ class Track extends JPanel implements ActionListener {
                 System.out.println("Running time " + runningTime);
                 info.setRunningTime(runningTime);
 
+                timeLine.setRunningTime(runningTime);
+                timeLine.repaint();
                 visualPanel.setData(audioData,
                         targetDataLine.getFormat().getFrameSize());
+                info.resetDate();
+                setToolTip();
 
                 System.out.println("Closing targetDataLine . . . ");
                 targetDataLine.close();
@@ -361,6 +375,7 @@ class Track extends JPanel implements ActionListener {
             // It will run until all the data has been played back.
             Thread playThread = new Thread(new PlayThread());
             playThread.start();
+            timeLine.start();
 
         } catch (Exception e) {
             System.out.println(e);
@@ -397,6 +412,7 @@ class Track extends JPanel implements ActionListener {
                 sourceDataLine.drain();
                 sourceDataLine.close();
                 stopPlay = false;
+                timeLine.stop();
 
             } catch (Exception e) {
                 System.out.println(e);

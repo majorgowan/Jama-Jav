@@ -81,6 +81,12 @@ class Info {
         return date;
     }
 
+    public void resetDate() {
+        Calendar d = Calendar.getInstance();
+        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        date = dateFormat.format(d.getTime());
+    }
+
     Info() {
         notes = new ArrayList<String>(0);
         title = "Track";
