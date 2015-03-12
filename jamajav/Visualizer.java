@@ -64,7 +64,7 @@ class Visualizer extends JPanel {
         for (int i=0; i < data.length; i++) {
             data[i] = 0;
             for (int j=0; j < binSize; j++) {
-                data[i] += toReturn[binSize*i+j];
+                data[i] += Math.abs(toReturn[binSize*i+j]);
             }
         }
 

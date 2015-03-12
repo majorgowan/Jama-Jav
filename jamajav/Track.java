@@ -138,7 +138,7 @@ class Track extends JPanel implements ActionListener {
         String toolTip = "<html><h3>" + info.getTitle() + "<br>";
 
         toolTip += "by: " + info.getContributor() + "<br>";
-        
+
         toolTip += "length: " + info.getRunningTime() + "s" + "</h3>";
 
         toolTip += info.getAllNotes();
@@ -250,7 +250,16 @@ class Track extends JPanel implements ActionListener {
     public void putBytes(byte[] bytes) {
         audioData = bytes;
         notEmpty = true;
-        visualPanel.setData(audioData, getAudioFormat().getFrameSize());
+        visualPanel.setData(audioData, audioFormat.getFrameSize());
+
+        int runningTime = (int) 
+            ((double)(audioData.length) / 
+             (double)( 
+                 audioFormat.getFrameSize() 
+                 * audioFormat.getFrameRate() ) ); 
+
+        timeLine.setRunningTime(runningTime);
+        timeLine.repaint();
     }
 
     // Create and return an AudioFormat object for a given set
@@ -322,10 +331,9 @@ class Track extends JPanel implements ActionListener {
 
                 int runningTime = (int) 
                     ((double)(audioData.length) / 
-                    (double)( 
-                        audioFormat.getFrameSize() 
-                        * audioFormat.getFrameRate() ) ); 
-                System.out.println("Running time " + runningTime);
+                     (double)( 
+                         audioFormat.getFrameSize() 
+                         * audioFormat.getFrameRate() ) ); 
                 info.setRunningTime(runningTime);
 
                 timeLine.setRunningTime(runningTime);
