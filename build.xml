@@ -31,8 +31,8 @@
             Making a zip.
         </echo>
         <zip destfile="JamaJav.zip">
-            <zipfileset dir="." prefix="MajMidMak/"
-                includes="JamaJav.jar,*.jar,jjav.bat,jjav.unx" />
+            <zipfileset dir="." prefix="JamaJav/"
+                includes="JamaJav.jar,HelloWalls.*" />
         </zip>
     </target>
 
