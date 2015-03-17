@@ -26,12 +26,12 @@ class TrackPanel extends JPanel implements ActionListener {
     private JPanel mainPanel;
 
     private JButton allStopButton;   // must be global to receive focus!
-    
+
     private Metronome metronome;
     private Clock clock;
     private Prefs prefs;
 
-
+    // ActionListener method
     public void actionPerformed(ActionEvent ae) {
         String comStr = ae.getActionCommand();
 
@@ -72,13 +72,7 @@ class TrackPanel extends JPanel implements ActionListener {
                 for (int i = tracks.size() - 1; i >= 0; i--) {
                     //System.out.println("track " + i + " is " + tracks.get(i).isSelected());
                     if (tracks.get(i).isSelected()) {
-                        tracks.get(i).stopRecording();
-                        tracks.get(i).stopPlaying();
-                        mainPanel.remove(linePanel.get(i));
-                        tracks.remove(i);
-                        linePanel.remove(i);
-                        ntracks--;
-                        //System.out.println("   Removing track " + i);
+                        removeTrack(i);
                     }
                 }
                 refreshMainPanel();
@@ -198,6 +192,15 @@ class TrackPanel extends JPanel implements ActionListener {
 
         mainPanel.add(linePanel.get(ntracks-1));
         revalidate();
+    }
+
+    private void removeTrack(int i) {
+        tracks.get(i).stopRecording();
+        tracks.get(i).stopPlaying();
+        mainPanel.remove(linePanel.get(i));
+        tracks.remove(i);
+        linePanel.remove(i);
+        ntracks--;
     }
 
     private void allStop() {
@@ -326,7 +329,7 @@ class TrackPanel extends JPanel implements ActionListener {
 
                     br.readLine(); // INFO_END
                     tracks.get(i).setToolTip();
-                                
+
                     // read number of bytes
                     words = br.readLine().split(" ");
                     int nbytes = Integer.parseInt(words[1]);

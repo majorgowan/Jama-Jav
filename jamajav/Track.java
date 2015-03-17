@@ -234,7 +234,7 @@ class Track extends JPanel implements ActionListener {
 
         byte tempBuffer[] = new byte[1000];
         public void run(){
-        
+
             int frameSize = targetDataLine.getFormat().getFrameSize();
 
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -330,7 +330,7 @@ class Track extends JPanel implements ActionListener {
         byte tempBuffer[] = new byte[1000];
 
         public void run(){
-                
+
             int frameSize = sourceDataLine.getFormat().getFrameSize();
 
             try{
@@ -448,10 +448,12 @@ class Track extends JPanel implements ActionListener {
 
         addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent me) {
-                if (isSelected()) {
-                    setSelected(false);
-                } else {
-                    setSelected(true);
+                if (SwingUtilities.isLeftMouseButton(me)) {
+                    if (isSelected()) {
+                        setSelected(false);
+                    } else {
+                        setSelected(true);
+                    }
                 }
             }
         });
