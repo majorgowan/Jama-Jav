@@ -14,12 +14,14 @@ class PrefsPanel extends JPanel implements ActionListener {
     int[] metroset = new int[2];
     int[] cparam = new int[2];
     private String userName, userCity;
+    private String avatar;
 
     private JTextField bpMinField;
     private JTextField bpMeasField;
     private JTextField countInField;
     private JTextField userNameField;
     private JTextField userCityField;
+    private JButton changeAvatarButton;
 
     public void actionPerformed(ActionEvent ae) {
 
@@ -33,7 +35,7 @@ class PrefsPanel extends JPanel implements ActionListener {
                 userName = userNameField.getText();
                 userCity = userCityField.getText();
 
-                prefs.setPrefs(metroset, cparam, userName, userCity);
+                prefs.setPrefs(metroset, cparam, userName, userCity, avatar);
                 prefs.writePrefsFile();
                 break;
 
@@ -45,7 +47,7 @@ class PrefsPanel extends JPanel implements ActionListener {
                 userName = userNameField.getText();
                 userCity = userCityField.getText();
 
-                prefs.setPrefs(metroset, cparam, userName, userCity);
+                prefs.setPrefs(metroset, cparam, userName, userCity, avatar);
 
             case ("Cancel") :
                 // change nothing
@@ -55,7 +57,7 @@ class PrefsPanel extends JPanel implements ActionListener {
         }
     }
 
-    PrefsPanel(Prefs p) {
+    PrefsPanel(Prefs p, Avatar[] avatars) {
 
         prefs = p;
 
@@ -63,33 +65,55 @@ class PrefsPanel extends JPanel implements ActionListener {
         cparam = prefs.getClockParam();
         userName = prefs.getUserName();
         userCity = prefs.getUserCity();
+        
+        avatar = prefs.getAvatar();
+        int avatarIndex = 0;
+
+        // find Avatar index
+        for (int i = 0; i < avatars.length; i++)
+            if (avatars[i].getName().equals(avatar)) {
+                avatarIndex = i;
+                break;
+            }
 
         bpMinField = new JTextField("" + metroset[0],4);
         bpMeasField = new JTextField("" + metroset[1],2);
         countInField = new JTextField("" + cparam[0],4);
         userNameField = new JTextField(userName,15);
         userCityField = new JTextField(userCity,15);
+        changeAvatarButton = new JButton("Change");
+        changeAvatarButton.setActionCommand("changeAvatar");
+        changeAvatarButton.addActionListener(this);
+
+        JPanel avatarPanel = new JPanel(new BorderLayout());
+        avatarPanel.add(new JLabel(new ImageIcon(avatars[avatarIndex].getImage())));
 
         JPanel mainPanel = new JPanel(new GridLayout(7,1));
-        JPanel line1 = new JPanel();
-        JPanel line2 = new JPanel();
-        JPanel line3 = new JPanel();
-        JPanel line4 = new JPanel();
-        JPanel line5 = new JPanel();
-        JPanel line6 = new JPanel();
-        JPanel line7 = new JPanel();
-        line1.add(new JLabel("Metronome settings:"));
-        line2.add(new JLabel("Beats per minute:",JLabel.RIGHT));
-        line2.add(bpMinField);
-        line3.add(new JLabel("Beats per measure:",JLabel.RIGHT));
-        line3.add(bpMeasField);
-        line4.add(new JLabel("Clock settings:"));
-        line5.add(new JLabel("Count-in (seconds):",JLabel.RIGHT));
-        line5.add(countInField);
-        line6.add(new JLabel("User Name:",JLabel.RIGHT));
-        line6.add(userNameField);
-        line7.add(new JLabel("User City:",JLabel.RIGHT));
-        line7.add(userCityField);
+
+        JPanel line1 = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JPanel line2 = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JPanel line3 = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JPanel line4 = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JPanel line5 = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JPanel line6 = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JPanel line7 = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JPanel line8 = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JPanel line9 = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        line1.add(new JLabel("User Name:",JLabel.RIGHT));
+        line1.add(userNameField);
+        line2.add(new JLabel("User City:",JLabel.RIGHT));
+        line2.add(userCityField);
+        line3.add(new JLabel("Avatar:"));
+        line4.add(avatarPanel);
+        line4.add(changeAvatarButton);
+        line5.add(new JLabel("Metronome settings:"));
+        line6.add(new JLabel("Beats per minute:",JLabel.RIGHT));
+        line6.add(bpMinField);
+        line7.add(new JLabel("Beats per measure:",JLabel.RIGHT));
+        line7.add(bpMeasField);
+        line8.add(new JLabel("Clock settings:"));
+        line9.add(new JLabel("Count-in (seconds):",JLabel.RIGHT));
+        line9.add(countInField);
         mainPanel.add(line1);
         mainPanel.add(line2);
         mainPanel.add(line3);
@@ -97,6 +121,8 @@ class PrefsPanel extends JPanel implements ActionListener {
         mainPanel.add(line5);
         mainPanel.add(line6);
         mainPanel.add(line7);
+        mainPanel.add(line8);
+        mainPanel.add(line9);
 
         // for the future perhaps
         JScrollPane scrollPane = new JScrollPane(mainPanel);

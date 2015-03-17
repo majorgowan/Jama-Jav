@@ -19,7 +19,7 @@
             Making a jar.
         </echo>
         <jar jarfile="JamaJav.jar" basedir="." 
-            includes="jamajav/*.class,Sounds/*.wav,Images/*.png">
+            includes="jamajav/*.class,Sounds/*.wav,Images/*.png,Images/Avatars/*.png">
             <manifest>
                 <attribute name="Main-Class" value="jamajav.JamaJav"/>
             </manifest>

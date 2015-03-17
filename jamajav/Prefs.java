@@ -10,6 +10,7 @@ class Prefs {
     private Clock clock;
     private String userName;
     private String userCity;
+    private String avatar;
 
     private void setDefaults() {
 
@@ -24,6 +25,9 @@ class Prefs {
 
         // default usercity
         userCity = "Toronto";
+
+        // default avatar
+        avatar = "tenor";
 
     }
 
@@ -43,11 +47,20 @@ class Prefs {
         return userCity;
     }
 
-    public void setPrefs(int[] ms, int[] cparam, String un, String uc) {
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setPrefs(int[] ms, int[] cparam, String un, String uc, String av) {
         metronome.setParam(ms[0],ms[1]);
         clock.setParam(cparam[0],cparam[1]);
         userName = un;
         userCity = uc;
+        avatar = av;
+    }
+
+    public void setAvatar(String av) {
+        avatar = av;
     }
 
     private void readPrefsFile() {
@@ -78,7 +91,12 @@ class Prefs {
             String uc = br.readLine();
             br.readLine();  // discard blank line
 
-            setPrefs(ms, cparam, un, uc);
+            // read avatar
+            br.readLine(); // discard "User City:"
+            String av = br.readLine();
+            br.readLine();  // discard blank line
+
+            setPrefs(ms, cparam, un, uc, av);
 
         } catch (IOException ie) {
             System.out.println("No valid preferences file found, using defaults.");
@@ -104,6 +122,9 @@ class Prefs {
 
             fw.write("User City:\n");
             fw.write(userCity + "\n\n");
+
+            fw.write("Avatar:\n");
+            fw.write(avatar + "\n\n");
         } catch (IOException ie) {
             System.out.println("Problem writing preferences to file.  Aborting.");
         }

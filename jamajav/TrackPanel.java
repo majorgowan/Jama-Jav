@@ -9,11 +9,15 @@ import java.awt.event.*;
 // for formatting numbers:
 import java.text.DecimalFormat;
 
-// For resizable arrays
+// For resizable arrays:
 import java.util.ArrayList;
 
-// For input/output
+// For input/output:
 import java.io.*;
+
+// For finding avatar files:
+import java.net.URL;
+import java.net.URISyntaxException;
 
 class TrackPanel extends JPanel implements ActionListener {
 
@@ -30,6 +34,8 @@ class TrackPanel extends JPanel implements ActionListener {
     private Metronome metronome;
     private Clock clock;
     private Prefs prefs;
+
+    private Avatar[] avatars;
 
     // ActionListener method
     public void actionPerformed(ActionEvent ae) {
@@ -54,7 +60,7 @@ class TrackPanel extends JPanel implements ActionListener {
                 prefsDialog.setLocationRelativeTo(parent);
                 prefsDialog.getContentPane().setLayout(new BorderLayout());
                 prefsDialog.getContentPane().add(
-                        new PrefsPanel(prefs), BorderLayout.CENTER);
+                        new PrefsPanel(prefs, avatars), BorderLayout.CENTER);
                 prefsDialog.revalidate();
                 prefsDialog.pack();
                 prefsDialog.setVisible(true);
@@ -358,6 +364,26 @@ class TrackPanel extends JPanel implements ActionListener {
         repaint();
     }
 
+    private void initAvatars() {
+        ClassLoader cl = this.getClass().getClassLoader();
+        URL url = cl.getResource("Images/Avatars");
+        System.out.println("URL is " + url);
+        try {
+            File avatarFolder = new File(url.toURI());
+            File[] files = avatarFolder.listFiles();
+
+            avatars = new Avatar[files.length];
+
+            for (int i = 0; i < files.length; i++) {
+                String filename = files[i].getName().split("\\.")[0];  // strip .png
+                avatars[i] = new Avatar(filename);
+                System.out.println("New Avatar : " + filename);
+            }
+        } catch (URISyntaxException ex) {
+            System.out.println(url + " didn't convert to a URI!");
+        }
+    }
+
     TrackPanel(JFrame jfrm, Metronome m, Clock c, Prefs p) {
 
         parent = jfrm;
@@ -367,6 +393,9 @@ class TrackPanel extends JPanel implements ActionListener {
 
         tracks = new ArrayList<Track>(0);
         linePanel = new ArrayList<JPanel>(0);
+
+        // initialize Avatars
+        initAvatars();
 
         setBackground(new Color(0.75f,0.6f,0.1f));
         setLayout(new BorderLayout());
