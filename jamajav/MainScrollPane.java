@@ -6,7 +6,7 @@ import java.awt.*;
 
 public class MainScrollPane extends JScrollPane {
 
-    final private int DEFAULT_WIDTH = 450;
+    final private int DEFAULT_WIDTH = 480;
     final private int DEFAULT_HEIGHT = 350;
 
     public Dimension getPreferredSize() {

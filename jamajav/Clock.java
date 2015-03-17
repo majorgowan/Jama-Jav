@@ -67,6 +67,10 @@ class Clock extends JPanel implements ActionListener {
         repaint();
     }
 
+    public void stop() {
+        timer.stop();
+    }
+
     public int[] getParam() {
         int[] cparam = new int[2];
         cparam[0] = countInSeconds;

@@ -25,8 +25,8 @@ class Visualizer extends JPanel {
         g.setColor(Color.YELLOW);
         for (int i=0; i<data.length; i++)
             g.drawLine(i, 
-                    (int)(DEFAULT_HEIGHT/2-factor*Math.abs(data[i])),
-                    i, (int)(DEFAULT_HEIGHT/2+factor*Math.abs(data[i])));
+                    (int)(DEFAULT_HEIGHT/2-factor*data[i]),
+                    i, (int)(DEFAULT_HEIGHT/2+factor*data[i]));
 
         // draw a horizontal line across middle of panel
         g.setColor(Color.BLUE);
@@ -70,8 +70,10 @@ class Visualizer extends JPanel {
 
         maxValue = 0.0;
         for (int i=100; i<data.length; i++)
-            if (Math.abs(data[i]) > maxValue)
-                maxValue = Math.abs(data[i]);
+            if (data[i] > maxValue)
+                maxValue = data[i];
+
+        // System.out.println("MaxValue is " + maxValue);
 
         repaint();
     }

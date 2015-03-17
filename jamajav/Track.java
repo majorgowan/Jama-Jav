@@ -15,7 +15,7 @@ import javax.sound.sampled.*;
 
 class Track extends JPanel implements ActionListener {
 
-    final private int DEFAULT_WIDTH = 400;
+    final private int DEFAULT_WIDTH = 425;
     final private int DEFAULT_HEIGHT = 120;
 
     private boolean stopPlay = false;
@@ -47,6 +47,7 @@ class Track extends JPanel implements ActionListener {
 
     private TimeLine timeLine;
     private Visualizer visualPanel;
+    private Monitor monitor;
     private JPanel mainPanel;
     private JPanel titlePanel;
     private JLabel titleLabel;
@@ -68,6 +69,7 @@ class Track extends JPanel implements ActionListener {
                 break;
 
             case ("Play") :
+                stopPlaying();
                 startPlaying();
                 break;
 
@@ -107,18 +109,20 @@ class Track extends JPanel implements ActionListener {
         System.out.println("Stopping recording . . .");
         stopCapture = true;
         metronome.stop();
-        clock.reset();
+        clock.stop();
         isCapturing = false;
     }
 
     public void startPlaying() {
         if (notEmpty) {
+            clock.restart();
             stopPlay = false;
             playback();
         }
     }
 
     public void stopPlaying() {
+        clock.stop();
         stopPlay = true;
     }
 
@@ -151,88 +155,6 @@ class Track extends JPanel implements ActionListener {
 
         // probably bad form to put this here, but ...
         titleLabel.setText(info.getTitle());
-    }
-
-    // constructor
-    Track(JFrame frm, Metronome m, Clock c, Prefs p) {
-
-        jfrm = frm;
-        metronome = m;
-        clock = c;
-        prefs = p;
-
-        audioFormat = getAudioFormat();
-
-        clickedColor = Color.LIGHT_GRAY;
-        unclickedColor = getBackground();
-
-        info = new Info();
-        info.setContributor(prefs.getUserName());
-        info.setLocation(prefs.getUserCity());
-
-        setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
-
-        timeLine = new TimeLine();
-
-        mainPanel = new JPanel();
-        mainPanel.setLayout(new BoxLayout(mainPanel,BoxLayout.PAGE_AXIS));
-
-        titlePanel = new JPanel(new FlowLayout());
-        titleLabel = new JLabel(info.getTitle());
-        titlePanel.add(titleLabel);
-
-        visualPanel = new Visualizer();
-        setToolTip();
-
-        JPanel outerVisualPanel = new JPanel(new FlowLayout());
-        outerVisualPanel.add(visualPanel);
-        JPanel outerTimePanel = new JPanel(new FlowLayout());
-        outerTimePanel.add(timeLine);
-        mainPanel.add(outerTimePanel);
-        mainPanel.add(outerVisualPanel);
-        mainPanel.add(titlePanel);
-
-        // Buttons
-        Font buttonFont = new Font("SansSerif",Font.BOLD,10);
-
-        recordButton = new JButton("Rec/Stop");
-        infoButton = new JButton("Edit info");
-        infoButton.setActionCommand("editinfo");
-        playButton = new JButton("Play");
-
-        slider = new VolumeSlider(JSlider.HORIZONTAL, 0, 10, 10);
-        recordButton.addActionListener(this);
-        infoButton.addActionListener(this);
-        playButton.addActionListener(this);
-
-        recordButton.setFont(buttonFont);
-        infoButton.setFont(buttonFont);
-        playButton.setFont(buttonFont);
-        slider.setFont(buttonFont);
-
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new GridLayout(4,1));
-
-        buttonPanel.add(recordButton);
-        buttonPanel.add(infoButton);
-        buttonPanel.add(playButton);
-        buttonPanel.add(slider);
-        buttonPanel.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
-
-        add(buttonPanel);
-        add(Box.createRigidArea(new Dimension(5,0)));
-        add(mainPanel);
-
-        addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent me) {
-                if (isSelected()) {
-                    setSelected(false);
-                } else {
-                    setSelected(true);
-                }
-            }
-        });
-
     }
 
     public Info getInfo() {
@@ -308,10 +230,17 @@ class Track extends JPanel implements ActionListener {
     class RecordThread extends Thread{
 
         // An arbitrary-size temporary holding buffer
-        byte tempBuffer[] = new byte[10000];
+        // byte tempBuffer[] = new byte[10000];
+
+        byte tempBuffer[] = new byte[1000];
         public void run(){
+        
+            int frameSize = targetDataLine.getFormat().getFrameSize();
+
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+
             stopCapture = false;
+
             try{
                 // Loop until stopCapture is set by another thread that
                 while(!stopCapture) {
@@ -320,12 +249,15 @@ class Track extends JPanel implements ActionListener {
                             tempBuffer,
                             0,
                             tempBuffer.length);
+                    monitor.setData(tempBuffer, frameSize);
+
                     if(cnt > 0){
                         // Save data in output stream object.
                         byteArrayOutputStream.write(tempBuffer, 0, cnt);
                     }
                 }
                 byteArrayOutputStream.close();
+                stopRecording();
 
                 audioData = byteArrayOutputStream.toByteArray();
 
@@ -338,8 +270,8 @@ class Track extends JPanel implements ActionListener {
 
                 timeLine.setRunningTime(runningTime);
                 timeLine.repaint();
-                visualPanel.setData(audioData,
-                        targetDataLine.getFormat().getFrameSize());
+                visualPanel.setData(audioData, frameSize);
+
                 info.resetDate();
                 setToolTip();
 
@@ -355,6 +287,7 @@ class Track extends JPanel implements ActionListener {
 
     public void playback() {
         // System.out.println("Playing back . . . ");
+        stopPlay = false;
         try {
             InputStream byteArrayInputStream 
                 = new ByteArrayInputStream(audioData);
@@ -387,15 +320,19 @@ class Track extends JPanel implements ActionListener {
 
         } catch (Exception e) {
             System.out.println(e);
+            e.printStackTrace();
             // System.exit(0);
         }
     }
 
     class PlayThread extends Thread {
 
-        byte tempBuffer[] = new byte[10000];
+        byte tempBuffer[] = new byte[1000];
 
         public void run(){
+                
+            int frameSize = sourceDataLine.getFormat().getFrameSize();
+
             try{
                 int cnt;
                 // Keep looping until the input
@@ -411,6 +348,7 @@ class Track extends JPanel implements ActionListener {
                         // where it will be delivered
                         // to the speaker.
                         sourceDataLine.write(tempBuffer, 0, cnt);
+                        monitor.setData(tempBuffer, frameSize);
                     }
                 }
 
@@ -419,15 +357,106 @@ class Track extends JPanel implements ActionListener {
                 // empty.
                 sourceDataLine.drain();
                 sourceDataLine.close();
-                stopPlay = false;
                 timeLine.stop();
+                clock.stop();
 
             } catch (Exception e) {
                 System.out.println(e);
+                // e.printStackTrace();
                 // System.exit(0);
             }
         }
 
     } //end inner class PlayThread
+
+
+
+    // Track constructor
+    Track(JFrame frm, Metronome m, Clock c, Prefs p) {
+
+        jfrm = frm;
+        metronome = m;
+        clock = c;
+        prefs = p;
+
+        audioFormat = getAudioFormat();
+
+        clickedColor = Color.LIGHT_GRAY;
+        unclickedColor = getBackground();
+
+        info = new Info();
+        info.setContributor(prefs.getUserName());
+        info.setLocation(prefs.getUserCity());
+
+        setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
+
+        timeLine = new TimeLine();
+
+        mainPanel = new JPanel();
+        mainPanel.setLayout(new BoxLayout(mainPanel,BoxLayout.PAGE_AXIS));
+
+        titlePanel = new JPanel(new FlowLayout());
+        titleLabel = new JLabel(info.getTitle());
+        titlePanel.add(titleLabel);
+
+        visualPanel = new Visualizer();
+        setToolTip();
+
+        monitor = new Monitor();
+
+        JPanel outerVisualPanel = new JPanel(new FlowLayout());
+        outerVisualPanel.add(visualPanel);
+        JPanel outerTimePanel = new JPanel(new FlowLayout());
+        outerTimePanel.add(timeLine);
+        mainPanel.add(outerTimePanel);
+        mainPanel.add(outerVisualPanel);
+        mainPanel.add(titlePanel);
+        JPanel outerMonitorPanel = new JPanel(new FlowLayout());
+        outerMonitorPanel.add(monitor);
+
+        // Buttons
+        Font buttonFont = new Font("SansSerif",Font.BOLD,10);
+
+        recordButton = new JButton("Rec/Stop");
+        infoButton = new JButton("Edit info");
+        infoButton.setActionCommand("editinfo");
+        playButton = new JButton("Play");
+
+        slider = new VolumeSlider(JSlider.HORIZONTAL, 0, 10, 10);
+        recordButton.addActionListener(this);
+        infoButton.addActionListener(this);
+        playButton.addActionListener(this);
+
+        recordButton.setFont(buttonFont);
+        infoButton.setFont(buttonFont);
+        playButton.setFont(buttonFont);
+        slider.setFont(buttonFont);
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new GridLayout(4,1));
+
+        buttonPanel.add(recordButton);
+        buttonPanel.add(infoButton);
+        buttonPanel.add(playButton);
+        buttonPanel.add(slider);
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
+
+        add(buttonPanel);
+        add(Box.createRigidArea(new Dimension(5,0)));
+        add(mainPanel);
+        add(outerMonitorPanel);
+
+        addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent me) {
+                if (isSelected()) {
+                    setSelected(false);
+                } else {
+                    setSelected(true);
+                }
+            }
+        });
+
+    }
+
 
 }

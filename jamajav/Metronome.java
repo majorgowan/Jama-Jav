@@ -13,12 +13,13 @@ import java.net.URL;
 class Metronome extends JPanel implements ActionListener {
 
     final private int DEFAULT_WIDTH = 200;
-    final private int DEFAULT_HEIGHT = 120;
+    final private int DEFAULT_HEIGHT = 150;
 
     private JPanel signalPanel;
     private JLabel signalLabel; // to be replaced by a picture and sounds
 
-    private JLabel infoLabel;
+    private JTextField bpmField;
+    private JTextField bpMeasField;
 
     private JCheckBox soundCheckBox;
 
@@ -40,7 +41,8 @@ class Metronome extends JPanel implements ActionListener {
         bpMeas = beatspermeasure;  
         beat = 0;
 
-        infoLabel.setText("" + bpMin + " bpm "); 
+        bpmField.setText("" + bpMin); 
+        bpMeasField.setText("" + bpMeas); 
         signalLabel.setText("   0" + " / " + bpMeas + "   ");
         
         // reinit Timer
@@ -87,6 +89,12 @@ class Metronome extends JPanel implements ActionListener {
             timer.start();
         } else if (comStr.equals("stop")) {
             stop();
+        } else if (comStr.equals("bpm")) {
+            int b = Integer.parseInt(bpmField.getText());
+            setParam(b, bpMeas);
+        } else if (comStr.equals("bpMeas")) {
+            int b = Integer.parseInt(bpMeasField.getText());
+            setParam(bpMin, b);
         }
     }
 
@@ -106,13 +114,9 @@ class Metronome extends JPanel implements ActionListener {
         setBackground(new Color(0.75f,0.6f,0.1f));
 
         signalLabel = new JLabel();
-        infoLabel = new JLabel(); 
 
         // a Timer object which triggers a listener every beat
         timer = new Timer(100, this);
-
-        // defaults (never used ... fix)
-        setParam(120, 4);
 
         // load sound files
         try {
@@ -149,30 +153,74 @@ class Metronome extends JPanel implements ActionListener {
         stopButton.addActionListener(this);
 
         // checkbox to enable/disable sound
-        soundCheckBox = new JCheckBox("sound enabled", false);
+        soundCheckBox = new JCheckBox("sound enabled", true);
 
         JPanel buttonPanel = new JPanel(new FlowLayout());
         buttonPanel.add(startButton);
         buttonPanel.add(stopButton);
 
-        signalPanel = new JPanel(new FlowLayout());
+        signalPanel = new JPanel(new BorderLayout());
         signalLabel.setFont(new Font("SansSerif",Font.BOLD,30));
-        signalPanel.add(signalLabel);
-        signalPanel.add(soundCheckBox);
+        signalPanel.add(signalLabel, BorderLayout.CENTER);
 
         JPanel titlePanel = new JPanel();
         titlePanel.setLayout(new BoxLayout(titlePanel,BoxLayout.LINE_AXIS));
         JLabel titleLabel = new JLabel("Metronome");
         titleLabel.setFont(new Font("SansSerif",Font.BOLD,13));
-        infoLabel.setFont(new Font("SansSerif",Font.BOLD,13));
+
+        JPanel bpmPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JLabel bpmLabel = new JLabel("bpm");
+        bpmField = new JTextField("" + bpMin, 2);
+        bpmLabel.setFont(new Font("SansSerif",Font.BOLD,13));
+        bpmField.setFont(new Font("SansSerif",Font.BOLD,13));
+        bpmPanel.add(bpmField);
+        bpmPanel.add(bpmLabel);
+        
+        JPanel bpMeasPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JLabel bpMeasLabel = new JLabel("/ 4 time");
+        bpMeasField = new JTextField("" + bpMeas, 1);
+        bpMeasLabel.setFont(new Font("SansSerif",Font.BOLD,13));
+        bpMeasField.setFont(new Font("SansSerif",Font.BOLD,13));
+        bpMeasPanel.add(bpMeasField);
+        bpMeasPanel.add(bpMeasLabel);
+
+        JPanel infoPanel = new JPanel();
+        infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.PAGE_AXIS));
+        infoPanel.add(bpmPanel);
+        infoPanel.add(bpMeasPanel);
+        JPanel outerInfoPanel = new JPanel(new FlowLayout());
+        outerInfoPanel.add(infoPanel);
+
         titlePanel.add(titleLabel);
         titlePanel.add(Box.createHorizontalGlue());
-        titlePanel.add(infoLabel);
+        titlePanel.add(soundCheckBox);
+
+        bpmField.setActionCommand("bpm");
+        bpmField.addActionListener(this);
+        bpmField.addFocusListener(new FocusAdapter() {
+            public void focusLost(FocusEvent e) {
+                int b = Integer.parseInt(bpmField.getText());
+                setParam(b, bpMeas);
+            }
+        });
+
+        bpMeasField.setActionCommand("bpMeas");
+        bpMeasField.addActionListener(this);
+        bpMeasField.addFocusListener(new FocusAdapter() {
+            public void focusLost(FocusEvent e) {
+                int b = Integer.parseInt(bpMeasField.getText());
+                setParam(bpMin, b);
+            }
+        });
+
+        JPanel mainPanel = new JPanel(new BorderLayout());
+        mainPanel.add(titlePanel,BorderLayout.NORTH);
+        mainPanel.add(outerInfoPanel,BorderLayout.EAST);
+        mainPanel.add(signalPanel,BorderLayout.WEST);
+        mainPanel.add(buttonPanel,BorderLayout.SOUTH);
 
         setLayout(new BorderLayout());
-        add(titlePanel,BorderLayout.NORTH);
-        add(signalPanel,BorderLayout.CENTER);
-        add(buttonPanel,BorderLayout.SOUTH);
+        add(mainPanel);
     }
 
 }

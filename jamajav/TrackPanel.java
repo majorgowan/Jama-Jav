@@ -402,10 +402,12 @@ class TrackPanel extends JPanel implements ActionListener {
         buttonPanel.add(playSelectedButton);
         buttonPanel.add(allStopButton);
 
-        mainPanel.setBorder(BorderFactory.createRaisedBevelBorder());
         buttonPanel.setBorder(BorderFactory.createRaisedBevelBorder());
 
-        MainScrollPane scrollPane = new MainScrollPane(mainPanel);
+        JPanel outerMainPanel = new JPanel(new FlowLayout());
+        outerMainPanel.add(mainPanel);
+
+        MainScrollPane scrollPane = new MainScrollPane(outerMainPanel);
 
         add(scrollPane,BorderLayout.CENTER);
         add(buttonPanel,BorderLayout.SOUTH);
