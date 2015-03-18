@@ -32,6 +32,8 @@ public class JamaJav {
 
     JamaJav(String[] args) {
 
+        Color goldColour = new Color(0.7f,0.7f,0.98f);
+
         jfrm = new JFrame("Major's Jama Jav");
         JPanel contentPane = (JPanel)jfrm.getContentPane(); 
         contentPane.setLayout(new BorderLayout());
@@ -42,10 +44,12 @@ public class JamaJav {
 
         clock = new Clock();
         clock.setBorder(BorderFactory.createRaisedBevelBorder());
+        //clock.setBorder(BorderFactory.createLineBorder(goldColour));
         controlPanel.add(clock);
 
         metronome = new Metronome();
         metronome.setBorder(BorderFactory.createRaisedBevelBorder());
+        //metronome.setBorder(BorderFactory.createLineBorder(goldColour));
         controlPanel.add(metronome);
 
         // add logo to app
@@ -62,6 +66,8 @@ public class JamaJav {
             imageBackPanel.add(imagePanel,BorderLayout.CENTER);
             imageBackPanel.setBackground(new Color(0.75f,0.6f,0.1f));
             imageBackPanel.setBorder(BorderFactory.createRaisedBevelBorder());
+            //imageBackPanel.setBorder(BorderFactory.createLineBorder(goldColour));
+            controlPanel.add(Box.createVerticalGlue());
             controlPanel.add(imageBackPanel);
         } catch (IOException e) {
             System.out.println("Logo image not found!");
@@ -72,7 +78,12 @@ public class JamaJav {
         trackPanel = new TrackPanel(jfrm, metronome, clock, prefs);
         trackPanel.setBorder(BorderFactory.createRaisedBevelBorder());
 
-        contentPane.add(controlPanel,BorderLayout.WEST);
+        JPanel outerControlPanel = new JPanel();
+        outerControlPanel.add(controlPanel);
+        outerControlPanel.setBorder(BorderFactory.createRaisedBevelBorder());
+        outerControlPanel.setBackground(goldColour);
+
+        contentPane.add(outerControlPanel,BorderLayout.WEST);
         contentPane.add(trackPanel,BorderLayout.CENTER);
 
         // Menus!!

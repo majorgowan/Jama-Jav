@@ -23,6 +23,7 @@ class TrackPanel extends JPanel implements ActionListener {
 
     private ArrayList<Track> tracks;
     private ArrayList<JPanel> linePanel;
+
     private int ntracks = 0;
 
     private JFrame parent;
@@ -35,7 +36,8 @@ class TrackPanel extends JPanel implements ActionListener {
     private Clock clock;
     private Prefs prefs;
 
-    private Avatar[] avatars;
+    private ArrayList<Avatar> avatars;
+    private ArrayList<JLabel> avatarLabel;
 
     // ActionListener method
     public void actionPerformed(ActionEvent ae) {
@@ -60,7 +62,7 @@ class TrackPanel extends JPanel implements ActionListener {
                 prefsDialog.setLocationRelativeTo(parent);
                 prefsDialog.getContentPane().setLayout(new BorderLayout());
                 prefsDialog.getContentPane().add(
-                        new PrefsPanel(prefs, avatars), BorderLayout.CENTER);
+                        new PrefsPanel(prefs, avatars, prefsDialog), BorderLayout.CENTER);
                 prefsDialog.revalidate();
                 prefsDialog.pack();
                 prefsDialog.setVisible(true);
@@ -183,15 +185,18 @@ class TrackPanel extends JPanel implements ActionListener {
     }
 
     private void addNewTrack() {
+        ntracks++;
         tracks.add(new Track(parent, metronome, clock, prefs));
         linePanel.add(new JPanel());
-        ntracks++;
+        avatarLabel.add(new JLabel(
+                    new ImageIcon(avatars.get(findAvatarIndex(prefs.getAvatar())).getImage())));
 
         //System.out.println("adding track ... now " + ntracks + " tracks");
 
         tracks.get(ntracks-1)
             .setBorder(BorderFactory.createRaisedBevelBorder());
 
+        linePanel.get(ntracks-1).add(avatarLabel.get(ntracks-1));
         linePanel.get(ntracks-1).add(tracks.get(ntracks-1));
         linePanel.get(ntracks-1)
             .setBorder(BorderFactory.createEmptyBorder(0,0,0,10));
@@ -241,6 +246,7 @@ class TrackPanel extends JPanel implements ActionListener {
                 asciifw.write("TRACK_" + i + "_INFO_BEGIN\n");
                 asciifw.write(in.getTitle() + "\n");
                 asciifw.write(in.getContributor() + "\n");
+                asciifw.write(in.getAvatar() + "\n");
                 asciifw.write(in.getDate() + "\n");
                 asciifw.write(in.getLocation() + "\n");
                 asciifw.write(in.getRunningTime() + " seconds\n");
@@ -322,6 +328,11 @@ class TrackPanel extends JPanel implements ActionListener {
                     br.readLine(); // INFO_BEGIN
                     in.setTitle(br.readLine());
                     in.setContributor(br.readLine());
+                    in.setAvatar(br.readLine());
+
+                    avatarLabel.get(i).setIcon(
+                            new ImageIcon(avatars.get(findAvatarIndex(in.getAvatar())).getImage()));
+
                     in.setDate(br.readLine());
                     in.setLocation(br.readLine());
 
@@ -366,22 +377,27 @@ class TrackPanel extends JPanel implements ActionListener {
 
     private void initAvatars() {
         ClassLoader cl = this.getClass().getClassLoader();
-        URL url = cl.getResource("Images/Avatars");
-        System.out.println("URL is " + url);
         try {
-            File avatarFolder = new File(url.toURI());
-            File[] files = avatarFolder.listFiles();
-
-            avatars = new Avatar[files.length];
-
-            for (int i = 0; i < files.length; i++) {
-                String filename = files[i].getName().split("\\.")[0];  // strip .png
-                avatars[i] = new Avatar(filename);
-                System.out.println("New Avatar : " + filename);
+            InputStream is = cl.getResourceAsStream("Images/Avatars/list.txt");
+            BufferedReader br = new BufferedReader(new InputStreamReader(is));
+            String s;
+            while ((s = br.readLine()) != null) {
+                System.out.println(s.split("\\.")[0]);
+                avatars.add(new Avatar(s.split("\\.")[0]));
             }
-        } catch (URISyntaxException ex) {
-            System.out.println(url + " didn't convert to a URI!");
+        } catch (Exception e) {
+            System.out.println(e);
+            e.printStackTrace();
         }
+    }
+
+    private int findAvatarIndex(String name) {
+        for (int i = 0; i < avatars.size(); i++)
+            if (avatars.get(i).getName().equals(name)) {
+                return i;
+            }
+
+        return 0;
     }
 
     TrackPanel(JFrame jfrm, Metronome m, Clock c, Prefs p) {
@@ -393,8 +409,10 @@ class TrackPanel extends JPanel implements ActionListener {
 
         tracks = new ArrayList<Track>(0);
         linePanel = new ArrayList<JPanel>(0);
+        avatarLabel = new ArrayList<JLabel>(0);
 
         // initialize Avatars
+        avatars = new ArrayList<Avatar>(0);
         initAvatars();
 
         setBackground(new Color(0.75f,0.6f,0.1f));

@@ -8,6 +8,9 @@ import java.awt.event.*;
 // For input/output
 import java.io.*;
 
+// For resizable arrays:
+import java.util.ArrayList;
+
 class PrefsPanel extends JPanel implements ActionListener {
 
     private Prefs prefs;
@@ -21,12 +24,31 @@ class PrefsPanel extends JPanel implements ActionListener {
     private JTextField countInField;
     private JTextField userNameField;
     private JTextField userCityField;
+    private JLabel avatarLabel;
     private JButton changeAvatarButton;
+
+    private ArrayList<Avatar> avatars;
+    private JDialog prefsDialog;
 
     public void actionPerformed(ActionEvent ae) {
 
         String comStr = ae.getActionCommand();
         switch (comStr) {
+            case ("changeAvatar") :
+                final JDialog avatarDialog = new JDialog(prefsDialog, "Choose Avatar", true);
+                avatarDialog.setLocationRelativeTo(prefsDialog);
+                avatarDialog.getContentPane().setLayout(new BorderLayout());
+                avatarDialog.getContentPane().add(
+                        new AvatarPanel(avatars, prefs), BorderLayout.CENTER);
+                avatarDialog.revalidate();
+                avatarDialog.pack();
+                avatarDialog.setVisible(true);
+                avatar = prefs.getAvatar();
+                avatarLabel.setIcon(
+                        new ImageIcon(avatars.get(findAvatarIndex(avatar)).getImage()));
+                revalidate();
+                break;
+
             case ("save") :
                 metroset[0] = Integer.parseInt(bpMinField.getText());
                 metroset[1] = Integer.parseInt(bpMeasField.getText());
@@ -57,9 +79,20 @@ class PrefsPanel extends JPanel implements ActionListener {
         }
     }
 
-    PrefsPanel(Prefs p, Avatar[] avatars) {
+    private int findAvatarIndex(String name) {
+        for (int i = 0; i < avatars.size(); i++)
+            if (avatars.get(i).getName().equals(name)) {
+                return i;
+            }
+
+        return 0;
+    }
+
+    PrefsPanel(Prefs p, ArrayList<Avatar> avs, JDialog pD) {
 
         prefs = p;
+        prefsDialog = pD;
+        avatars = avs;
 
         metroset = prefs.getMetroSet();
         cparam = prefs.getClockParam();
@@ -68,13 +101,6 @@ class PrefsPanel extends JPanel implements ActionListener {
         
         avatar = prefs.getAvatar();
         int avatarIndex = 0;
-
-        // find Avatar index
-        for (int i = 0; i < avatars.length; i++)
-            if (avatars[i].getName().equals(avatar)) {
-                avatarIndex = i;
-                break;
-            }
 
         bpMinField = new JTextField("" + metroset[0],4);
         bpMeasField = new JTextField("" + metroset[1],2);
@@ -86,9 +112,12 @@ class PrefsPanel extends JPanel implements ActionListener {
         changeAvatarButton.addActionListener(this);
 
         JPanel avatarPanel = new JPanel(new BorderLayout());
-        avatarPanel.add(new JLabel(new ImageIcon(avatars[avatarIndex].getImage())));
+        avatarLabel = new JLabel(
+                new ImageIcon(avatars.get(findAvatarIndex(avatar)).getImage()));
+        avatarPanel.add(avatarLabel);
 
-        JPanel mainPanel = new JPanel(new GridLayout(7,1));
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.PAGE_AXIS));
 
         JPanel line1 = new JPanel(new FlowLayout(FlowLayout.CENTER));
         JPanel line2 = new JPanel(new FlowLayout(FlowLayout.CENTER));

@@ -11,6 +11,7 @@ class Info {
 
     private String date;
     private String contributor;
+    private String avatar;
     private String location;
     private String title;
     private int runningTime;
@@ -26,6 +27,10 @@ class Info {
 
     public void setContributor(String c) {
         contributor = c;
+    }
+
+    public void setAvatar(String av) {
+        avatar = av;
     }
 
     public void setLocation(String l) {
@@ -65,6 +70,10 @@ class Info {
         return contributor;
     }
 
+    public String getAvatar() {
+        return avatar;
+    }
+
     public String getLocation() {
         return location;
     }
@@ -91,6 +100,7 @@ class Info {
         notes = new ArrayList<String>(0);
         title = "Track";
         contributor = "You, that's who.";
+        contributor = "tenor";
         runningTime = 0;
         Calendar d = Calendar.getInstance();
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");

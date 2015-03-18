@@ -8,18 +8,22 @@ import java.awt.event.*;
 // For input/output
 import java.io.*;
 
+// For resizable arrays:
+import java.util.ArrayList;
+
 class AvatarPanel extends JPanel implements  MouseListener {
 
     private Prefs prefs;
-    private Avatar[] avatars;
-    private JPanel[] avatarPanels;
+    private ArrayList<Avatar> avatars;
+    private ArrayList<JPanel> avatarPanels;
 
     public void mouseClicked(MouseEvent me) {
         if (SwingUtilities.isLeftMouseButton(me)) {
             int selectedNum;
-            for (int i = 0; i < avatars.length; i++) {
-                if (me.getSource() == avatarPanels[i]) {
-                    prefs.setAvatar(avatars[i].getName());
+            for (int i = 0; i < avatars.size(); i++) {
+                if (me.getSource() == avatarPanels.get(i)) {
+                    prefs.setAvatar(avatars.get(i).getName());
+                    System.out.println(avatars.get(i).getName());
                     SwingUtilities.windowForComponent(this).setVisible(false);
                     SwingUtilities.windowForComponent(this).dispose();
                 }
@@ -39,22 +43,22 @@ class AvatarPanel extends JPanel implements  MouseListener {
         // Invoked when a mouse button has been released on a component.
     }
 
-    AvatarPanel(Avatar[] avs, Prefs p) {
+    AvatarPanel(ArrayList<Avatar> avs, Prefs p) {
 
         prefs = p;
         avatars = avs;
 
-        avatarPanels = new JPanel[avatars.length];
+        avatarPanels = new ArrayList<JPanel>(0);
 
         JPanel gridPanel = new JPanel(new GridLayout(4,4));
 
-        for (int i = 0; i<avatars.length; i++) {
-            avatarPanels[i] = new JPanel(new BorderLayout());
-            avatarPanels[i].add(new JLabel(new ImageIcon(avatars[i].getImage())),
+        for (int i = 0; i<avatars.size(); i++) {
+            avatarPanels.add(new JPanel(new BorderLayout()));
+            avatarPanels.get(i).add(new JLabel(new ImageIcon(avatars.get(i).getImage())),
                     BorderLayout.CENTER);
-            gridPanel.add(avatarPanels[i]);
-            avatarPanels[i].addMouseListener(this);
-            avatarPanels[i].setToolTipText(avatars[i].getName());
+            gridPanel.add(avatarPanels.get(i));
+            avatarPanels.get(i).addMouseListener(this);
+            avatarPanels.get(i).setToolTipText(avatars.get(i).getName());
         }
 
         JPanel mainPanel = new JPanel(new FlowLayout());
