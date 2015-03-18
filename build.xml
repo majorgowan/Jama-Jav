@@ -18,12 +18,13 @@
         <echo>
             Making a jar.
         </echo>
-        <exec dir="Images/Avatars" executable="ls">
-            <arg value="*.png"/>
+        <apply executable="basename" parallel="true" dir="Images/Avatars">
+            <arg value="-a"/>
+            <fileset dir="Images/Avatars" includes="*.png"/>
             <redirector>
                 <outputmapper type="merge" to="Images/Avatars/list.txt"/>
             </redirector>
-        </exec>
+        </apply>
         <jar jarfile="JamaJav.jar" basedir="." 
             includes="jamajav/*.class,Sounds/*.wav,Images/*.png,Images/Avatars/*.png,Images/Avatars/list.txt">
             <manifest>
