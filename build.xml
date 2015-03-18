@@ -1,7 +1,11 @@
 <?xml version="1.0" ?>
 <project default="main">
 
-    <target name="main" depends="compile, jar">
+    <condition property="isUnix">
+        <os family="unix"/>
+    </condition>
+
+    <target name="main" depends="compile, avatarCW, avatarUN, jar">
         <echo>
             Building the jar file.
         </echo>
@@ -14,9 +18,22 @@
         <javac srcdir="."/>
     </target>
 
-    <target name="jar" depends="compile">
+    <target name="avatarUN" if="isUnix">
         <echo>
-            Making a jar.
+            Making list of avatars (linux).
+        </echo>
+        <apply executable="basename" parallel="true" dir="Images/Avatars">
+            <arg value="-a"/>
+            <fileset dir="Images/Avatars" includes="*.png"/>
+            <redirector>
+                <outputmapper type="merge" to="Images/Avatars/list.txt"/>
+            </redirector>
+        </apply>
+    </target>
+
+    <target name="avatarCW" unless="isUnix">
+        <echo>
+            Making list of avatars (cygwin).
         </echo>
         <exec executable="ls" dir="Images/Avatars">
             <arg value="*.png"/>
@@ -24,13 +41,12 @@
                 <outputmapper type="merge" to="Images/Avatars/list.txt"/>
             </redirector>
         </exec>
-        <apply executable="basename" parallel="true" dir="Images/Avatars" os="unix">
-            <arg value="-a"/>
-            <fileset dir="Images/Avatars" includes="*.png"/>
-            <redirector>
-                <outputmapper type="merge" to="Images/Avatars/list.txt"/>
-            </redirector>
-        </apply>
+    </target>
+
+    <target name="jar" depends="compile">
+        <echo>
+            Making a jar.
+        </echo>
         <jar jarfile="JamaJav.jar" basedir="." 
             includes="jamajav/*.class,Sounds/*.wav,Images/*.png,Images/Avatars/*.png,Images/Avatars/list.txt">
             <manifest>
