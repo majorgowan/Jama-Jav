@@ -19,7 +19,8 @@
             Making a jar.
         </echo>
         <exec dir="Images/Avatars" executable="ls">
-            <redirector inputstring="*.png">
+            <arg value="*.png"/>
+            <redirector>
                 <outputmapper type="merge" to="Images/Avatars/list.txt"/>
             </redirector>
         </exec>
