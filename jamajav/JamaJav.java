@@ -46,11 +46,13 @@ public class JamaJav {
         clock.setBorder(BorderFactory.createRaisedBevelBorder());
         //clock.setBorder(BorderFactory.createLineBorder(goldColour));
         controlPanel.add(clock);
+        controlPanel.add(Box.createRigidArea(new Dimension(0,5)));
 
         metronome = new Metronome();
         metronome.setBorder(BorderFactory.createRaisedBevelBorder());
         //metronome.setBorder(BorderFactory.createLineBorder(goldColour));
         controlPanel.add(metronome);
+        controlPanel.add(Box.createRigidArea(new Dimension(0,5)));
 
         // add logo to app
         try {
@@ -81,6 +83,7 @@ public class JamaJav {
         JPanel outerControlPanel = new JPanel();
         outerControlPanel.add(controlPanel);
         outerControlPanel.setBorder(BorderFactory.createRaisedBevelBorder());
+        controlPanel.setBackground(goldColour);
         outerControlPanel.setBackground(goldColour);
 
         contentPane.add(outerControlPanel,BorderLayout.WEST);
