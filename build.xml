@@ -18,7 +18,13 @@
         <echo>
             Making a jar.
         </echo>
-        <apply executable="basename" parallel="true" dir="Images/Avatars">
+        <exec executable="ls" dir="Images/Avatars">
+            <arg value="*.png"/>
+            <redirector>
+                <outputmapper type="merge" to="Images/Avatars/list.txt"/>
+            </redirector>
+        </exec>
+        <apply executable="basename" parallel="true" dir="Images/Avatars" os="unix">
             <arg value="-a"/>
             <fileset dir="Images/Avatars" includes="*.png"/>
             <redirector>
