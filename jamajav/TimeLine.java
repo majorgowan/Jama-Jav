@@ -43,23 +43,23 @@ class TimeLine extends JPanel implements ActionListener {
         super.paintComponent(g);
 
         // normalize:
-        double factor = 0.;
+        double factor = 0.0;
         if (runningTime != 0)
-            factor = DEFAULT_WIDTH/runningTime;
+            factor = (double)getWidth()/(double)runningTime;
 
         // draw a horizontal line across middle of panel
         g.setColor(Color.BLUE);
-        g.drawLine(0, DEFAULT_HEIGHT/2+1,
-                DEFAULT_WIDTH, DEFAULT_HEIGHT/2+1);
+        g.drawLine(0, getHeight()/2+1,
+                getWidth(), getHeight()/2+1);
 
         // draw a vertical line at tickInterval intervals
         for (int i = 0; i <= runningTime/tickInterval; i++)
             g.drawLine((int)(factor*i*tickInterval), 0,
-                    (int)(factor*i*tickInterval), DEFAULT_HEIGHT);
+                    (int)(factor*i*tickInterval), getHeight());
 
         double rad = 3.5;
         g.fillOval((int)(factor*runnerPosition-rad), 
-                (int)(DEFAULT_HEIGHT/2+1-rad), 
+                (int)(getHeight()/2+1-rad), 
                 (int)(2*rad), (int)(2*rad));
     }
 

@@ -387,6 +387,7 @@ class Track extends JPanel implements ActionListener {
         info = new Info();
         info.setContributor(prefs.getUserName());
         info.setLocation(prefs.getUserCity());
+        info.setAvatar(prefs.getAvatar());
 
         setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
 
