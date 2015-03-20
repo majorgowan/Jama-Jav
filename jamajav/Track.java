@@ -41,8 +41,9 @@ class Track extends JPanel implements ActionListener {
     private Clock clock; 
 
     private JButton recordButton;
-    private JButton infoButton;
     private JButton playButton;
+    private JButton editButton;
+    private JButton infoButton;
     private VolumeSlider slider;
 
     private TimeLine timeLine;
@@ -419,33 +420,40 @@ class Track extends JPanel implements ActionListener {
         Font buttonFont = new Font("SansSerif",Font.BOLD,10);
 
         recordButton = new JButton("Rec/Stop");
+        playButton = new JButton("Play");
+        editButton = new JButton("Edit");
+        editButton.setActionCommand("edittrack");
         infoButton = new JButton("Edit info");
         infoButton.setActionCommand("editinfo");
-        playButton = new JButton("Play");
 
-        slider = new VolumeSlider(JSlider.HORIZONTAL, 0, 10, 10);
         recordButton.addActionListener(this);
-        infoButton.addActionListener(this);
         playButton.addActionListener(this);
+        editButton.addActionListener(this);
+        infoButton.addActionListener(this);
 
         recordButton.setFont(buttonFont);
         infoButton.setFont(buttonFont);
         playButton.setFont(buttonFont);
+
+        slider = new VolumeSlider(JSlider.VERTICAL, 0, 10, 7);
         slider.setFont(buttonFont);
+        JPanel outerSliderPanel = new JPanel(new FlowLayout());
+        outerSliderPanel.add(slider);
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new GridLayout(4,1));
 
         buttonPanel.add(recordButton);
-        buttonPanel.add(infoButton);
         buttonPanel.add(playButton);
-        buttonPanel.add(slider);
+        buttonPanel.add(editButton);
+        buttonPanel.add(infoButton);
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
 
         add(buttonPanel);
         add(Box.createRigidArea(new Dimension(5,0)));
         add(mainPanel);
         add(outerMonitorPanel);
+        add(outerSliderPanel);
 
         addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent me) {

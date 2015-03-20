@@ -54,6 +54,9 @@ class TrackPanel extends JPanel implements ActionListener {
 
             case ("open") :
                 open();
+                // Scroll the TrackPanel to the top to show first Track:
+                // (doesn't go quite to the top for some reason but noone will notice)
+                mainPanel.scrollRectToVisible(new Rectangle(0,0,0,0));
                 break;
 
             case ("editprefs") :
@@ -202,7 +205,10 @@ class TrackPanel extends JPanel implements ActionListener {
             .setBorder(BorderFactory.createEmptyBorder(0,0,0,10));
 
         mainPanel.add(linePanel.get(ntracks-1));
+
         revalidate();
+        //Scroll the TrackPanel to the bottom to show the new Track:
+        mainPanel.scrollRectToVisible(new Rectangle(0,(int)mainPanel.getPreferredSize().getHeight(),10,10));
     }
 
     private void removeTrack(int i) {
@@ -263,7 +269,7 @@ class TrackPanel extends JPanel implements ActionListener {
 
                 // write bytes to binary file
                 binfos.write(bytes);
-            
+
                 parent.setTitle("Major's Jama Jav - " + filename);
             }
         } catch (IOException e) {
@@ -376,7 +382,7 @@ class TrackPanel extends JPanel implements ActionListener {
             tracks.remove(i);
             ntracks--;
         }
-            
+
         parent.setTitle("Major's Jama Jav");
         repaint();
     }
