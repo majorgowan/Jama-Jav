@@ -263,6 +263,8 @@ class TrackPanel extends JPanel implements ActionListener {
 
                 // write bytes to binary file
                 binfos.write(bytes);
+            
+                parent.setTitle("Major's Jama Jav - " + filename);
             }
         } catch (IOException e) {
             System.out.println("Error reading from file " 
@@ -281,8 +283,8 @@ class TrackPanel extends JPanel implements ActionListener {
                 SwingUtilities.windowForComponent(this));
         if(returnVal == JFileChooser.APPROVE_OPTION) {
             System.out.println("You chose to open this file: " +
-                    chooser.getSelectedFile().getName());
-            return chooser.getSelectedFile().getName();
+                    chooser.getSelectedFile().getAbsolutePath());
+            return chooser.getSelectedFile().getAbsolutePath();
         } else {
             return "rathernot";
         }
@@ -293,6 +295,8 @@ class TrackPanel extends JPanel implements ActionListener {
         if (!(filename.equals("rathernot"))) {
             newDoc();
             filename = filename.split("\\.")[0];  // strip .jj from filename
+
+            parent.setTitle("Major's Jama Jav - " + filename);
 
             System.out.println("Opening " + filename + ".jj"
                     + " and " + filename + ".bin");
@@ -360,7 +364,7 @@ class TrackPanel extends JPanel implements ActionListener {
                     tracks.get(i).putBytes(bytes);
                 }
             } catch (IOException e) {
-                System.out.println("Error writing to file " + filename + ".MMM");
+                System.out.println("Error reading from " + filename + ".MMM");
             }
         }
     }
@@ -372,6 +376,8 @@ class TrackPanel extends JPanel implements ActionListener {
             tracks.remove(i);
             ntracks--;
         }
+            
+        parent.setTitle("Major's Jama Jav");
         repaint();
     }
 
