@@ -34,7 +34,9 @@ class Track extends JPanel implements ActionListener {
     private boolean isClicked = false;
     private Color clickedColor, unclickedColor;
 
+    // ancestors
     private JFrame jfrm;
+    private TrackPanel trackPanel;
 
     private Prefs prefs;
     private Metronome metronome;
@@ -49,7 +51,6 @@ class Track extends JPanel implements ActionListener {
     private TimeLine timeLine;
     private Visualizer visualPanel;
     private Monitor monitor;
-    private JPanel mainPanel;
     private JPanel titlePanel;
     private JLabel titleLabel;
 
@@ -77,6 +78,10 @@ class Track extends JPanel implements ActionListener {
             case ("editinfo") :
                 editInfo();
                 setToolTip();
+                break;
+
+            case ("edittrack") :
+                editTrack();
                 break;
         }
     }
@@ -125,6 +130,18 @@ class Track extends JPanel implements ActionListener {
     public void stopPlaying() {
         clock.stop();
         stopPlay = true;
+    }
+
+    private void editTrack() {
+        // open dialog with a infopanel
+        final JDialog editTrackDialog = new JDialog(jfrm, "Track editor", true);
+        editTrackDialog.setLocationRelativeTo(jfrm);
+        editTrackDialog.getContentPane().setLayout(new BorderLayout());
+        editTrackDialog.getContentPane().add(
+                new TrackEditor(this, trackPanel), BorderLayout.CENTER);
+        editTrackDialog.revalidate();
+        editTrackDialog.pack();
+        editTrackDialog.setVisible(true);
     }
 
     private void editInfo() {
@@ -189,7 +206,7 @@ class Track extends JPanel implements ActionListener {
     // of format parameters.  If these parameters don't work well for
     // you, try some of the other allowable parameter values, which
     // are shown in comments following the declarations.
-    private AudioFormat getAudioFormat(){
+    public AudioFormat getAudioFormat(){
         float sampleRate = 8000.0f; //8000,11025,16000,22050,44100
         int sampleSizeInBits = 16;  // 8,16
         int channels = 1;           // 1,2
@@ -371,11 +388,12 @@ class Track extends JPanel implements ActionListener {
     } //end inner class PlayThread
 
 
-
-    // Track constructor
-    Track(JFrame frm, Metronome m, Clock c, Prefs p) {
+    // Basic Track constructor
+    Track(JFrame frm, TrackPanel tpnl, Metronome m, Clock c, Prefs p) {
 
         jfrm = frm;
+        trackPanel = tpnl;
+
         metronome = m;
         clock = c;
         prefs = p;
@@ -394,7 +412,7 @@ class Track extends JPanel implements ActionListener {
 
         timeLine = new TimeLine();
 
-        mainPanel = new JPanel();
+        JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel,BoxLayout.PAGE_AXIS));
 
         titlePanel = new JPanel(new FlowLayout());
@@ -432,8 +450,9 @@ class Track extends JPanel implements ActionListener {
         infoButton.addActionListener(this);
 
         recordButton.setFont(buttonFont);
-        infoButton.setFont(buttonFont);
         playButton.setFont(buttonFont);
+        editButton.setFont(buttonFont);
+        infoButton.setFont(buttonFont);
 
         slider = new VolumeSlider(JSlider.VERTICAL, 0, 10, 7);
         slider.setFont(buttonFont);

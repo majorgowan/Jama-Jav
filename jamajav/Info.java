@@ -100,8 +100,21 @@ class Info {
         notes = new ArrayList<String>(0);
         title = "Track";
         contributor = "You, that's who.";
-        contributor = "tenor";
+        avatar = "tenor";
         runningTime = 0;
+        Calendar d = Calendar.getInstance();
+        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        date = dateFormat.format(d.getTime());
+    }
+
+    // copy constructor
+    Info(Info in) {
+        notes = new ArrayList<String>(0);
+        title = "copy of " + this.title;
+        contributor = this.contributor;
+        avatar = this.avatar;
+        runningTime = this.runningTime;
+        // date should be date of copying
         Calendar d = Calendar.getInstance();
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         date = dateFormat.format(d.getTime());

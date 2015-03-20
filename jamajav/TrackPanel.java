@@ -189,7 +189,7 @@ class TrackPanel extends JPanel implements ActionListener {
 
     private void addNewTrack() {
         ntracks++;
-        tracks.add(new Track(parent, metronome, clock, prefs));
+        tracks.add(new Track(parent, this, metronome, clock, prefs));
         linePanel.add(new JPanel());
         avatarLabel.add(new JLabel(
                     new ImageIcon(avatars.get(findAvatarIndex(prefs.getAvatar())).getImage())));
