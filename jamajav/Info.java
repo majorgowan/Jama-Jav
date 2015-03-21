@@ -110,10 +110,10 @@ class Info {
     // copy constructor
     Info(Info in) {
         notes = new ArrayList<String>(0);
-        title = "copy of " + this.title;
-        contributor = this.contributor;
-        avatar = this.avatar;
-        runningTime = this.runningTime;
+        title = "copy of " + in.getTitle();
+        contributor = in.getContributor();
+        avatar = in.getAvatar();
+        runningTime = in.getRunningTime();
         // date should be date of copying
         Calendar d = Calendar.getInstance();
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");

@@ -14,9 +14,7 @@ class TrackEditor extends JPanel implements ActionListener {
     // the track to be edited
     private Track track;
 
-    private byte[] audioData;
-    private AudioFormat audioFormat;
-    private Info info;
+    private TrackData trackData, oldTrackData;
 
     private TimeLine timeLine;
     private Visualizer visualPanel;
@@ -26,15 +24,20 @@ class TrackEditor extends JPanel implements ActionListener {
     private JButton cancelButton;
 
     public void actionPerformed(ActionEvent ae) {
-        
+
         String cmdStr = ae.getActionCommand();
 
         switch (cmdStr) {
+            case "preview" :
+                trackData.playback(7, timeLine);
+                break;
+                    
             case "Cancel" :
-            // exit without saving changes
-            SwingUtilities.windowForComponent(this).setVisible(false);
-            SwingUtilities.windowForComponent(this).dispose();
-            break;
+                // exit without saving changes
+                SwingUtilities.windowForComponent(this).setVisible(false);
+                SwingUtilities.windowForComponent(this).dispose();
+                break;
+
         }
     }
 
@@ -77,9 +80,9 @@ class TrackEditor extends JPanel implements ActionListener {
 
     private void saveAsNew() {
         // addNewTrack to trackPanel
-        
+
         // copy info object of old track to new track
-        
+
         // update info object with changes
         //  (author stays old author)
         //  (add "copy of " to beginning of title
@@ -96,15 +99,18 @@ class TrackEditor extends JPanel implements ActionListener {
         trackPanel = tpnl;
         track = oldTrack;
 
-        Info info = track.getInfo();
-        audioFormat = track.getAudioFormat();
-        audioData = track.getBytes();
+        oldTrackData = track.getTrackData();
+        trackData = new TrackData(oldTrackData);
+
+        Info info = trackData.getInfo();
 
         visualPanel = new Visualizer();
-        visualPanel.setData(audioData, audioFormat.getFrameSize());
+        visualPanel.setData(trackData.getBytes(), 
+                trackData.getAudioFormat().getFrameSize());
 
         timeLine = new TimeLine();
         timeLine.setRunningTime(info.getRunningTime());
+        System.out.println("RUNNING MAN'S TIME " + info.getRunningTime());
 
         JPanel editPanel = new JPanel(new FlowLayout());
         JPanel buttonPanel = new JPanel(new FlowLayout());
@@ -134,6 +140,7 @@ class TrackEditor extends JPanel implements ActionListener {
         mainPanel.add(outerVisualPanel);
 
         JButton previewButton = new JButton("Preview");
+        previewButton.setActionCommand("preview");
         previewButton.addActionListener(this);
         JButton saveButton = new JButton("Save changes");
         saveButton.addActionListener(this);

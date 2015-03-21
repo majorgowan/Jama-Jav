@@ -7,29 +7,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-// For reading and writing files and streams
-import java.io.*;
-
-// For sound samples
-import javax.sound.sampled.*;
-
 class Track extends JPanel implements ActionListener {
 
     final private int DEFAULT_WIDTH = 425;
     final private int DEFAULT_HEIGHT = 120;
 
-    private boolean stopPlay = false;
-    private boolean stopCapture = false;
-    private boolean isCapturing = false;
-    private boolean notEmpty = false;
-
-    private byte[] audioData;
-    private AudioFormat audioFormat;
-    private TargetDataLine targetDataLine;
-    private AudioInputStream audioInputStream;
-    private SourceDataLine sourceDataLine;
-
-    private Info info;
+    private TrackData trackData;
 
     private boolean isClicked = false;
     private Color clickedColor, unclickedColor;
@@ -49,7 +32,7 @@ class Track extends JPanel implements ActionListener {
     private VolumeSlider slider;
 
     private TimeLine timeLine;
-    private Visualizer visualPanel;
+    private Visualizer visualizer;
     private Monitor monitor;
     private JPanel titlePanel;
     private JLabel titleLabel;
@@ -63,7 +46,7 @@ class Track extends JPanel implements ActionListener {
 
         switch (comStr) {
             case ("Rec/Stop") :
-                if (!isCapturing) {
+                if (!trackData.isCapturing()) {
                     startRecording();
                 } else {
                     stopRecording();
@@ -76,8 +59,9 @@ class Track extends JPanel implements ActionListener {
                 break;
 
             case ("editinfo") :
-                editInfo();
-                setToolTip();
+                Info info = editInfo();
+                trackData.putInfo(info);
+                setToolTip(info);
                 break;
 
             case ("edittrack") :
@@ -91,7 +75,7 @@ class Track extends JPanel implements ActionListener {
     }
 
     public boolean isNotEmpty() {
-        return notEmpty;
+        return trackData.isNotEmpty();
     }
 
     public void setSelected(boolean b) {
@@ -107,29 +91,28 @@ class Track extends JPanel implements ActionListener {
     public void startRecording() {
         clock.restart();
         metronome.start();
-        record();
-        notEmpty = true;
+        trackData.record(visualizer, timeLine);
+        trackData.setNotEmpty(true);
     }
 
     public void stopRecording() {
         System.out.println("Stopping recording . . .");
-        stopCapture = true;
+        trackData.stopCapturing();
         metronome.stop();
         clock.stop();
-        isCapturing = false;
+        trackData.stopCapturing();
     }
 
     public void startPlaying() {
-        if (notEmpty) {
+        if (trackData.isNotEmpty()) {
             clock.restart();
-            stopPlay = false;
             playback();
         }
     }
 
     public void stopPlaying() {
         clock.stop();
-        stopPlay = true;
+        trackData.stopPlaying();
     }
 
     private void editTrack() {
@@ -144,7 +127,8 @@ class Track extends JPanel implements ActionListener {
         editTrackDialog.setVisible(true);
     }
 
-    private void editInfo() {
+    private Info editInfo() {
+        Info info = trackData.getInfo();
         // open dialog with a infopanel
         final JDialog infoDialog = new JDialog(jfrm, "Edit track info", true);
         infoDialog.setLocationRelativeTo(jfrm);
@@ -154,9 +138,10 @@ class Track extends JPanel implements ActionListener {
         infoDialog.revalidate();
         infoDialog.pack();
         infoDialog.setVisible(true);
+        return info;
     }
 
-    public void setToolTip() {
+    public void setToolTip(Info info) {
         String toolTip = "<html><h3>" + info.getTitle() + "<br>";
 
         toolTip += "by: " + info.getContributor() + "<br>";
@@ -169,224 +154,41 @@ class Track extends JPanel implements ActionListener {
 
         toolTip += ", " + info.getLocation();
 
-        visualPanel.setToolTipText(toolTip);
+        visualizer.setToolTipText(toolTip);
 
         // probably bad form to put this here, but ...
         titleLabel.setText(info.getTitle());
     }
 
     public Info getInfo() {
-        return info;
+        return trackData.getInfo();
     }
 
     public void putInfo(Info in) {
-        info = in;
+        trackData.putInfo(in);
     }
 
     public byte[] getBytes() {
-        return audioData;
+        return trackData.getBytes();
     }
 
     public void putBytes(byte[] bytes) {
-        audioData = bytes;
-        notEmpty = true;
-        visualPanel.setData(audioData, audioFormat.getFrameSize());
-
-        int runningTime = (int) 
-            ((double)(audioData.length) / 
-             (double)( 
-                 audioFormat.getFrameSize() 
-                 * audioFormat.getFrameRate() ) ); 
-
-        timeLine.setRunningTime(runningTime);
-        timeLine.repaint();
-    }
-
-    // Create and return an AudioFormat object for a given set
-    // of format parameters.  If these parameters don't work well for
-    // you, try some of the other allowable parameter values, which
-    // are shown in comments following the declarations.
-    public AudioFormat getAudioFormat(){
-        float sampleRate = 8000.0f; //8000,11025,16000,22050,44100
-        int sampleSizeInBits = 16;  // 8,16
-        int channels = 1;           // 1,2
-        boolean signed = true;
-        boolean bigEndian = false;
-
-        return new AudioFormat(
-                sampleRate,
-                sampleSizeInBits,
-                channels,
-                signed,
-                bigEndian);
-    }
-
-    public void record() {
-        try{
-            System.out.println("Recording . . . ");
-            // Get everything set up for recording
-            DataLine.Info dataLineInfo = new DataLine.Info(
-                    TargetDataLine.class, audioFormat);
-
-            targetDataLine = (TargetDataLine)AudioSystem.getLine(dataLineInfo);
-            targetDataLine.open(audioFormat);
-            targetDataLine.start();
-
-            // Create a thread to capture the
-            // microphone data and start it
-            // running.  It will run until
-            // the Stop button is clicked.
-            Thread recordThread = new Thread(new RecordThread());
-            recordThread.start();
-            isCapturing = true;
-        } catch (Exception e) {
-            System.out.println(e);
-            // System.exit(0);   // Don't have to exit, just do nothing!
-        }
-    }
-
-    class RecordThread extends Thread{
-
-        // An arbitrary-size temporary holding buffer
-        // byte tempBuffer[] = new byte[10000];
-
-        byte tempBuffer[] = new byte[1000];
-        public void run(){
-
-            int frameSize = targetDataLine.getFormat().getFrameSize();
-
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-
-            stopCapture = false;
-
-            try{
-                // Loop until stopCapture is set by another thread that
-                while(!stopCapture) {
-                    // Read data from the internal buffer of the data line.
-                    int cnt = targetDataLine.read(
-                            tempBuffer,
-                            0,
-                            tempBuffer.length);
-                    monitor.setData(tempBuffer, frameSize);
-
-                    if(cnt > 0){
-                        // Save data in output stream object.
-                        byteArrayOutputStream.write(tempBuffer, 0, cnt);
-                    }
-                }
-                byteArrayOutputStream.close();
-                stopRecording();
-
-                audioData = byteArrayOutputStream.toByteArray();
-
-                int runningTime = (int) 
-                    ((double)(audioData.length) / 
-                     (double)( 
-                         audioFormat.getFrameSize() 
-                         * audioFormat.getFrameRate() ) ); 
-                info.setRunningTime(runningTime);
-
-                timeLine.setRunningTime(runningTime);
-                timeLine.repaint();
-                visualPanel.setData(audioData, frameSize);
-
-                info.resetDate();
-                setToolTip();
-
-                System.out.println("Closing targetDataLine . . . ");
-                targetDataLine.close();
-
-            } catch (Exception e) {
-                System.out.println(e);
-                // System.exit(0);
-            }
-        }
+        trackData.putBytes(bytes);
+        visualizer.setData(bytes,trackData.getAudioFormat().getFrameSize());
+        timeLine.setRunningTime(trackData.getInfo().getRunningTime());
     }
 
     public void playback() {
-        // System.out.println("Playing back . . . ");
-        stopPlay = false;
-        try {
-            InputStream byteArrayInputStream 
-                = new ByteArrayInputStream(audioData);
-
-            audioInputStream = 
-                new AudioInputStream(
-                        byteArrayInputStream,
-                        audioFormat,
-                        audioData.length/audioFormat.
-                        getFrameSize());
-
-            DataLine.Info dataLineInfo = 
-                new DataLine.Info(SourceDataLine.class, audioFormat);
-
-            sourceDataLine = (SourceDataLine) AudioSystem.getLine(dataLineInfo);
-            sourceDataLine.open(audioFormat);
-            sourceDataLine.start();
-
-            FloatControl volume_control = 
-                (FloatControl)sourceDataLine.getControl(FloatControl.Type.MASTER_GAIN);
-
-            volume_control.setValue((float)(
-                        -2.5*(10.0-slider.getValue())));
-
-            // Create a thread to play back the data and start it running.  
-            // It will run until all the data has been played back.
-            Thread playThread = new Thread(new PlayThread());
-            playThread.start();
-            timeLine.start();
-
-        } catch (Exception e) {
-            System.out.println(e);
-            e.printStackTrace();
-            // System.exit(0);
-        }
+        trackData.playback(slider.getValue(), timeLine);
     }
 
-    class PlayThread extends Thread {
+    public void putTrackData(TrackData td) {
+        trackData = td;
+    }
 
-        byte tempBuffer[] = new byte[1000];
-
-        public void run(){
-
-            int frameSize = sourceDataLine.getFormat().getFrameSize();
-
-            try{
-                int cnt;
-                // Keep looping until the input
-                // read method returns -1 for
-                // empty stream.
-                while (((cnt = audioInputStream.read(
-                                    tempBuffer, 0,
-                                    tempBuffer.length)) != -1) && (!stopPlay))
-                {
-                    if (cnt > 0) {
-                        // Write data to the internal
-                        // buffer of the data line
-                        // where it will be delivered
-                        // to the speaker.
-                        sourceDataLine.write(tempBuffer, 0, cnt);
-                        monitor.setData(tempBuffer, frameSize);
-                    }
-                }
-
-                // Block and wait for internal
-                // buffer of the data line to
-                // empty.
-                sourceDataLine.drain();
-                sourceDataLine.close();
-                timeLine.stop();
-                clock.stop();
-
-            } catch (Exception e) {
-                System.out.println(e);
-                // e.printStackTrace();
-                // System.exit(0);
-            }
-        }
-
-    } //end inner class PlayThread
-
+    public TrackData getTrackData() {
+        return trackData;
+    }
 
     // Basic Track constructor
     Track(JFrame frm, TrackPanel tpnl, Metronome m, Clock c, Prefs p) {
@@ -398,15 +200,17 @@ class Track extends JPanel implements ActionListener {
         clock = c;
         prefs = p;
 
-        audioFormat = getAudioFormat();
-
         clickedColor = Color.LIGHT_GRAY;
         unclickedColor = getBackground();
 
-        info = new Info();
+        // trackData has the audio stuff and info
+        trackData = new TrackData();
+
+        Info info = new Info();
         info.setContributor(prefs.getUserName());
         info.setLocation(prefs.getUserCity());
         info.setAvatar(prefs.getAvatar());
+        trackData.putInfo(info);
 
         setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
 
@@ -419,13 +223,14 @@ class Track extends JPanel implements ActionListener {
         titleLabel = new JLabel(info.getTitle());
         titlePanel.add(titleLabel);
 
-        visualPanel = new Visualizer();
-        setToolTip();
+        visualizer = new Visualizer();
+        setToolTip(info);
 
         monitor = new Monitor();
+        trackData.setMonitor(monitor);
 
         JPanel outerVisualPanel = new JPanel(new FlowLayout());
-        outerVisualPanel.add(visualPanel);
+        outerVisualPanel.add(visualizer);
         JPanel outerTimePanel = new JPanel(new FlowLayout());
         outerTimePanel.add(timeLine);
         mainPanel.add(outerTimePanel);

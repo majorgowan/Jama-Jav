@@ -334,28 +334,28 @@ class TrackPanel extends JPanel implements ActionListener {
                 for (int i = 0; i < ntracks; i++) {
                     addNewTrack();
 
-                    Info in = tracks.get(i).getInfo();
+                    Info info = tracks.get(i).getInfo();
                     br.readLine(); // INFO_BEGIN
-                    in.setTitle(br.readLine());
-                    in.setContributor(br.readLine());
-                    in.setAvatar(br.readLine());
+                    info.setTitle(br.readLine());
+                    info.setContributor(br.readLine());
+                    info.setAvatar(br.readLine());
 
                     avatarLabel.get(i).setIcon(
-                            new ImageIcon(avatars.get(findAvatarIndex(in.getAvatar())).getImage()));
+                            new ImageIcon(avatars.get(findAvatarIndex(info.getAvatar())).getImage()));
 
-                    in.setDate(br.readLine());
-                    in.setLocation(br.readLine());
+                    info.setDate(br.readLine());
+                    info.setLocation(br.readLine());
 
                     words = br.readLine().split(" ");
-                    in.setRunningTime(Integer.parseInt(words[0]));
+                    info.setRunningTime(Integer.parseInt(words[0]));
 
                     words = br.readLine().split(" ");
                     int numNotes = Integer.parseInt(words[0]);
                     for (int j = 0; j < numNotes; j++)
-                        in.addNote(br.readLine());
+                        info.addNote(br.readLine());
 
                     br.readLine(); // INFO_END
-                    tracks.get(i).setToolTip();
+                    tracks.get(i).setToolTip(info);
 
                     // read number of bytes
                     words = br.readLine().split(" ");
