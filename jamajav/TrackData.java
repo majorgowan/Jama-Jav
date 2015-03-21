@@ -8,10 +8,14 @@ import java.io.*;
 // For sound samples
 import javax.sound.sampled.*;
 
+// For observing:
+import java.util.Observable;
+import java.util.Observer;
+
 class TrackData {
 
-    private boolean stopPlay = false;
-    private boolean stopCapture = false;
+    private Stopper stopPlay = new Stopper();
+    private Stopper stopCapture = new Stopper();
     private boolean isCapturing = false;
     private boolean notEmpty = false;
 
@@ -38,11 +42,24 @@ class TrackData {
     }
 
     public void stopPlaying() {
-        stopPlay = true;
+        stopPlay.stop();
+    }
+
+    public Stopper getStopPlay() {
+        return stopPlay;
     }
 
     public void stopCapturing() {
-        stopCapture = true;
+        stopCapture.stop();
+    }
+
+    public Stopper getStopCapture() {
+        return stopCapture;
+    }
+
+    public void addStopperObserver(Observer obs) {
+        stopCapture.addObserver(obs);
+        stopPlay.addObserver(obs);
     }
 
     public boolean isCapturing() {
@@ -138,11 +155,11 @@ class TrackData {
 
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
-            stopCapture = false;
+            stopCapture.start();
 
             try{
                 // Loop until stopCapture is set by another thread that
-                while(!stopCapture) {
+                while(!stopCapture.getValue()) {
                     // Read data from the internal buffer of the data line.
                     int cnt = targetDataLine.read(
                             tempBuffer,
@@ -157,7 +174,6 @@ class TrackData {
                     }
                 }
                 byteArrayOutputStream.close();
-                stopCapturing();
 
                 audioData = byteArrayOutputStream.toByteArray();
 
@@ -188,7 +204,7 @@ class TrackData {
         timeLine = tl;
         timeLine.start();
         // System.out.println("Playing back . . . ");
-        stopPlay = false;
+        stopPlay.start();
         try {
             InputStream byteArrayInputStream 
                 = new ByteArrayInputStream(audioData);
@@ -239,7 +255,7 @@ class TrackData {
                 // empty stream.
                 while (((cnt = audioInputStream.read(
                                     tempBuffer, 0,
-                                    tempBuffer.length)) != -1) && (!stopPlay))
+                                    tempBuffer.length)) != -1) && (!stopPlay.getValue()))
                 {
                     if (cnt > 0) {
                         // Write data to the internal
@@ -258,7 +274,7 @@ class TrackData {
                 sourceDataLine.drain();
                 sourceDataLine.close();
                 timeLine.stop();
-                //clock.stop();
+                stopPlay.stop();
 
             } catch (Exception e) {
                 System.out.println(e);

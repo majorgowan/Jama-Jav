@@ -97,7 +97,6 @@ class Track extends JPanel implements ActionListener {
 
     public void stopRecording() {
         System.out.println("Stopping recording . . .");
-        trackData.stopCapturing();
         metronome.stop();
         clock.stop();
         trackData.stopCapturing();
@@ -160,6 +159,10 @@ class Track extends JPanel implements ActionListener {
         titleLabel.setText(info.getTitle());
     }
 
+    public void resetToolTip() {
+        setToolTip(trackData.getInfo());
+    }
+
     public Info getInfo() {
         return trackData.getInfo();
     }
@@ -205,6 +208,7 @@ class Track extends JPanel implements ActionListener {
 
         // trackData has the audio stuff and info
         trackData = new TrackData();
+        trackData.addStopperObserver(trackPanel);
 
         Info info = new Info();
         info.setContributor(prefs.getUserName());

@@ -8,7 +8,11 @@ import java.awt.event.*;
 // For sound samples
 import javax.sound.sampled.*;
 
-class TrackEditor extends JPanel implements ActionListener {
+// For observing:
+import java.util.Observer;
+import java.util.Observable;
+
+class TrackEditor extends JPanel implements ActionListener, Observer {
 
     private TrackPanel trackPanel;
     // the track to be edited
@@ -22,6 +26,10 @@ class TrackEditor extends JPanel implements ActionListener {
     private JButton saveButton;
     private JButton saveAsNewButton;
     private JButton cancelButton;
+
+    public void update(Observable obs, Object arg) {
+        // stop "clock" eventually
+    }
 
     public void actionPerformed(ActionEvent ae) {
 
@@ -113,6 +121,7 @@ class TrackEditor extends JPanel implements ActionListener {
 
         oldTrackData = track.getTrackData();
         trackData = new TrackData(oldTrackData);
+        trackData.addStopperObserver(this);
 
         Info info = trackData.getInfo();
 

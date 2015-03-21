@@ -19,7 +19,11 @@ import java.io.*;
 import java.net.URL;
 import java.net.URISyntaxException;
 
-class TrackPanel extends JPanel implements ActionListener {
+// For observing:
+import java.util.Observable;
+import java.util.Observer;
+
+class TrackPanel extends JPanel implements ActionListener, Observer {
 
     private ArrayList<Track> tracks;
     private ArrayList<JPanel> linePanel;
@@ -38,6 +42,33 @@ class TrackPanel extends JPanel implements ActionListener {
 
     private ArrayList<Avatar> avatars;
     private ArrayList<JLabel> avatarLabel;
+
+    // Observer method for stopping clock when playback or record is finished
+    public void update(Observable obs, Object arg) {
+
+        // System.out.println("I THINK WE GOT SOMETHING THERE!");
+        for (int i = 0; i < tracks.size(); i++) {
+            if (obs == tracks.get(i).getTrackData().getStopPlay()) {
+                // loop over all tracks - if all are stopped playing
+                // then stop clock
+                boolean allStopped = true;
+                for (int j = 0; j < tracks.size(); j++) {
+                    if (!tracks.get(j).getTrackData().getStopPlay().getValue())
+                        allStopped = false;
+                }
+                if (allStopped)
+                    clock.stop();
+            } else if (obs == tracks.get(i).getTrackData().getStopCapture()) {
+                // if firing track is stopped recording, stop the clock
+                if (tracks.get(i).getTrackData().getStopCapture().getValue()) {
+                    clock.stop(); // stop clock (probably redundant)
+                    System.out.println("Stopped clock, resetting toolTip");
+                    System.out.println("Running time: " + tracks.get(i).getInfo().getRunningTime());
+                    tracks.get(i).resetToolTip(); // reset ToolTip to set running time
+                }
+            }
+        }
+    }
 
     // ActionListener method
     public void actionPerformed(ActionEvent ae) {
