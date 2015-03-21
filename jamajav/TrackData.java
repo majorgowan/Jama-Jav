@@ -24,9 +24,14 @@ class TrackData {
     private Info info;
 
     private Monitor monitor;
+
+    // eventually don't put this stuff here.  Have the
+    // components "listen" for change in "stopPlay" 
+    // and "isCapturing" and then
+    // request the byteArray bzw. runningTime from
+    // the TrackData object
     private Visualizer visualizer;
     private TimeLine timeLine;
-    private Clock clock;
 
     public void setNotEmpty(boolean ne) {
         notEmpty = ne;

@@ -32,7 +32,19 @@ class TrackEditor extends JPanel implements ActionListener {
                 trackData.playback(7, timeLine);
                 break;
                     
-            case "Cancel" :
+            case "save" :
+                saveChanges();
+                // exit 
+                SwingUtilities.windowForComponent(this).setVisible(false);
+                SwingUtilities.windowForComponent(this).dispose();
+
+            case "saveasnew" :
+                saveAsNew();
+                // exit 
+                SwingUtilities.windowForComponent(this).setVisible(false);
+                SwingUtilities.windowForComponent(this).dispose();
+
+            case "cancel" :
                 // exit without saving changes
                 SwingUtilities.windowForComponent(this).setVisible(false);
                 SwingUtilities.windowForComponent(this).dispose();
@@ -41,7 +53,7 @@ class TrackEditor extends JPanel implements ActionListener {
         }
     }
 
-    private void clipSeconds(int start, int end) {
+    private void crop(int start, int end) {
 
         // convert seconds to bytes
 
@@ -110,7 +122,6 @@ class TrackEditor extends JPanel implements ActionListener {
 
         timeLine = new TimeLine();
         timeLine.setRunningTime(info.getRunningTime());
-        System.out.println("RUNNING MAN'S TIME " + info.getRunningTime());
 
         JPanel editPanel = new JPanel(new FlowLayout());
         JPanel buttonPanel = new JPanel(new FlowLayout());
@@ -143,10 +154,13 @@ class TrackEditor extends JPanel implements ActionListener {
         previewButton.setActionCommand("preview");
         previewButton.addActionListener(this);
         JButton saveButton = new JButton("Save changes");
+        saveButton.setActionCommand("save");
         saveButton.addActionListener(this);
         JButton saveAsNewButton = new JButton("Save as new track");
+        saveAsNewButton.setActionCommand("saveasnew");
         saveAsNewButton.addActionListener(this);
         JButton cancelButton = new JButton("Cancel");
+        cancelButton.setActionCommand("cancel");
         cancelButton.addActionListener(this);
 
         buttonPanel.add(previewButton);
