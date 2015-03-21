@@ -191,6 +191,8 @@ class TrackData {
 
                 System.out.println("Closing targetDataLine . . . ");
                 targetDataLine.close();
+                stopCapturing();
+                isCapturing = false;
 
             } catch (Exception e) {
                 System.out.println(e);
