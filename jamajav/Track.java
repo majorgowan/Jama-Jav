@@ -177,7 +177,7 @@ class Track extends JPanel implements ActionListener {
 
     public void putBytes(byte[] bytes) {
         trackData.putBytes(bytes);
-        visualizer.setData(bytes,trackData.getAudioFormat().getFrameSize());
+        visualizer.setData(bytes);
         timeLine.setRunningTime(trackData.getInfo().getRunningTime());
     }
 

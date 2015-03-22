@@ -419,6 +419,8 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
         // reset metronome to saved preferences
         int[] metroset = prefs.getMetroSet();
         metronome.setParam(metroset[0], metroset[1]);
+        // reset clock
+        clock.reset();
 
         repaint();
     }

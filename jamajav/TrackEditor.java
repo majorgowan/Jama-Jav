@@ -110,8 +110,18 @@ class TrackEditor extends JPanel implements ActionListener, Observer {
     private int getSixteenBitSample(int high, int low) {
         return (high << 8) + (low & 0x00ff);            
     }
+    private int[] getEightBitPair(int sixteenBitSample) {
+        // opposite of: return (high << 8) + (low & 0x00ff);
+        int high = 0; 
+        int low = 0;
+        int[] highLow = new int[2];
+        highLow[0] = high;
+        highLow[1] = low;
+        return highLow;
+    }
 
-    public void setData(byte[] bytes, int frameSize) {
+    // eight-bit byte representation converted to amplitude of sixteen-bit signal
+    public int[] toSixteen(byte[] bytes) {
 
         int[] toReturn = new int[bytes.length/2];
 
@@ -125,6 +135,15 @@ class TrackEditor extends JPanel implements ActionListener, Observer {
             toReturn[sampleIndex] = sample;
             sampleIndex++;
         }
+        return toReturn;
+    }
+    // inverse (could replace with void routine that sets the audioData array
+    // but this is probably cleaner)
+    public byte[] toEight(int[] sixteen) {
+
+        byte[] toReturn = new byte[2*sixteen.length];
+        // inverse of previous routine (must think about it!)
+        return toReturn;
     }
 
     private void saveChanges() {
@@ -163,8 +182,7 @@ class TrackEditor extends JPanel implements ActionListener, Observer {
         Info info = trackData.getInfo();
 
         visualPanel = new Visualizer();
-        visualPanel.setData(trackData.getBytes(), 
-                trackData.getAudioFormat().getFrameSize());
+        visualPanel.setData(trackData.getBytes()); 
 
         timeLine = new TimeLine();
         timeLine.setRunningTime(info.getRunningTime());

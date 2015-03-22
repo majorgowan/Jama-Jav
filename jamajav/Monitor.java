@@ -41,7 +41,7 @@ class Monitor extends JPanel {
     }
 
     // based on http://codeidol.com/java/swing/Audio/Build-an-Audio-Waveform-Display/
-    public void setData(byte[] bytes, int frameSize) {
+    public void setData(byte[] bytes) {
 
         // System.out.println(bytes.length + " " + frameSize);
         int[] toReturn = new int[bytes.length/2];

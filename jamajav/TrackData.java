@@ -151,8 +151,6 @@ class TrackData {
         byte tempBuffer[] = new byte[1000];
         public void run(){
 
-            int frameSize = targetDataLine.getFormat().getFrameSize();
-
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
             stopCapture.start();
@@ -166,7 +164,7 @@ class TrackData {
                             0,
                             tempBuffer.length);
                     if (monitor != null)
-                        monitor.setData(tempBuffer, frameSize);
+                        monitor.setData(tempBuffer);
 
                     if(cnt > 0){
                         // Save data in output stream object.
@@ -187,7 +185,7 @@ class TrackData {
 
                 timeLine.setRunningTime(runningTime);
                 timeLine.repaint();
-                visualizer.setData(audioData, frameSize);
+                visualizer.setData(audioData);
 
                 //System.out.println("Closing targetDataLine . . . ");
                 targetDataLine.close();
@@ -248,8 +246,6 @@ class TrackData {
 
         public void run(){
 
-            int frameSize = sourceDataLine.getFormat().getFrameSize();
-
             try{
                 int cnt;
                 // Keep looping until the input
@@ -266,7 +262,7 @@ class TrackData {
                         // to the speaker.
                         sourceDataLine.write(tempBuffer, 0, cnt);
                         if (monitor != null)
-                            monitor.setData(tempBuffer, frameSize);
+                            monitor.setData(tempBuffer);
                     }
                 }
 
