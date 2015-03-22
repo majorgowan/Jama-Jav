@@ -62,8 +62,8 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                 // if firing track is stopped recording, stop the clock
                 if (tracks.get(i).getTrackData().getStopCapture().getValue()) {
                     clock.stop(); // stop clock (probably redundant)
-                    System.out.println("Stopped clock, resetting toolTip");
-                    System.out.println("Running time: " + tracks.get(i).getInfo().getRunningTime());
+                    // System.out.println("Stopped clock, resetting toolTip");
+                    // System.out.println("Running time: " + tracks.get(i).getInfo().getRunningTime());
                     tracks.get(i).resetToolTip(); // reset ToolTip to set running time
                 }
             }
@@ -112,7 +112,7 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
 
             case ("Remove Selected") :
                 for (int i = tracks.size() - 1; i >= 0; i--) {
-                    //System.out.println("track " + i + " is " + tracks.get(i).isSelected());
+                    // System.out.println("track " + i + " is " + tracks.get(i).isSelected());
                     if (tracks.get(i).isSelected()) {
                         removeTrack(i);
                     }
@@ -225,7 +225,7 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
         avatarLabel.add(new JLabel(
                     new ImageIcon(avatars.get(findAvatarIndex(prefs.getAvatar())).getImage())));
 
-        //System.out.println("adding track ... now " + ntracks + " tracks");
+        // System.out.println("adding track ... now " + ntracks + " tracks");
 
         tracks.get(ntracks-1)
             .setBorder(BorderFactory.createRaisedBevelBorder());
@@ -351,9 +351,9 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                 int bpMeas = Integer.parseInt(words[3]);
                 metronome.setParam(bpMin, bpMeas);
 
-                System.out.println("Metronome settings: " 
-                        + bpMin + " bpMin "
-                        + "and " + bpMeas + " bpMeas.");
+                // System.out.println("Metronome settings: " 
+                //         + bpMin + " bpMin "
+                //         + "and " + bpMeas + " bpMeas.");
 
                 // create appropriate number of tracks,
                 words = br.readLine().split(" ");
@@ -395,9 +395,9 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
 
                     // read bytes from bin file
                     int bytesread = binfis.read(bytes);
-                    System.out.println("Track " + i + ":"
-                            + " read " + bytesread
-                            + " bytes");
+                    // System.out.println("Track " + i + ":"
+                    //         + " read " + bytesread
+                    //         + " bytes");
                     tracks.get(i).putBytes(bytes);
                 }
             } catch (IOException e) {
@@ -415,6 +415,11 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
         }
 
         parent.setTitle("Major's Jama Jav");
+
+        // reset metronome to saved preferences
+        int[] metroset = prefs.getMetroSet();
+        metronome.setParam(metroset[0], metroset[1]);
+
         repaint();
     }
 
@@ -425,7 +430,7 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
             String s;
             while ((s = br.readLine()) != null) {
-                System.out.println(s.split("\\.")[0]);
+                // System.out.println(s.split("\\.")[0]);
                 avatars.add(new Avatar(s.split("\\.")[0]));
             }
         } catch (Exception e) {
@@ -458,6 +463,10 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
         avatars = new ArrayList<Avatar>(0);
         initAvatars();
 
+        // create an empty Jam by default
+        newDoc();
+
+        // GUI Stuff ...
         setBackground(new Color(0.75f,0.6f,0.1f));
         setLayout(new BorderLayout());
 

@@ -15,7 +15,6 @@ class PrefsPanel extends JPanel implements ActionListener {
 
     private Prefs prefs;
     int[] metroset = new int[2];
-    int[] cparam = new int[2];
     private String userName, userCity;
     private String avatar;
 
@@ -49,27 +48,15 @@ class PrefsPanel extends JPanel implements ActionListener {
                 revalidate();
                 break;
 
-            case ("save") :
-                metroset[0] = Integer.parseInt(bpMinField.getText());
-                metroset[1] = Integer.parseInt(bpMeasField.getText());
-                cparam[0] = Integer.parseInt(countInField.getText());
-                cparam[1] = 100;    // precision of clock (in milliseconds)
-                userName = userNameField.getText();
-                userCity = userCityField.getText();
-
-                prefs.setPrefs(metroset, cparam, userName, userCity, avatar);
-                prefs.writePrefsFile();
-                break;
-
             case ("Ok") :
                 metroset[0] = Integer.parseInt(bpMinField.getText());
                 metroset[1] = Integer.parseInt(bpMeasField.getText());
-                cparam[0] = Integer.parseInt(countInField.getText());
-                cparam[1] = 100;    // precision of clock (in milliseconds)
                 userName = userNameField.getText();
                 userCity = userCityField.getText();
 
-                prefs.setPrefs(metroset, cparam, userName, userCity, avatar);
+                prefs.setPrefs(metroset, userName, userCity, avatar);
+                prefs.writePrefsFile();
+                // drop through to close window (no break!)
 
             case ("Cancel") :
                 // change nothing
@@ -95,7 +82,6 @@ class PrefsPanel extends JPanel implements ActionListener {
         avatars = avs;
 
         metroset = prefs.getMetroSet();
-        cparam = prefs.getClockParam();
         userName = prefs.getUserName();
         userCity = prefs.getUserCity();
         
@@ -104,7 +90,6 @@ class PrefsPanel extends JPanel implements ActionListener {
 
         bpMinField = new JTextField("" + metroset[0],4);
         bpMeasField = new JTextField("" + metroset[1],2);
-        countInField = new JTextField("" + cparam[0],4);
         userNameField = new JTextField(userName,15);
         userCityField = new JTextField(userCity,15);
         changeAvatarButton = new JButton("Change");
@@ -127,7 +112,6 @@ class PrefsPanel extends JPanel implements ActionListener {
         JPanel line6 = new JPanel(new FlowLayout(FlowLayout.CENTER));
         JPanel line7 = new JPanel(new FlowLayout(FlowLayout.CENTER));
         JPanel line8 = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        JPanel line9 = new JPanel(new FlowLayout(FlowLayout.CENTER));
         line1.add(new JLabel("User Name:",JLabel.RIGHT));
         line1.add(userNameField);
         line2.add(new JLabel("User City:",JLabel.RIGHT));
@@ -135,14 +119,11 @@ class PrefsPanel extends JPanel implements ActionListener {
         line3.add(new JLabel("Avatar:"));
         line4.add(avatarPanel);
         line4.add(changeAvatarButton);
-        line5.add(new JLabel("Metronome settings:"));
+        line5.add(new JLabel("Default metronome settings:"));
         line6.add(new JLabel("Beats per minute:",JLabel.RIGHT));
         line6.add(bpMinField);
         line7.add(new JLabel("Beats per measure:",JLabel.RIGHT));
         line7.add(bpMeasField);
-        line8.add(new JLabel("Clock settings:"));
-        line9.add(new JLabel("Count-in (seconds):",JLabel.RIGHT));
-        line9.add(countInField);
         mainPanel.add(line1);
         mainPanel.add(line2);
         mainPanel.add(line3);
@@ -151,7 +132,6 @@ class PrefsPanel extends JPanel implements ActionListener {
         mainPanel.add(line6);
         mainPanel.add(line7);
         mainPanel.add(line8);
-        mainPanel.add(line9);
 
         // for the future perhaps
         JScrollPane scrollPane = new JScrollPane(mainPanel);
@@ -159,14 +139,10 @@ class PrefsPanel extends JPanel implements ActionListener {
         JPanel buttonPanel = new JPanel(new FlowLayout());
         JButton okButton = new JButton("Ok");
         okButton.addActionListener(this);
-        JButton saveButton = new JButton("Save as Default");
-        saveButton.setActionCommand("save");
-        saveButton.addActionListener(this);
         JButton cancelButton = new JButton("Cancel");
         cancelButton.addActionListener(this);
 
         buttonPanel.add(okButton);
-        buttonPanel.add(saveButton);
         buttonPanel.add(cancelButton);
 
         setLayout(new BorderLayout());

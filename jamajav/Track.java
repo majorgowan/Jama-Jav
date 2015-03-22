@@ -96,7 +96,7 @@ class Track extends JPanel implements ActionListener {
     }
 
     public void stopRecording() {
-        System.out.println("Stopping recording . . .");
+        // System.out.println("Stopping recording . . .");
         metronome.stop();
         clock.stop();
         trackData.stopCapturing();

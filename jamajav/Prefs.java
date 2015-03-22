@@ -5,9 +5,8 @@ import java.io.*;
 
 class Prefs {
 
+    private int[] metroset;
     private String filename;
-    private Metronome metronome;
-    private Clock clock;
     private String userName;
     private String userCity;
     private String avatar;
@@ -15,10 +14,8 @@ class Prefs {
     private void setDefaults() {
 
         // default Metronome
-        metronome.setParam(120,4);
-
-        // default Clock
-        clock.setParam(0,100);
+        metroset[0] = 120;
+        metroset[1] = 4;
 
         // default username
         userName = "auser";
@@ -32,11 +29,7 @@ class Prefs {
     }
 
     public int[] getMetroSet() {
-        return metronome.getParam();
-    }
-
-    public int[] getClockParam() {
-        return clock.getParam();
+        return metroset;
     }
 
     public String getUserName() {
@@ -51,9 +44,8 @@ class Prefs {
         return avatar;
     }
 
-    public void setPrefs(int[] ms, int[] cparam, String un, String uc, String av) {
-        metronome.setParam(ms[0],ms[1]);
-        clock.setParam(cparam[0],cparam[1]);
+    public void setPrefs(int[] ms, String un, String uc, String av) {
+        metroset = ms;
         userName = un;
         userCity = uc;
         avatar = av;
@@ -74,13 +66,6 @@ class Prefs {
             ms[1] = Integer.parseInt(words[3]);
             br.readLine();
 
-            // read clock settings
-            words = br.readLine().split(" ");
-            int[] cparam = new int[2];
-            cparam[0] = Integer.parseInt(words[2]);
-            cparam[1] = Integer.parseInt(words[4]);
-            br.readLine();
-
             // read userName
             br.readLine();  // discard "User Name:"
             String un = br.readLine();
@@ -96,7 +81,7 @@ class Prefs {
             String av = br.readLine();
             br.readLine();  // discard blank line
 
-            setPrefs(ms, cparam, un, uc, av);
+            setPrefs(ms, un, uc, av);
 
         } catch (IOException ie) {
             System.out.println("No valid preferences file found, using defaults.");
@@ -107,15 +92,9 @@ class Prefs {
     public void writePrefsFile() {
         try (FileWriter fw = new FileWriter(filename)) {
 
-            int[] metroset = metronome.getParam();
             fw.write("Metronome: " 
                     + metroset[0] + " bpMin "
                     + metroset[1] + " bpMeas\n\n");
-
-            int[] cparam = clock.getParam();
-            fw.write("Clock: " 
-                    + "count-in: " + cparam[0] + " "
-                    + "precision: " + cparam[1] + "\n\n");
 
             fw.write("User Name:\n");
             fw.write(userName + "\n\n");
@@ -130,11 +109,8 @@ class Prefs {
         }
     }
 
-    Prefs(String fn, Metronome m, Clock c) {
-
+    Prefs(String fn) {
         filename = fn;
-        metronome = m;
-        clock = c;
         readPrefsFile();
     }
 }

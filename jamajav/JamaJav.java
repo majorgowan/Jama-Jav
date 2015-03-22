@@ -75,7 +75,7 @@ public class JamaJav {
             System.out.println("Logo image not found!");
         }
 
-        prefs = new Prefs("jamajav.cfg", metronome, clock);
+        prefs = new Prefs("jamajav.cfg");
 
         trackPanel = new TrackPanel(jfrm, metronome, clock, prefs);
         trackPanel.setBorder(BorderFactory.createRaisedBevelBorder());
@@ -153,7 +153,6 @@ public class JamaJav {
         jfrm.pack();
         jfrm.setVisible(true);
 
-        //metronome.getSettings();
     }
 
     public static void main(String[] args) {

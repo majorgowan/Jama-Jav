@@ -40,6 +40,22 @@ class TrackEditor extends JPanel implements ActionListener, Observer {
                 trackData.playback(7, timeLine);
                 break;
                     
+            case "stop" :
+                trackData.stopPlaying();
+                break;
+
+            case "fade" :
+                break;
+                    
+            case "mute" :
+                break;
+                    
+            case "shift" :
+                break;
+                    
+            case "crop" :
+                break;
+                    
             case "save" :
                 saveChanges();
                 // exit 
@@ -90,6 +106,27 @@ class TrackEditor extends JPanel implements ActionListener, Observer {
         // kill signal for time interval
     }
 
+    // Audio processing utility routines:
+    private int getSixteenBitSample(int high, int low) {
+        return (high << 8) + (low & 0x00ff);            
+    }
+
+    public void setData(byte[] bytes, int frameSize) {
+
+        int[] toReturn = new int[bytes.length/2];
+
+        int sampleIndex = 0;
+        for (int t = 0; t < bytes.length;) {
+            int low = (int) bytes[t];
+            t++;
+            int high = (int) bytes[t];
+            t++;
+            int sample = getSixteenBitSample(high, low);
+            toReturn[sampleIndex] = sample;
+            sampleIndex++;
+        }
+    }
+
     private void saveChanges() {
         // compute new running time
 
@@ -132,36 +169,53 @@ class TrackEditor extends JPanel implements ActionListener, Observer {
         timeLine = new TimeLine();
         timeLine.setRunningTime(info.getRunningTime());
 
+        // Edit panel
         JPanel editPanel = new JPanel(new FlowLayout());
-        JPanel buttonPanel = new JPanel(new FlowLayout());
-
         JButton fadeButton = new JButton("Fade");
         fadeButton.addActionListener(this);
+        fadeButton.setActionCommand("fade");
         JButton muteButton = new JButton("Mute interval");
         muteButton.addActionListener(this);
+        muteButton.setActionCommand("mute");
         JButton shiftButton = new JButton("Shift");
         shiftButton.addActionListener(this);
+        shiftButton.setActionCommand("shift");
         JButton cropButton = new JButton("Crop");
         cropButton.addActionListener(this);
-
+        cropButton.setActionCommand("crop");
         editPanel.add(fadeButton);
         editPanel.add(muteButton);
         editPanel.add(shiftButton);
         editPanel.add(cropButton);
 
+        // Main panel
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel,BoxLayout.PAGE_AXIS));
+
         JPanel outerVisualPanel = new JPanel(new FlowLayout());
         outerVisualPanel.add(visualPanel);
         JPanel outerTimePanel = new JPanel(new FlowLayout());
         outerTimePanel.add(timeLine);
 
-        mainPanel.add(outerTimePanel);
-        mainPanel.add(outerVisualPanel);
-
+        JPanel playPanel = new JPanel(new FlowLayout());
         JButton previewButton = new JButton("Preview");
         previewButton.setActionCommand("preview");
         previewButton.addActionListener(this);
+        JButton stopButton = new JButton("Stop");
+        stopButton.setActionCommand("stop");
+        stopButton.addActionListener(this);
+
+        playPanel.add(previewButton);
+        playPanel.add(stopButton);
+
+        mainPanel.add(Box.createRigidArea(new Dimension(0,15)));
+        mainPanel.add(outerTimePanel);
+        mainPanel.add(outerVisualPanel);
+        mainPanel.add(playPanel);
+        mainPanel.add(Box.createRigidArea(new Dimension(0,15)));
+
+        // Button panel
+        JPanel buttonPanel = new JPanel(new FlowLayout());
         JButton saveButton = new JButton("Save changes");
         saveButton.setActionCommand("save");
         saveButton.addActionListener(this);
@@ -172,7 +226,6 @@ class TrackEditor extends JPanel implements ActionListener, Observer {
         cancelButton.setActionCommand("cancel");
         cancelButton.addActionListener(this);
 
-        buttonPanel.add(previewButton);
         buttonPanel.add(saveButton);
         buttonPanel.add(saveAsNewButton);
         buttonPanel.add(cancelButton);

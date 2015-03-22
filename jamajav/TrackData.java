@@ -120,7 +120,7 @@ class TrackData {
         visualizer = vis;
         timeLine = tl;
         try{
-            System.out.println("Recording . . . ");
+            // System.out.println("Recording . . . ");
             // Get everything set up for recording
             DataLine.Info dataLineInfo = new DataLine.Info(
                     TargetDataLine.class, audioFormat);
@@ -189,7 +189,7 @@ class TrackData {
                 timeLine.repaint();
                 visualizer.setData(audioData, frameSize);
 
-                System.out.println("Closing targetDataLine . . . ");
+                //System.out.println("Closing targetDataLine . . . ");
                 targetDataLine.close();
                 stopCapturing();
                 isCapturing = false;
