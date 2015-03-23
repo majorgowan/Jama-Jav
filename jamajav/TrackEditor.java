@@ -100,7 +100,7 @@ class TrackEditor extends JPanel implements ActionListener, Observer {
         if (result == JOptionPane.OK_OPTION) {
             int start = Integer.parseInt(startField.getText());
             int end = Integer.parseInt(endField.getText());
-            System.out.println("Cropping from " + start + " seconds to " + end + " seconds!"); 
+            // System.out.println("Cropping from " + start + " seconds to " + end + " seconds!"); 
             // crop it!
             crop(start, end);
             // redraw visualizer and timeLine
@@ -146,33 +146,181 @@ class TrackEditor extends JPanel implements ActionListener, Observer {
     }
 
     private void setShift() {
+        JPanel shiftPanel = new JPanel(new FlowLayout());
+        JTextField secondsField = new JTextField("0",3);
+
+        shiftPanel.add(new JLabel("Shift by (seconds): "));
+        shiftPanel.add(secondsField);
+
+        int result = JOptionPane.showConfirmDialog(null, shiftPanel, "Shift track", JOptionPane.OK_CANCEL_OPTION);
+
+        if (result == JOptionPane.OK_OPTION) {
+            int seconds = Integer.parseInt(secondsField.getText());
+            // System.out.println("Shifting by " + seconds + " seconds!"); 
+            // shift it!
+            shift(seconds);
+            // redraw visualizer and timeLine
+            visualizer.setData(trackData.getBytes()); 
+            visualizer.repaint();
+            timeLine.setRunningTime(trackData.getInfo().getRunningTime());
+            timeLine.repaint();
+        }
     }
 
     private void shift(int seconds) {
 
-        // if seconds is positive, make new byte array longer than the old
-        // -> fill with zeros and then old byte array
-        // -> replace byte array with new byte array
+        // convert seconds to bytes
+        int shiftBytes = (int)(seconds 
+                * trackData.getAudioFormat().getFrameSize() 
+                * trackData.getAudioFormat().getFrameRate());
 
-        // if seconds is negative, make new byte array shorter than old
-        // -> fill with remaining part of old byte array
-        // -> replace byte array with new byte array
+        byte[] oldBytes = trackData.getBytes();
+        byte[] newBytes 
+            = new byte[oldBytes.length + shiftBytes]; 
 
-        // update visualizer
+        // if shiftBytes is positive, pad with zeros and then copy
+        // otherwise just copy necessary bytes
+        if (shiftBytes > 0) {
+            for (int i = 0; i < shiftBytes; i++)
+                newBytes[i] = (byte)0;
+            for (int i = shiftBytes; i < newBytes.length; i++)
+                newBytes[i] = oldBytes[i-shiftBytes];
+        } else if (shiftBytes < 0) {
+            for (int i = 0; i < newBytes.length; i++)
+                newBytes[i] = oldBytes[i-shiftBytes];
+        }
+
+        trackData.putBytes(newBytes);
+
+        // new running time:
+        trackData.getInfo().setRunningTime((int)
+                ((double)newBytes.length 
+                 / (double)(trackData.getAudioFormat().getFrameRate()
+                     *trackData.getAudioFormat().getFrameSize())));
     }
 
     private void setFade() {
+        JPanel fadePanel = new JPanel(new FlowLayout());
+        JTextField startField = new JTextField("0",3);
+        JTextField endField = new JTextField("" 
+                + Math.min(5,trackData.getInfo().getRunningTime()),3);
+
+        JRadioButton fadeInButton = new JRadioButton("Fade in");
+        JRadioButton fadeOutButton = new JRadioButton("Fade out");
+        fadeInButton.setSelected(true);
+        ButtonGroup fadeGroup = new ButtonGroup();
+        fadeGroup.add(fadeInButton);
+        fadeGroup.add(fadeOutButton);
+
+        JPanel buttonPanel = new JPanel(new GridLayout(2,1));
+        buttonPanel.add(fadeInButton);
+        buttonPanel.add(fadeOutButton);
+
+        fadePanel.add(new JLabel("From (seconds): "));
+        fadePanel.add(startField);
+
+        fadePanel.add(new JLabel("    ")); // crude spacer
+
+        fadePanel.add(new JLabel("To (seconds): "));
+        fadePanel.add(endField);
+
+        fadePanel.add(buttonPanel);
+
+        int result = JOptionPane.showConfirmDialog(null, fadePanel, 
+                "Fade in/out", JOptionPane.OK_CANCEL_OPTION);
+
+        if (result == JOptionPane.OK_OPTION) {
+            int start = Integer.parseInt(startField.getText());
+            int end = Integer.parseInt(endField.getText());
+            // System.out.println("Fading from " + start + " seconds to " + end + " seconds!"); 
+            // get state of radiobuttons:
+            boolean inout = true;
+            if (fadeOutButton.isSelected())
+                inout = false;
+            // fade it!
+            fade(start, end, inout);
+            // redraw visualizer and timeLine
+            visualizer.setData(trackData.getBytes()); 
+            visualizer.repaint();
+        }
     }
 
-    private void fade(int start, int end, double fadedecay) {
-        // fadedecay can be positive or negative
+    private void fade(int start, int end, boolean inout) {
+        int seconds = Math.abs(end - start);
+
+        int frameRate = (int) trackData.getAudioFormat().getFrameRate();
+        // compute number of frames to fade over
+        int fadeFrames = seconds * frameRate; 
+        int startFade = Math.min(start,end) * frameRate;
+        int endFade = Math.max(start,end) * frameRate;
+
+        // System.out.println("Fading from byte " + startFade + " to byte " + endFade + "!"); 
+
+        // decay from full volume to exp(-2) smaller
+        double coeff = -2.0 / (double)fadeFrames;
+
+        // convert bytes to 16-bit integers:
+        int[] sixteen = toSixteen(trackData.getBytes());
+
+        // fade
+        if (inout)    // fade in
+            for (int i = startFade; i < endFade; i++)
+                sixteen[i] = (int)
+                    (Math.exp((double)(endFade - i)*coeff)*sixteen[i]);
+        else          // fade out
+            for (int i = startFade; i < endFade; i++)
+                sixteen[i] = (int)
+                    (Math.exp((double)(i - startFade)*coeff)*sixteen[i]);
+
+        // convert integers back to bytes and copy to trackData
+        trackData.putBytes(toEight(sixteen));
     }
 
     private void setMute() {
+        JPanel mutePanel = new JPanel(new FlowLayout());
+        JTextField startField = new JTextField("0",3);
+        JTextField endField = new JTextField("" + trackData.getInfo().getRunningTime(),3);
+
+        mutePanel.add(new JLabel("From (seconds): "));
+        mutePanel.add(startField);
+
+        mutePanel.add(new JLabel("    ")); // crude spacer
+
+        mutePanel.add(new JLabel("To (seconds): "));
+        mutePanel.add(endField);
+
+        int result = JOptionPane.showConfirmDialog(null, mutePanel, 
+                "Mute interval", JOptionPane.OK_CANCEL_OPTION);
+
+        if (result == JOptionPane.OK_OPTION) {
+            int start = Integer.parseInt(startField.getText());
+            int end = Integer.parseInt(endField.getText());
+            // System.out.println("Muting from " + start + " seconds to " + end + " seconds!"); 
+            // mute it!
+            mute(start, end);
+            // redraw visualizer and timeLine
+            visualizer.setData(trackData.getBytes()); 
+            visualizer.repaint();
+        }
     }
 
     private void mute(int start, int end) {
-        // kill signal for time interval
+        // convert seconds to bytes
+        int startByte = (int)(start 
+                * trackData.getAudioFormat().getFrameSize() 
+                * trackData.getAudioFormat().getFrameRate());
+        int endByte = (int)(end 
+                * trackData.getAudioFormat().getFrameSize() 
+                * trackData.getAudioFormat().getFrameRate()) + 1;
+
+        int cutBytes = endByte - startByte + 1;
+
+        byte[] oldBytes = trackData.getBytes();
+
+        for (int i = startByte; i < endByte; i++)
+            oldBytes[i] = (byte)0;
+
+        trackData.putBytes(oldBytes);
     }
 
     // Audio processing utility routines:
@@ -185,8 +333,8 @@ class TrackEditor extends JPanel implements ActionListener, Observer {
         // and split it into the high eight bits and the low eight bits
 
         byte[] highLow = new byte[2];
-        highLow[0] = (byte)((sixteenBitSample >> 8) & 0xff);
-        highLow[1] = (byte)(sixteenBitSample & 0xff); 
+        highLow[0] = (byte)(sixteenBitSample & 0xff); 
+        highLow[1] = (byte)((sixteenBitSample >> 8) & 0xff);
         return highLow;
     }
 
@@ -253,13 +401,16 @@ class TrackEditor extends JPanel implements ActionListener, Observer {
         trackData = new TrackData(oldTrackData);
         trackData.addStopperObserver(this);
 
-        Info info = trackData.getInfo();
+        // override default copy constructor appending "copy of" to info
+        // of copy (will only do that if "save as new track" is
+        // clicked
+        trackData.putInfo(oldTrackData.getInfo());
 
         visualizer = new Visualizer();
         visualizer.setData(trackData.getBytes()); 
 
         timeLine = new TimeLine();
-        timeLine.setRunningTime(info.getRunningTime());
+        timeLine.setRunningTime(trackData.getInfo().getRunningTime());
 
         // Edit panel
         JPanel editPanel = new JPanel(new FlowLayout());

@@ -115,7 +115,7 @@ class Track extends JPanel implements ActionListener {
     }
 
     private void editTrack() {
-        System.out.println("Trackdata has " + trackData.getBytes().length + " bytes!");
+        // System.out.println("Trackdata has " + trackData.getBytes().length + " bytes!");
 
         // open dialog with a infopanel
         final JDialog editTrackDialog = new JDialog(jfrm, "Track editor", true);
@@ -127,7 +127,7 @@ class Track extends JPanel implements ActionListener {
         editTrackDialog.pack();
         editTrackDialog.setVisible(true);
         // refresh Visualizer and TimeLine in case it's changed
-        System.out.println("New trackdata has " + trackData.getBytes().length + " bytes!");
+        // System.out.println("New trackdata has " + trackData.getBytes().length + " bytes!");
         visualizer.setData(trackData.getBytes());
         visualizer.repaint();
         timeLine.setRunningTime(trackData.getInfo().getRunningTime());
