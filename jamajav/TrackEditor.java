@@ -21,7 +21,7 @@ class TrackEditor extends JPanel implements ActionListener, Observer {
     private TrackData trackData, oldTrackData;
 
     private TimeLine timeLine;
-    private Visualizer visualPanel;
+    private Visualizer visualizer;
 
     private JButton saveButton;
     private JButton saveAsNewButton;
@@ -39,23 +39,27 @@ class TrackEditor extends JPanel implements ActionListener, Observer {
             case "preview" :
                 trackData.playback(7, timeLine);
                 break;
-                    
+
             case "stop" :
                 trackData.stopPlaying();
                 break;
 
             case "fade" :
+                setFade();
                 break;
-                    
+
             case "mute" :
+                setMute();
                 break;
-                    
+
             case "shift" :
+                setShift();
                 break;
-                    
+
             case "crop" :
+                setCrop();
                 break;
-                    
+
             case "save" :
                 saveChanges();
                 // exit 
@@ -77,12 +81,71 @@ class TrackEditor extends JPanel implements ActionListener, Observer {
         }
     }
 
-    private void crop(int start, int end) {
+    private void setCrop() {
+        JPanel cropPanel = new JPanel(new FlowLayout());
+        JTextField startField = new JTextField("0",3);
+        JTextField endField = new JTextField("" + trackData.getInfo().getRunningTime(),3);
 
+        cropPanel.add(new JLabel("From (seconds): "));
+        cropPanel.add(startField);
+
+        cropPanel.add(new JLabel("    ")); // crude spacer
+
+        cropPanel.add(new JLabel("To (seconds): "));
+        cropPanel.add(endField);
+
+        int result = JOptionPane.showConfirmDialog(null, cropPanel, 
+                "Crop interval", JOptionPane.OK_CANCEL_OPTION);
+
+        if (result == JOptionPane.OK_OPTION) {
+            int start = Integer.parseInt(startField.getText());
+            int end = Integer.parseInt(endField.getText());
+            System.out.println("Cropping from " + start + " seconds to " + end + " seconds!"); 
+            // crop it!
+            crop(start, end);
+            // redraw visualizer and timeLine
+            visualizer.setData(trackData.getBytes()); 
+            visualizer.repaint();
+            timeLine.setRunningTime(trackData.getInfo().getRunningTime());
+            timeLine.repaint();
+        }
+    }
+
+    private void crop(int start, int end) {
         // convert seconds to bytes
+        int startByte = (int)(start 
+                * trackData.getAudioFormat().getFrameSize() 
+                * trackData.getAudioFormat().getFrameRate());
+        int endByte = (int)(end 
+                * trackData.getAudioFormat().getFrameSize() 
+                * trackData.getAudioFormat().getFrameRate()) + 1;
+
+        int cutBytes = endByte - startByte + 1;
+        // System.out.println("startByte: " + startByte + ", endBytes:" + endByte);
+        // System.out.println("Cropping " + cutBytes + " bytes!");
 
         // truncate byte array accordingly
+        byte[] oldBytes = trackData.getBytes();
+        byte[] newBytes 
+            = new byte[oldBytes.length - cutBytes]; 
 
+        // System.out.println("Old byte array has length " + oldBytes.length);
+        // System.out.println("New byte array has length " + newBytes.length);
+        for (int i = 0; i < startByte-1; i++)
+            newBytes[i] = oldBytes[i];
+        for (int i = startByte; i < newBytes.length; i++)
+            newBytes[i] = oldBytes[i+cutBytes];
+
+        trackData.putBytes(newBytes);
+
+        // new running time:
+        trackData.getInfo().setRunningTime((int)
+                ((double)newBytes.length 
+                 / (double)(trackData.getAudioFormat().getFrameRate()
+                     *trackData.getAudioFormat().getFrameSize())));
+    }
+
+    private void setShift() {
     }
 
     private void shift(int seconds) {
@@ -98,8 +161,14 @@ class TrackEditor extends JPanel implements ActionListener, Observer {
         // update visualizer
     }
 
+    private void setFade() {
+    }
+
     private void fade(int start, int end, double fadedecay) {
         // fadedecay can be positive or negative
+    }
+
+    private void setMute() {
     }
 
     private void mute(int start, int end) {
@@ -141,18 +210,22 @@ class TrackEditor extends JPanel implements ActionListener, Observer {
     // inverse (could replace with void routine that sets the audioData array
     // but this is probably cleaner)
     public byte[] toEight(int[] sixteen) {
+        // inverse of previous routine (must think about it!)
 
         byte[] toReturn = new byte[2*sixteen.length];
-        // inverse of previous routine (must think about it!)
+        for (int i = 0; i < sixteen.length; i++) {
+            byte[] highLow = getEightBitPair(sixteen[i]);
+            toReturn[2*i] = highLow[0];
+            toReturn[2*i+1] = highLow[1];
+        }
         return toReturn;
     }
 
     private void saveChanges() {
-        // compute new running time
-
-        // update info object with new running time
-
-        // set bytes of oldTrack to local byte array
+        // copy modified TrackData to the one belonging to the Track
+        // that triggered the TrackEditor
+        oldTrackData.putBytes(trackData.getBytes());
+        oldTrackData.putInfo(trackData.getInfo());
     }
 
     private void saveAsNew() {
@@ -182,8 +255,8 @@ class TrackEditor extends JPanel implements ActionListener, Observer {
 
         Info info = trackData.getInfo();
 
-        visualPanel = new Visualizer();
-        visualPanel.setData(trackData.getBytes()); 
+        visualizer = new Visualizer();
+        visualizer.setData(trackData.getBytes()); 
 
         timeLine = new TimeLine();
         timeLine.setRunningTime(info.getRunningTime());
@@ -212,7 +285,7 @@ class TrackEditor extends JPanel implements ActionListener, Observer {
         mainPanel.setLayout(new BoxLayout(mainPanel,BoxLayout.PAGE_AXIS));
 
         JPanel outerVisualPanel = new JPanel(new FlowLayout());
-        outerVisualPanel.add(visualPanel);
+        outerVisualPanel.add(visualizer);
         JPanel outerTimePanel = new JPanel(new FlowLayout());
         outerTimePanel.add(timeLine);
 
