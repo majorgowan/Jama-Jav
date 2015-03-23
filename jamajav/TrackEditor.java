@@ -110,13 +110,14 @@ class TrackEditor extends JPanel implements ActionListener, Observer {
     private int getSixteenBitSample(int high, int low) {
         return (high << 8) + (low & 0x00ff);            
     }
-    private int[] getEightBitPair(int sixteenBitSample) {
+    private byte[] getEightBitPair(int sixteenBitSample) {
         // opposite of: return (high << 8) + (low & 0x00ff);
-        int high = 0; 
-        int low = 0;
-        int[] highLow = new int[2];
-        highLow[0] = high;
-        highLow[1] = low;
+        // basically must format integer as a 16-bit binary number
+        // and split it into the high eight bits and the low eight bits
+
+        byte[] highLow = new byte[2];
+        highLow[0] = (byte)((sixteenBitSample >> 8) & 0xff);
+        highLow[1] = (byte)(sixteenBitSample & 0xff); 
         return highLow;
     }
 
