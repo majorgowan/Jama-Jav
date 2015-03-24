@@ -85,8 +85,8 @@ class TrackEditor extends JPanel implements ActionListener, Observer {
 
     private void setCrop() {
         JPanel cropPanel = new JPanel(new FlowLayout());
-        JTextField startField = new JTextField("0",3);
-        JTextField endField = new JTextField("" + trackData.getInfo().getRunningTime(),3);
+        JTextField startField = new JTextField("0",4);
+        JTextField endField = new JTextField("" + trackData.getInfo().getRunningTime(),4);
 
         cropPanel.add(new JLabel("From (seconds): "));
         cropPanel.add(startField);
@@ -102,8 +102,8 @@ class TrackEditor extends JPanel implements ActionListener, Observer {
                 "Crop interval", JOptionPane.OK_CANCEL_OPTION);
 
         if (result == JOptionPane.OK_OPTION) {
-            int start = Integer.parseInt(startField.getText());
-            int end = Integer.parseInt(endField.getText());
+            double start = Double.parseDouble(startField.getText());
+            double end = Double.parseDouble(endField.getText());
             // System.out.println("Cropping from " + start + " seconds to " + end + " seconds!"); 
             // crop it!
             crop(start, end);
@@ -115,7 +115,7 @@ class TrackEditor extends JPanel implements ActionListener, Observer {
         }
     }
 
-    private void crop(int start, int end) {
+    private void crop(double start, double end) {
         // convert seconds to bytes
         int startByte = (int)(start 
                 * trackData.getAudioFormat().getFrameSize() 
@@ -151,7 +151,7 @@ class TrackEditor extends JPanel implements ActionListener, Observer {
 
     private void setShift() {
         JPanel shiftPanel = new JPanel(new FlowLayout());
-        JTextField secondsField = new JTextField("0",3);
+        JTextField secondsField = new JTextField("0",4);
 
         shiftPanel.add(new JLabel("Shift by (seconds): "));
         shiftPanel.add(secondsField);
@@ -161,7 +161,7 @@ class TrackEditor extends JPanel implements ActionListener, Observer {
         int result = JOptionPane.showConfirmDialog(null, shiftPanel, "Shift track", JOptionPane.OK_CANCEL_OPTION);
 
         if (result == JOptionPane.OK_OPTION) {
-            int seconds = Integer.parseInt(secondsField.getText());
+            double seconds = Double.parseDouble(secondsField.getText());
             // System.out.println("Shifting by " + seconds + " seconds!"); 
             // shift it!
             shift(seconds);
@@ -173,7 +173,7 @@ class TrackEditor extends JPanel implements ActionListener, Observer {
         }
     }
 
-    private void shift(int seconds) {
+    private void shift(Double seconds) {
 
         // convert seconds to bytes
         int shiftBytes = (int)(seconds 
@@ -237,8 +237,8 @@ class TrackEditor extends JPanel implements ActionListener, Observer {
                 "Fade in/out", JOptionPane.OK_CANCEL_OPTION);
 
         if (result == JOptionPane.OK_OPTION) {
-            int start = Integer.parseInt(startField.getText());
-            int end = Integer.parseInt(endField.getText());
+            double start = Double.parseDouble(startField.getText());
+            double end = Double.parseDouble(endField.getText());
             // System.out.println("Fading from " + start + " seconds to " + end + " seconds!"); 
             // get state of radiobuttons:
             boolean inout = true;
@@ -252,14 +252,14 @@ class TrackEditor extends JPanel implements ActionListener, Observer {
         }
     }
 
-    private void fade(int start, int end, boolean inout) {
-        int seconds = Math.abs(end - start);
+    private void fade(double start, double end, boolean inout) {
+        double seconds = Math.abs(end - start);
 
         int frameRate = (int) trackData.getAudioFormat().getFrameRate();
         // compute number of frames to fade over
-        int fadeFrames = seconds * frameRate; 
-        int startFade = Math.min(start,end) * frameRate;
-        int endFade = Math.max(start,end) * frameRate;
+        int fadeFrames = (int)(seconds * frameRate); 
+        int startFade = (int)(Math.min(start,end) * frameRate);
+        int endFade = (int)(Math.max(start,end) * frameRate);
 
         // System.out.println("Fading from byte " + startFade + " to byte " + endFade + "!"); 
 
@@ -302,8 +302,8 @@ class TrackEditor extends JPanel implements ActionListener, Observer {
                 "Mute interval", JOptionPane.OK_CANCEL_OPTION);
 
         if (result == JOptionPane.OK_OPTION) {
-            int start = Integer.parseInt(startField.getText());
-            int end = Integer.parseInt(endField.getText());
+            double start = Double.parseDouble(startField.getText());
+            double end = Double.parseDouble(endField.getText());
             // System.out.println("Muting from " + start + " seconds to " + end + " seconds!"); 
             // mute it!
             mute(start, end);
@@ -313,7 +313,7 @@ class TrackEditor extends JPanel implements ActionListener, Observer {
         }
     }
 
-    private void mute(int start, int end) {
+    private void mute(double start, double end) {
         // convert seconds to bytes
         int startByte = (int)(start 
                 * trackData.getAudioFormat().getFrameSize() 
