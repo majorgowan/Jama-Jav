@@ -8,26 +8,13 @@ import java.awt.event.*;
 // for formatting numbers:
 import java.text.DecimalFormat;
 
-class Clock extends JPanel implements ActionListener {
+class Clock extends PlainClock {
 
     final private int DEFAULT_WIDTH = 200;
     final private int DEFAULT_HEIGHT = 100;
 
-    private double theTime = 0.0;
-    private int precision = 100;  // in milliseconds
-
-    private JPanel timerPanel;
-    private Timer timer;
-    private JLabel timeLabel;
-
-    private final DecimalFormat df = new DecimalFormat("##0.0");
-
     public Dimension getPreferredSize() {
         return (new Dimension(DEFAULT_WIDTH, DEFAULT_HEIGHT));
-    }
-
-    public double getTime() {
-        return theTime;
     }
 
     public void actionPerformed(ActionEvent ae) {
@@ -51,27 +38,10 @@ class Clock extends JPanel implements ActionListener {
         }
     }
 
-    public void restart() {
-        timer.stop();
-        theTime = 0.0;
-        timer.start();
-    }
-
-    public void reset() {
-        timer.stop();
-        theTime = 0.0;
-        timeLabel.setText(df.format(theTime));
-        repaint();
-    }
-
-    public void stop() {
-        timer.stop();
-    }
-
     Clock() {
-        setBackground(new Color(0.75f,0.6f,0.1f));
+        super();
 
-        timeLabel = new JLabel(df.format(theTime));
+        setBackground(new Color(0.75f,0.6f,0.1f));
 
         // start and reset buttons:
         JButton startButton = new JButton("start/stop");
@@ -85,12 +55,6 @@ class Clock extends JPanel implements ActionListener {
         buttonPanel.add(startButton);
         buttonPanel.add(resetButton);
 
-        timerPanel = new JPanel(new FlowLayout());
-        timeLabel.setFont(new Font("SansSerif",Font.BOLD,30));
-        // a Timer object which triggers a listener every precision milliseconds
-        timer = new Timer(precision, this);
-        timerPanel.add(timeLabel);
-
         JLabel titleLabel = new JLabel("Timer");
         titleLabel.setFont(new Font("SansSerif",Font.BOLD,13));
         JPanel titlePanel = new JPanel();
@@ -98,9 +62,7 @@ class Clock extends JPanel implements ActionListener {
         titlePanel.add(titleLabel);
         titlePanel.add(Box.createHorizontalGlue());
 
-        setLayout(new BorderLayout());
         add(titlePanel,BorderLayout.NORTH);
-        add(timerPanel,BorderLayout.CENTER);
         add(buttonPanel,BorderLayout.SOUTH);
     }
 
