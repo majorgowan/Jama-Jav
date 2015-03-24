@@ -77,12 +77,11 @@ class TrackData {
     public void putBytes(byte[] bytes) {
         audioData = bytes;
         notEmpty = true;
+    }
 
-        int runningTime = (int) 
-            ((double)(audioData.length) / 
-             (double)( 
-                 audioFormat.getFrameSize() 
-                 * audioFormat.getFrameRate() ) ); 
+    public int getRunningTime() {
+        return (int)((double)(audioData.length) / 
+                (double)(audioFormat.getFrameSize() * audioFormat.getFrameRate())); 
     }
 
     public Info getInfo() {
@@ -175,15 +174,10 @@ class TrackData {
 
                 audioData = byteArrayOutputStream.toByteArray();
 
-                int runningTime = (int) 
-                    ((double)(audioData.length) / 
-                     (double)( 
-                         audioFormat.getFrameSize() 
-                         * audioFormat.getFrameRate() ) ); 
-                info.setRunningTime(runningTime);
+                info.setRunningTime(getRunningTime());
                 info.resetDate();
 
-                timeLine.setRunningTime(runningTime);
+                timeLine.setRunningTime(getRunningTime());
                 timeLine.repaint();
                 visualizer.setData(audioData);
 
@@ -283,6 +277,28 @@ class TrackData {
 
     } //end inner class PlayThread
 
+    public void writeToFile(String filename) {
+
+        InputStream byteArrayInputStream = new ByteArrayInputStream(audioData);
+
+        audioInputStream = 
+            new AudioInputStream(
+                    byteArrayInputStream,
+                    audioFormat,
+                    audioData.length/audioFormat.getFrameSize());
+
+        try {
+
+            AudioSystem.write(audioInputStream, 
+                    AudioFileFormat.Type.WAVE, 
+                    new File(filename + ".wav"));
+
+        } catch (Exception e) {
+            System.out.println(e);
+            e.printStackTrace();
+            // System.exit(0);
+        }
+    }
 
     // Basic TrackData constructor
     TrackData() {
@@ -292,10 +308,14 @@ class TrackData {
     // Copy constructor
     TrackData(TrackData td) {
         this();
-        audioData = new byte[td.getBytes().length];
+        this.audioData = new byte[td.getBytes().length];
         for (int i = 0; i < audioData.length; i++)
-            audioData[i] = td.getBytes()[i];
+            this.audioData[i] = td.getBytes()[i];
 
-        info = new Info(td.getInfo());
+        // copy constructor of Info adds "copy of" to title
+        this.info = new Info(td.getInfo());
+
+        if (td.isNotEmpty())
+            this.setNotEmpty(true);
     }
 }

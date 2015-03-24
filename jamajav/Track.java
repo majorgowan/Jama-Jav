@@ -171,6 +171,10 @@ class Track extends JPanel implements ActionListener {
         return trackData.getInfo();
     }
 
+    public int getVolume() {
+        return slider.getValue();
+    }
+
     public void putInfo(Info in) {
         trackData.putInfo(in);
     }
@@ -208,6 +212,7 @@ class Track extends JPanel implements ActionListener {
 
     public void setTrackData(TrackData td) {
         trackData = td;
+        trackData.addStopperObserver(trackPanel);
     }
 
     // Basic Track constructor

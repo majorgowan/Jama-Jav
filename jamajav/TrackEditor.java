@@ -63,6 +63,7 @@ class TrackEditor extends JPanel implements ActionListener, Observer {
             case "save" :
                 saveChanges();
                 // exit 
+                trackData.stopPlaying();
                 SwingUtilities.windowForComponent(this).setVisible(false);
                 SwingUtilities.windowForComponent(this).dispose();
                 break;
@@ -70,12 +71,14 @@ class TrackEditor extends JPanel implements ActionListener, Observer {
             case "saveasnew" :
                 saveAsNew();
                 // exit 
+                trackData.stopPlaying();
                 SwingUtilities.windowForComponent(this).setVisible(false);
                 SwingUtilities.windowForComponent(this).dispose();
                 break;
 
             case "cancel" :
                 // exit without saving changes
+                trackData.stopPlaying();
                 SwingUtilities.windowForComponent(this).setVisible(false);
                 SwingUtilities.windowForComponent(this).dispose();
                 break;
@@ -267,7 +270,7 @@ class TrackEditor extends JPanel implements ActionListener, Observer {
         double coeff = -2.0 / (double)fadeFrames;
 
         // convert bytes to 16-bit integers:
-        int[] sixteen = toSixteen(trackData.getBytes());
+        int[] sixteen = EightSixteen.toSixteen(trackData.getBytes());
 
         // fade
         if (inout)    // fade in
@@ -280,7 +283,7 @@ class TrackEditor extends JPanel implements ActionListener, Observer {
                     (Math.exp((double)(i - startFade)*coeff)*sixteen[i]);
 
         // convert integers back to bytes and copy to trackData
-        trackData.putBytes(toEight(sixteen));
+        trackData.putBytes(EightSixteen.toEight(sixteen));
     }
 
     private void setMute() {
@@ -330,52 +333,6 @@ class TrackEditor extends JPanel implements ActionListener, Observer {
             oldBytes[i] = (byte)0;
 
         trackData.putBytes(oldBytes);
-    }
-
-    // Audio processing utility routines:
-    private int getSixteenBitSample(int high, int low) {
-        return (high << 8) + (low & 0x00ff);            
-    }
-    private byte[] getEightBitPair(int sixteenBitSample) {
-        // opposite of: return (high << 8) + (low & 0x00ff);
-        // basically must format integer as a 16-bit binary number
-        // and split it into the high eight bits and the low eight bits
-
-        byte[] highLow = new byte[2];
-        highLow[0] = (byte)(sixteenBitSample & 0xff); 
-        highLow[1] = (byte)((sixteenBitSample >> 8) & 0xff);
-        return highLow;
-    }
-
-    // eight-bit byte representation converted to amplitude of sixteen-bit signal
-    public int[] toSixteen(byte[] bytes) {
-
-        int[] toReturn = new int[bytes.length/2];
-
-        int sampleIndex = 0;
-        for (int t = 0; t < bytes.length;) {
-            int low = (int) bytes[t];
-            t++;
-            int high = (int) bytes[t];
-            t++;
-            int sample = getSixteenBitSample(high, low);
-            toReturn[sampleIndex] = sample;
-            sampleIndex++;
-        }
-        return toReturn;
-    }
-    // inverse (could replace with void routine that sets the audioData array
-    // but this is probably cleaner)
-    public byte[] toEight(int[] sixteen) {
-        // inverse of previous routine (must think about it!)
-
-        byte[] toReturn = new byte[2*sixteen.length];
-        for (int i = 0; i < sixteen.length; i++) {
-            byte[] highLow = getEightBitPair(sixteen[i]);
-            toReturn[2*i] = highLow[0];
-            toReturn[2*i+1] = highLow[1];
-        }
-        return toReturn;
     }
 
     private void saveChanges() {

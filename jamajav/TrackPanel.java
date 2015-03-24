@@ -72,6 +72,9 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
 
     // ActionListener method
     public void actionPerformed(ActionEvent ae) {
+
+        boolean noneSelected;
+
         String comStr = ae.getActionCommand();
 
         switch (comStr) {
@@ -120,11 +123,47 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                 refreshMainPanel();
                 break;
 
-            case ("Play Selected") :
+            case ("playselected") :
+                noneSelected = true;
                 for (int i = 0; i < tracks.size(); i++) 
-                    if (tracks.get(i).isSelected() &&
-                            tracks.get(i).isNotEmpty()) 
+                    if (tracks.get(i).isSelected() && tracks.get(i).isNotEmpty()) {
+                        noneSelected = false;
                         tracks.get(i).playback();
+                    }
+                if (!noneSelected)
+                    clock.restart();
+                break;
+
+            case ("combineselected") :
+                noneSelected = true;
+                for (int i = 0; i < tracks.size(); i++) 
+                    if (tracks.get(i).isSelected() && tracks.get(i).isNotEmpty()) {
+                        noneSelected = false;
+                    }
+                if (!noneSelected) {
+                    TrackData td = combineSelected();
+                    Info info = new Info();
+                    info.setContributor(prefs.getUserName());
+                    info.setLocation(prefs.getUserCity());
+                    info.setAvatar(prefs.getAvatar());
+                    info.setRunningTime(td.getRunningTime());
+                    td.putInfo(info);
+                    addNewTrack();
+                    tracks.get(ntracks-1).setTrackData(td);
+                    tracks.get(ntracks-1).refreshVisualizerAndTimeLine();
+                }
+                break;
+
+            case ("exportselected") :
+                noneSelected = true;
+                for (int i = 0; i < tracks.size(); i++) 
+                    if (tracks.get(i).isSelected() && tracks.get(i).isNotEmpty()) {
+                        noneSelected = false;
+                    }
+                if (!noneSelected) {
+                    TrackData td = combineSelected();
+                    export(td);
+                }
                 break;
 
             case ("selectall") :
@@ -326,6 +365,14 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
         }
     }
 
+    private void export(TrackData td) {
+        // get filename root
+        String filename = JOptionPane.showInputDialog(
+                "Please enter a filename");
+
+        td.writeToFile(filename);
+    }
+
     // choose a jj file
     private String chooseFile() {
         JFileChooser chooser = new JFileChooser(
@@ -467,6 +514,35 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
         return 0;
     }
 
+    public TrackData combineSelected() {
+
+        // find longest selected track
+        int maxDataLength = 0;
+        for (int i = 0; i < tracks.size(); i++) {
+            if (tracks.get(i).isSelected())
+                maxDataLength
+                    = Math.max(tracks.get(i).getTrackData().getBytes().length, maxDataLength);
+        }
+
+        // byte array for combined track
+        byte[] newBytes = new byte[0];
+
+        for (int i = 0; i < tracks.size(); i++)
+            if (tracks.get(i).isSelected())
+                newBytes 
+                    = EightSixteen.addEights(
+                            newBytes, 
+                            1.0,
+                            tracks.get(i).getTrackData().getBytes(), 
+                            (double)(tracks.get(i).getVolume())/10.0);
+
+        TrackData newTrackData = new TrackData();
+        newTrackData.putBytes(newBytes);
+
+        return newTrackData;
+
+    }
+
     TrackPanel(JFrame jfrm, Metronome m, Clock c, Prefs p) {
 
         parent = jfrm;
@@ -503,7 +579,16 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
         selectAllButton.addActionListener(this);
 
         JButton playSelectedButton = new JButton("Play Selected");
+        playSelectedButton.setActionCommand("playselected");
         playSelectedButton.addActionListener(this);
+
+        JButton combineSelectedButton = new JButton("Combine Selected");
+        combineSelectedButton.setActionCommand("combineselected");
+        combineSelectedButton.addActionListener(this);
+
+        JButton exportSelectedButton = new JButton("Export Selected");
+        exportSelectedButton.setActionCommand("exportselected");
+        exportSelectedButton.addActionListener(this);
 
         JButton playRecordButton = new JButton("Play Sel + Rec new");
         playRecordButton.setActionCommand("playrecord");
@@ -518,9 +603,11 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
 
         buttonPanel.add(newTrackButton);
         buttonPanel.add(selectAllButton);
+        buttonPanel.add(exportSelectedButton);
         buttonPanel.add(playRecordButton);
         buttonPanel.add(removeSelectedButton);
         buttonPanel.add(playSelectedButton);
+        buttonPanel.add(combineSelectedButton);
         buttonPanel.add(allStopButton);
 
         buttonPanel.setBorder(BorderFactory.createRaisedBevelBorder());

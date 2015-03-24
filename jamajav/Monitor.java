@@ -36,26 +36,11 @@ class Monitor extends JPanel {
         g.fillRect(left, top, right-left, bottom-top); 
     }
 
-    private int getSixteenBitSample(int high, int low) {
-        return (high << 8) + (low & 0x00ff);            
-    }
-
     // based on http://codeidol.com/java/swing/Audio/Build-an-Audio-Waveform-Display/
     public void setData(byte[] bytes) {
 
         // System.out.println(bytes.length + " " + frameSize);
-        int[] toReturn = new int[bytes.length/2];
-
-        int sampleIndex = 0;
-        for (int t = 0; t < bytes.length;) {
-            int low = (int) bytes[t];
-            t++;
-            int high = (int) bytes[t];
-            t++;
-            int sample = getSixteenBitSample(high, low);
-            toReturn[sampleIndex] = sample;
-            sampleIndex++;
-        }
+        int[] toReturn = EightSixteen.toSixteen(bytes);
 
         double oldLevel = level;
         level = 0.0;
