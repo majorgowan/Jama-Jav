@@ -65,12 +65,14 @@ class TrackEditor extends JPanel implements ActionListener, Observer {
                 // exit 
                 SwingUtilities.windowForComponent(this).setVisible(false);
                 SwingUtilities.windowForComponent(this).dispose();
+                break;
 
             case "saveasnew" :
                 saveAsNew();
                 // exit 
                 SwingUtilities.windowForComponent(this).setVisible(false);
                 SwingUtilities.windowForComponent(this).dispose();
+                break;
 
             case "cancel" :
                 // exit without saving changes
@@ -93,6 +95,8 @@ class TrackEditor extends JPanel implements ActionListener, Observer {
 
         cropPanel.add(new JLabel("To (seconds): "));
         cropPanel.add(endField);
+
+        startField.requestFocusInWindow();
 
         int result = JOptionPane.showConfirmDialog(null, cropPanel, 
                 "Crop interval", JOptionPane.OK_CANCEL_OPTION);
@@ -151,6 +155,8 @@ class TrackEditor extends JPanel implements ActionListener, Observer {
 
         shiftPanel.add(new JLabel("Shift by (seconds): "));
         shiftPanel.add(secondsField);
+
+        secondsField.requestFocusInWindow();
 
         int result = JOptionPane.showConfirmDialog(null, shiftPanel, "Shift track", JOptionPane.OK_CANCEL_OPTION);
 
@@ -225,6 +231,7 @@ class TrackEditor extends JPanel implements ActionListener, Observer {
         fadePanel.add(endField);
 
         fadePanel.add(buttonPanel);
+        startField.requestFocusInWindow();
 
         int result = JOptionPane.showConfirmDialog(null, fadePanel, 
                 "Fade in/out", JOptionPane.OK_CANCEL_OPTION);
@@ -288,6 +295,8 @@ class TrackEditor extends JPanel implements ActionListener, Observer {
 
         mutePanel.add(new JLabel("To (seconds): "));
         mutePanel.add(endField);
+
+        startField.requestFocusInWindow();
 
         int result = JOptionPane.showConfirmDialog(null, mutePanel, 
                 "Mute interval", JOptionPane.OK_CANCEL_OPTION);
@@ -377,17 +386,16 @@ class TrackEditor extends JPanel implements ActionListener, Observer {
     }
 
     private void saveAsNew() {
-        // addNewTrack to trackPanel
-
-        // copy info object of old track to new track
-
-        // update info object with changes
-        //  (author stays old author)
-        //  (add "copy of " to beginning of title
-
-        // set bytes of new track to local byte array
-
-        // set bytes of oldTrack to local byte array
+        // Replace current Info with a copy (adds words "copy of" to title)
+        trackData.putInfo(new Info(trackData.getInfo()));
+        // add a new track
+        trackPanel.addNewTrack();
+        // set trackData of new track (reorder in the future!)
+        trackPanel.getTrack(trackPanel.getNTracks() - 1).setTrackData(trackData);
+        trackPanel.getTrack(trackPanel.getNTracks() - 1).refreshVisualizerAndTimeLine();
+        // clumsy, but necessary because new Track will otherwise have default avatar
+        // instead of author of original track being copied
+        trackPanel.refreshAvatars();
     }
 
 

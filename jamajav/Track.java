@@ -127,13 +127,7 @@ class Track extends JPanel implements ActionListener {
         editTrackDialog.pack();
         editTrackDialog.setVisible(true);
         // refresh Visualizer and TimeLine in case it's changed
-        // System.out.println("New trackdata has " + trackData.getBytes().length + " bytes!");
-        visualizer.setData(trackData.getBytes());
-        visualizer.repaint();
-        timeLine.setRunningTime(trackData.getInfo().getRunningTime());
-        timeLine.repaint();
-        resetToolTip();
-        revalidate();
+        refreshVisualizerAndTimeLine();
     }
 
     private Info editInfo() {
@@ -199,8 +193,21 @@ class Track extends JPanel implements ActionListener {
         trackData = td;
     }
 
+    public void refreshVisualizerAndTimeLine() {
+        visualizer.setData(trackData.getBytes());
+        visualizer.repaint();
+        timeLine.setRunningTime(trackData.getInfo().getRunningTime());
+        timeLine.repaint();
+        resetToolTip();
+        revalidate();
+    }
+    
     public TrackData getTrackData() {
         return trackData;
+    }
+
+    public void setTrackData(TrackData td) {
+        trackData = td;
     }
 
     // Basic Track constructor

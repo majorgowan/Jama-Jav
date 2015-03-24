@@ -218,7 +218,20 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
         repaint();
     }
 
-    private void addNewTrack() {
+    public void refreshAvatars() {
+        for (int i = 0; i < tracks.size(); i++)
+            avatarLabel.get(i).setIcon(
+                    new ImageIcon(avatars.get(
+                            findAvatarIndex(
+                                tracks.get(i).getInfo().getAvatar())).getImage()));
+        revalidate();
+    }
+
+    public int getNTracks() {
+        return tracks.size();
+    }
+
+    public void addNewTrack() {
         ntracks++;
         tracks.add(new Track(parent, this, metronome, clock, prefs));
         linePanel.add(new JPanel());
@@ -249,6 +262,10 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
         tracks.remove(i);
         linePanel.remove(i);
         ntracks--;
+    }
+
+    public Track getTrack(int i) {
+        return tracks.get(i);
     }
 
     private void allStop() {
