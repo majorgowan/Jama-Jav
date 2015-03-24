@@ -27,8 +27,13 @@ class TrackEditor extends JPanel implements ActionListener, Observer {
     private JButton saveAsNewButton;
     private JButton cancelButton;
 
+    private PlainClock clock;
+
     public void update(Observable obs, Object arg) {
-        // stop "clock" eventually
+        // if update is called, it means track is finished playing
+        if (obs == trackData.getStopPlay()) {
+            clock.stop();
+        }
     }
 
     public void actionPerformed(ActionEvent ae) {
@@ -37,6 +42,7 @@ class TrackEditor extends JPanel implements ActionListener, Observer {
 
         switch (cmdStr) {
             case "preview" :
+                clock.restart();
                 trackData.playback(7, timeLine);
                 break;
 
@@ -377,6 +383,8 @@ class TrackEditor extends JPanel implements ActionListener, Observer {
         timeLine = new TimeLine();
         timeLine.setRunningTime(trackData.getInfo().getRunningTime());
 
+        clock = new PlainClock();
+
         // Edit panel
         JPanel editPanel = new JPanel(new FlowLayout());
         JButton fadeButton = new JButton("Fade");
@@ -422,6 +430,11 @@ class TrackEditor extends JPanel implements ActionListener, Observer {
         mainPanel.add(playPanel);
         mainPanel.add(Box.createRigidArea(new Dimension(0,15)));
 
+        // Centre panel
+        JPanel centrePanel = new JPanel(new FlowLayout());
+        centrePanel.add(mainPanel);
+        centrePanel.add(clock);
+
         // Button panel
         JPanel buttonPanel = new JPanel(new FlowLayout());
         JButton saveButton = new JButton("Save changes");
@@ -440,7 +453,7 @@ class TrackEditor extends JPanel implements ActionListener, Observer {
 
         setLayout(new BorderLayout());
         add(editPanel, BorderLayout.NORTH);
-        add(mainPanel, BorderLayout.CENTER);
+        add(centrePanel, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
     }
 

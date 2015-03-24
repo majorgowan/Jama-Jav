@@ -10,6 +10,9 @@ import java.text.DecimalFormat;
 
 class PlainClock extends JPanel implements ActionListener {
 
+    final private int DEFAULT_WIDTH = 80;
+    final private int DEFAULT_HEIGHT = 100;
+
     protected double theTime = 0.0;
     protected int precision = 100;  // in milliseconds
 
@@ -18,8 +21,8 @@ class PlainClock extends JPanel implements ActionListener {
 
     protected final DecimalFormat df = new DecimalFormat("##0.0");
 
-    public double getTime() {
-        return theTime;
+    public Dimension getPreferredSize() {
+        return (new Dimension(DEFAULT_WIDTH, DEFAULT_HEIGHT));
     }
 
     public void actionPerformed(ActionEvent ae) {
@@ -32,6 +35,10 @@ class PlainClock extends JPanel implements ActionListener {
             timeLabel.setText(df.format(theTime));
             repaint();
         }
+    }
+
+    public double getTime() {
+        return theTime;
     }
 
     public void restart() {
@@ -52,8 +59,6 @@ class PlainClock extends JPanel implements ActionListener {
     }
 
     PlainClock() {
-        setBackground(new Color(0.75f,0.6f,0.1f));
-
         timeLabel = new JLabel(df.format(theTime));
 
         JPanel timerPanel = new JPanel(new FlowLayout());

@@ -151,6 +151,7 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                     addNewTrack();
                     tracks.get(ntracks-1).setTrackData(td);
                     tracks.get(ntracks-1).refreshVisualizerAndTimeLine();
+                    refreshAvatars();
                 }
                 break;
 
@@ -415,7 +416,7 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                 int bpMin = Integer.parseInt(words[1]);
                 int bpMeas = Integer.parseInt(words[3]);
                 metronome.setParam(bpMin, bpMeas);
-                if (words.length == 6) {
+                if (words.length >= 7) {
                     double offset = Double.parseDouble(words[6]);
                     metronome.setOffset(offset);
                 } else
