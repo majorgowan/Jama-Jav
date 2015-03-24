@@ -13,22 +13,27 @@ import java.net.URL;
 class Metronome extends JPanel implements ActionListener {
 
     final private int DEFAULT_WIDTH = 200;
-    final private int DEFAULT_HEIGHT = 150;
+    final private int DEFAULT_HEIGHT = 165;
 
     private JPanel signalPanel;
     private JLabel signalLabel; // to be replaced by a picture and sounds
 
     private JTextField bpmField;
     private JTextField bpMeasField;
+    private JTextField offsetField;
 
     private JCheckBox soundCheckBox;
 
-    private int bpMin;       // beats per minute
-    private int bpMeas;      // beats per measure
+    private int bpMin;           // beats per minute
+    private int bpMeas;          // beats per measure
+    private double offset = 0.0; // time in seconds to wait before starting
 
     private Timer timer;
     private int beat;
+    private double theTime;
+    private boolean isStarted = false;
 
+    private double precision = 0.001;
     private Clip tick, tock;
 
     public Dimension getPreferredSize() {
@@ -44,13 +49,27 @@ class Metronome extends JPanel implements ActionListener {
         bpmField.setText("" + bpMin); 
         bpMeasField.setText("" + bpMeas); 
         signalLabel.setText("   0" + " / " + bpMeas + "   ");
-        
+
         // reinit Timer
-        timer.setDelay((int)(60000/(bpMin*5)));
+        precision = (60000.0/(double)(10*bpMin));
+        timer.setDelay((int)precision);
+    }
+
+    public void setOffset(double off) {
+        offset = off;
+        offsetField.setText("" + offset);
+        
+        isStarted = false;
+        // start one measure before "offset"
+        theTime = - offset + 60.0*(double)(bpMeas)/(double)(bpMin);
+    }
+
+    public double getOffset() {
+        return offset;
     }
 
     public int[] getParam() {
-        int[] params = new int[2];
+        int[] params = new int[3];
         params[0] = bpMin;
         params[1] = bpMeas;
 
@@ -62,28 +81,34 @@ class Metronome extends JPanel implements ActionListener {
         String comStr = ae.getActionCommand();
 
         if (ae.getSource() == timer) {
-            beat++;
-            if (beat == 5*bpMeas) {
-                signalLabel.setForeground(Color.RED);
-                signalLabel.setText("   1" + " / " + bpMeas + "   ");
-                beat = 0;
-                if (soundCheckBox.isSelected()) {
-                    if (tock.isRunning())
-                        tock.stop();   // Stop the player if it is still running
-                    tock.setFramePosition(0); // rewind to the beginning
-                    tock.start();     // Start playing
+            if (isStarted) {
+                beat++;
+                if (beat == 10*bpMeas) {
+                    signalLabel.setForeground(Color.RED);
+                    signalLabel.setText("   1" + " / " + bpMeas + "   ");
+                    beat = 0;
+                    if (soundCheckBox.isSelected()) {
+                        if (tock.isRunning())
+                            tock.stop();   // Stop the player if it is still running
+                        tock.setFramePosition(0); // rewind to the beginning
+                        tock.start();     // Start playing
+                    }
+                } else if (beat%10 == 0) {
+                    signalLabel.setForeground(Color.BLACK);
+                    signalLabel.setText("   " + (beat/10+1) + " / " + bpMeas + "   ");
+                    if (soundCheckBox.isSelected()) {
+                        if (tick.isRunning())
+                            tick.stop();   // Stop the player if it is still running
+                        tick.setFramePosition(0); // rewind to the beginning
+                        tick.start();     // Start playing
+                    }
+                } else {
+                    signalLabel.setText("     " + " / " + bpMeas + "   ");
                 }
-            } else if (beat%5 == 0) {
-                signalLabel.setForeground(Color.BLACK);
-                signalLabel.setText("   " + (beat/5+1) + " / " + bpMeas + "   ");
-                if (soundCheckBox.isSelected()) {
-                    if (tick.isRunning())
-                        tick.stop();   // Stop the player if it is still running
-                    tick.setFramePosition(0); // rewind to the beginning
-                    tick.start();     // Start playing
-                }
-            } else {
-                signalLabel.setText("     " + " / " + bpMeas + "   ");
+            } else { // if not started
+                theTime += precision/1000;  // precision is in milliseconds
+                if (theTime >= 0.0)
+                    isStarted = true;
             }
         } else if (comStr.equals("start")) {
             timer.start();
@@ -95,6 +120,8 @@ class Metronome extends JPanel implements ActionListener {
         } else if (comStr.equals("bpMeas")) {
             int b = Integer.parseInt(bpMeasField.getText());
             setParam(bpMin, b);
+        } else if (comStr.equals("offset")) {
+            setOffset(Double.parseDouble(offsetField.getText()));
         }
     }
 
@@ -105,6 +132,9 @@ class Metronome extends JPanel implements ActionListener {
     public void stop() {
         timer.stop();
         beat = -1;
+        // start one measure before "offset"
+        theTime = - offset + 60.0*(double)(bpMeas)/(double)(bpMin);
+        isStarted = false;
         signalLabel.setForeground(Color.BLACK);
         signalLabel.setText("   0" + " / " + bpMeas + "   ");
     }
@@ -175,7 +205,7 @@ class Metronome extends JPanel implements ActionListener {
         bpmField.setFont(new Font("SansSerif",Font.BOLD,13));
         bpmPanel.add(bpmField);
         bpmPanel.add(bpmLabel);
-        
+
         JPanel bpMeasPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JLabel bpMeasLabel = new JLabel("/ 4 time");
         bpMeasField = new JTextField("" + bpMeas, 1);
@@ -184,10 +214,22 @@ class Metronome extends JPanel implements ActionListener {
         bpMeasPanel.add(bpMeasField);
         bpMeasPanel.add(bpMeasLabel);
 
+        JPanel offsetPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JLabel offsetLabel = new JLabel("offset");
+        offsetField = new JTextField("" + offset, 3);
+        JLabel offsetSecLabel = new JLabel("s");
+        offsetLabel.setFont(new Font("SansSerif",Font.BOLD,13));
+        offsetField.setFont(new Font("SansSerif",Font.BOLD,13));
+        offsetSecLabel.setFont(new Font("SansSerif",Font.BOLD,13));
+        offsetPanel.add(offsetLabel);
+        offsetPanel.add(offsetField);
+        offsetPanel.add(offsetSecLabel);
+
         JPanel infoPanel = new JPanel();
         infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.PAGE_AXIS));
         infoPanel.add(bpmPanel);
         infoPanel.add(bpMeasPanel);
+        infoPanel.add(offsetPanel);
         JPanel outerInfoPanel = new JPanel(new FlowLayout());
         outerInfoPanel.add(infoPanel);
 
@@ -210,6 +252,14 @@ class Metronome extends JPanel implements ActionListener {
             public void focusLost(FocusEvent e) {
                 int b = Integer.parseInt(bpMeasField.getText());
                 setParam(bpMin, b);
+            }
+        });
+
+        offsetField.setActionCommand("offset");
+        offsetField.addActionListener(this);
+        offsetField.addFocusListener(new FocusAdapter() {
+            public void focusLost(FocusEvent e) {
+                setOffset(Double.parseDouble(offsetField.getText()));
             }
         });
 

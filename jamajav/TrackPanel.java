@@ -289,7 +289,8 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
             int[] mP = metronome.getParam();
             asciifw.write("Metronome: " 
                     + mP[0] + " bpMin "
-                    + mP[1] + " bpMeas\n");
+                    + mP[1] + " bpMeas "
+                    + "offset " + metronome.getOffset() + "\n");
 
             // write number of tracks to ASCII file
             asciifw.write("Tracks: " + tracks.size() + "\n");
@@ -367,10 +368,11 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                 int bpMin = Integer.parseInt(words[1]);
                 int bpMeas = Integer.parseInt(words[3]);
                 metronome.setParam(bpMin, bpMeas);
-
-                // System.out.println("Metronome settings: " 
-                //         + bpMin + " bpMin "
-                //         + "and " + bpMeas + " bpMeas.");
+                if (words.length == 6) {
+                    double offset = Double.parseDouble(words[6]);
+                    metronome.setOffset(offset);
+                } else
+                    metronome.setOffset(0.0);
 
                 // create appropriate number of tracks,
                 words = br.readLine().split(" ");
@@ -436,6 +438,7 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
         // reset metronome to saved preferences
         int[] metroset = prefs.getMetroSet();
         metronome.setParam(metroset[0], metroset[1]);
+        metronome.setOffset(0.0);
         // reset clock
         clock.reset();
 
