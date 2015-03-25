@@ -109,6 +109,13 @@ class Track extends JPanel implements ActionListener {
         }
     }
 
+    public void pausePlaying() {
+        if (trackData.isNotEmpty() && (!trackData.getStopPlay().getValue())) {
+            trackData.togglePause();
+            timeLine.toggle();
+        }
+    }
+
     public void stopPlaying() {
         clock.stop();
         trackData.stopPlaying();

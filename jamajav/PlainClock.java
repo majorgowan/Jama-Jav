@@ -58,6 +58,13 @@ class PlainClock extends JPanel implements ActionListener {
         timer.stop();
     }
 
+    public void toggle() {
+        if (timer.isRunning())
+            timer.stop();
+        else
+            timer.start();
+    }
+
     PlainClock() {
         timeLabel = new JLabel(df.format(theTime));
 

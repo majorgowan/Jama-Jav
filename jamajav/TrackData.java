@@ -16,6 +16,7 @@ class TrackData {
 
     private Stopper stopPlay = new Stopper();
     private Stopper stopCapture = new Stopper();
+    private boolean isPaused = false;
     private boolean isCapturing = false;
     private boolean notEmpty = false;
 
@@ -39,6 +40,17 @@ class TrackData {
 
     public void setNotEmpty(boolean ne) {
         notEmpty = ne;
+    }
+
+    public void togglePause() {
+        if (isPaused)  
+            isPaused = false;
+        else                
+            isPaused = true;
+    }
+
+    public boolean getPaused() {
+        return isPaused;
     }
 
     public void stopPlaying() {
@@ -199,6 +211,7 @@ class TrackData {
         timeLine.start();
         // System.out.println("Playing back . . . ");
         stopPlay.start();
+        isPaused = false;
         try {
             InputStream byteArrayInputStream 
                 = new ByteArrayInputStream(audioData);
@@ -258,6 +271,9 @@ class TrackData {
                         if (monitor != null)
                             monitor.setData(tempBuffer);
                     }
+                    // check if paused and wait
+                    do {
+                    } while (isPaused && !stopPlay.getValue());
                 }
 
                 // Block and wait for internal

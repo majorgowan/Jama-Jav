@@ -32,6 +32,13 @@ class TimeLine extends JPanel implements ActionListener {
         timer.stop();
     }
 
+    public void toggle() {
+        if (timer.isRunning())
+            timer.stop();
+        else
+            timer.start();
+    }
+
     public void actionPerformed(ActionEvent ae) {
         if (ae.getSource() == timer) {
             runnerPosition += 0.1;

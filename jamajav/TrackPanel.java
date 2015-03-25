@@ -204,6 +204,10 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                 allStop();
                 break;
 
+            case ("pause") :
+                allPause();
+                break;
+
             case ("playall") :
                 // start all tracks playing:
                 for (int i = 0; i < tracks.size(); i++) 
@@ -282,7 +286,7 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
         linePanel.add(new JPanel());
         avatarLabel.add(new JLabel(
                     new ImageIcon(avatars.get(findAvatarIndex(prefs.getAvatar())).getImage())));
-        
+
         avatarLabel.get(ntracks-1)
             .setBorder(BorderFactory
                     .createEtchedBorder(EtchedBorder.RAISED, highlightColour, shadowColour));
@@ -323,6 +327,19 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
             tracks.get(i).stopPlaying();
             tracks.get(i).stopRecording();
         }
+    }
+
+    private void allPause() {
+        boolean allStopped = true;
+        for (int j = 0; j < tracks.size(); j++) {
+            if (!tracks.get(j).getTrackData().getStopPlay().getValue()) {
+                tracks.get(j).pausePlaying();
+                allStopped = false;
+            }
+        }
+        // if any are running, then pause clock
+        if (!allStopped) 
+            clock.toggle();
     }
 
     private void save() {
@@ -582,7 +599,7 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
         mainPanel.setLayout(new BoxLayout(mainPanel,BoxLayout.PAGE_AXIS));
 
         // create and add buttons to buttonPanel:
-        JPanel buttonPanel = new JPanel(new GridLayout(2,4));
+        JPanel buttonPanel = new JPanel(new GridLayout(3,4));
 
         JButton newTrackButton = new JButton("New Track");
         newTrackButton.addActionListener(this);
@@ -614,6 +631,22 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
         JButton removeSelectedButton = new JButton("Remove Selected");
         removeSelectedButton.addActionListener(this);
 
+        JButton playAllButton = new JButton("Play All");
+        playAllButton.setActionCommand("playall");
+        playAllButton.addActionListener(this);
+
+        JButton pauseButton = new JButton("Pause");
+        pauseButton.setActionCommand("pause");
+        pauseButton.addActionListener(this);
+
+        JButton openButton = new JButton("Open");
+        openButton.setActionCommand("open");
+        openButton.addActionListener(this);
+
+        JButton saveButton = new JButton("Save");
+        saveButton.setActionCommand("save");
+        saveButton.addActionListener(this);
+
         buttonPanel.add(newTrackButton);
         buttonPanel.add(selectAllButton);
         buttonPanel.add(exportSelectedButton);
@@ -622,6 +655,10 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
         buttonPanel.add(playSelectedButton);
         buttonPanel.add(combineSelectedButton);
         buttonPanel.add(allStopButton);
+        buttonPanel.add(playAllButton);
+        buttonPanel.add(pauseButton);
+        buttonPanel.add(openButton);
+        buttonPanel.add(saveButton);
 
         buttonPanel.setBorder(BorderFactory.createRaisedBevelBorder());
 

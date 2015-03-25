@@ -19,13 +19,12 @@ class TrackEditor extends JPanel implements ActionListener, Observer {
     private Track track;
 
     private TrackData trackData, oldTrackData;
+    private byte[] bufferData;
 
     private TimeLine timeLine;
     private Visualizer visualizer;
 
-    private JButton saveButton;
-    private JButton saveAsNewButton;
-    private JButton cancelButton;
+    private JButton pasteButton;
 
     private PlainClock clock;
 
@@ -48,6 +47,14 @@ class TrackEditor extends JPanel implements ActionListener, Observer {
 
             case "stop" :
                 trackData.stopPlaying();
+                break;
+
+            case "select" :
+                setSelect();
+                break;
+
+            case "paste" :
+                setPaste();
                 break;
 
             case "fade" :
@@ -90,6 +97,119 @@ class TrackEditor extends JPanel implements ActionListener, Observer {
                 break;
 
         }
+    }
+
+    private void setSelect() {
+        JPanel selectPanel = new JPanel(new FlowLayout());
+        JTextField startField = new JTextField("0",4);
+        JTextField endField = new JTextField("" + trackData.getInfo().getRunningTime(),4);
+
+        selectPanel.add(new JLabel("From (seconds): "));
+        selectPanel.add(startField);
+
+        selectPanel.add(new JLabel("    ")); // crude spacer
+
+        selectPanel.add(new JLabel("To (seconds): "));
+        selectPanel.add(endField);
+
+        startField.requestFocusInWindow();
+
+        String[] options = new String[] {"Cut", "Copy", "Cancel"};
+        int result = JOptionPane.showOptionDialog(null, selectPanel, 
+                "Select interval", JOptionPane.DEFAULT_OPTION, 
+                JOptionPane.PLAIN_MESSAGE, 
+                null, options, options[2]);
+
+        if (result != 2) {
+            double start = Double.parseDouble(startField.getText());
+            double end = Double.parseDouble(endField.getText());
+            select(start, end);
+            pasteButton.setEnabled(true);
+            if (result == 0) {
+                mute(start, end);
+                // redraw visualizer and timeLine
+                visualizer.setData(trackData.getBytes()); 
+                visualizer.repaint();
+                timeLine.setRunningTime(trackData.getInfo().getRunningTime());
+                timeLine.repaint();
+            }
+        }
+    }
+
+    private void select(double start, double end) {
+        // convert seconds to bytes
+        int startByte = (int)(start 
+                * trackData.getAudioFormat().getFrameSize() 
+                * trackData.getAudioFormat().getFrameRate());
+        int endByte = (int)(end 
+                * trackData.getAudioFormat().getFrameSize() 
+                * trackData.getAudioFormat().getFrameRate()) + 1;
+
+        byte[] oldData = trackData.getBytes();
+        bufferData = new byte[endByte-startByte+1];
+
+        for (int i = startByte; i <= endByte; i++)
+            bufferData[i-startByte] = oldData[i];
+    }
+
+    private void setPaste() {
+        JPanel pastePanel = new JPanel(new FlowLayout());
+        JTextField secondsField = new JTextField("0",4);
+
+        pastePanel.add(new JLabel("Paste at (seconds): "));
+        pastePanel.add(secondsField);
+
+        secondsField.requestFocusInWindow();
+
+        int result = JOptionPane.showConfirmDialog(null, pastePanel, 
+                "Paste", JOptionPane.OK_CANCEL_OPTION);
+
+        if (result == JOptionPane.OK_OPTION) {
+            double seconds = Double.parseDouble(secondsField.getText());
+            paste(seconds);
+            // redraw visualizer and timeLine
+            visualizer.setData(trackData.getBytes()); 
+            visualizer.repaint();
+            timeLine.setRunningTime(trackData.getInfo().getRunningTime());
+            timeLine.repaint();
+        }
+    }
+
+    private void paste(double seconds) {
+
+        // convert seconds to bytes
+        int pasteAtByte = (int)(seconds 
+                * trackData.getAudioFormat().getFrameSize() 
+                * trackData.getAudioFormat().getFrameRate());
+
+        byte[] oldBytes = trackData.getBytes();
+        byte[] newBytes 
+            = new byte[Math.max(oldBytes.length, pasteAtByte+bufferData.length)]; 
+
+        // copy first part of data
+        for (int i = 0; i < Math.min(pasteAtByte, oldBytes.length); i++)
+            newBytes[i] = oldBytes[i];
+
+        // if pasteAtByte is past end of oldBytes
+        for (int i = oldBytes.length; i < pasteAtByte; i++)
+            newBytes[i] = (byte)0;
+
+        // paste buffer data
+        for (int i = pasteAtByte; i < pasteAtByte+bufferData.length; i++)
+            newBytes[i] = bufferData[i-pasteAtByte];
+
+        // copy last part of data
+        for (int i = pasteAtByte+bufferData.length; i < oldBytes.length; i++)
+            newBytes[i] = oldBytes[i];
+
+        // put data
+        trackData.putBytes(newBytes);
+
+        // new running time:
+        trackData.getInfo().setRunningTime((int)
+                ((double)newBytes.length 
+                 / (double)(trackData.getAudioFormat().getFrameRate()
+                     *trackData.getAudioFormat().getFrameSize())));
     }
 
     private void setCrop() {
@@ -182,7 +302,7 @@ class TrackEditor extends JPanel implements ActionListener, Observer {
         }
     }
 
-    private void shift(Double seconds) {
+    private void shift(double seconds) {
 
         // convert seconds to bytes
         int shiftBytes = (int)(seconds 
@@ -385,6 +505,10 @@ class TrackEditor extends JPanel implements ActionListener, Observer {
 
         clock = new PlainClock();
 
+        // Outer Edit panel
+        JPanel outerEditPanel = new JPanel();
+        outerEditPanel.setLayout(new BoxLayout(outerEditPanel, BoxLayout.PAGE_AXIS));
+
         // Edit panel
         JPanel editPanel = new JPanel(new FlowLayout());
         JButton fadeButton = new JButton("Fade");
@@ -403,6 +527,24 @@ class TrackEditor extends JPanel implements ActionListener, Observer {
         editPanel.add(muteButton);
         editPanel.add(shiftButton);
         editPanel.add(cropButton);
+
+        // Select panel
+        JPanel selectPanel = new JPanel(new FlowLayout());
+        JButton selectButton = new JButton("Select");
+        selectButton.addActionListener(this);
+        selectButton.setActionCommand("select");
+        // pasteButton is a class variable so it can be
+        // disabled and enabled when the buffer is not empty
+        pasteButton = new JButton("Paste");
+        pasteButton.setEnabled(false);
+        pasteButton.addActionListener(this);
+        pasteButton.setActionCommand("paste");
+        selectPanel.add(selectButton);
+        selectPanel.add(pasteButton);
+
+        outerEditPanel.add(editPanel);
+        outerEditPanel.add(Box.createRigidArea(new Dimension(0,10)));
+        outerEditPanel.add(selectPanel);
 
         // Main panel
         JPanel mainPanel = new JPanel();
@@ -424,11 +566,10 @@ class TrackEditor extends JPanel implements ActionListener, Observer {
         playPanel.add(previewButton);
         playPanel.add(stopButton);
 
-        mainPanel.add(Box.createRigidArea(new Dimension(0,15)));
         mainPanel.add(outerTimePanel);
         mainPanel.add(outerVisualPanel);
         mainPanel.add(playPanel);
-        mainPanel.add(Box.createRigidArea(new Dimension(0,15)));
+        mainPanel.add(Box.createRigidArea(new Dimension(0,5)));
 
         // Centre panel
         JPanel centrePanel = new JPanel(new FlowLayout());
@@ -452,7 +593,7 @@ class TrackEditor extends JPanel implements ActionListener, Observer {
         buttonPanel.add(cancelButton);
 
         setLayout(new BorderLayout());
-        add(editPanel, BorderLayout.NORTH);
+        add(outerEditPanel, BorderLayout.NORTH);
         add(centrePanel, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
     }
