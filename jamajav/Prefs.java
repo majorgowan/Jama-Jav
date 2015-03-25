@@ -5,7 +5,7 @@ import java.io.*;
 
 class Prefs {
 
-    private int[] metroset;
+    private int[] metroset = new int[2];
     private String filename;
     private String userName;
     private String userCity;

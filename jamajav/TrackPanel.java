@@ -3,6 +3,7 @@ package jamajav;
 // Swing packages:
 import javax.swing.*;
 import javax.swing.filechooser.*;
+import javax.swing.border.EtchedBorder;
 import java.awt.*;
 import java.awt.event.*;
 
@@ -27,6 +28,10 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
 
     private ArrayList<Track> tracks;
     private ArrayList<JPanel> linePanel;
+
+    private static Color goldColour = new Color(0.7f,0.7f,0.98f);
+    private static Color highlightColour = new Color(0.8f,0.4f,0.2f);
+    private static Color shadowColour = new Color(0.3f,0.1f,0.04f);
 
     private int ntracks = 0;
 
@@ -277,12 +282,17 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
         linePanel.add(new JPanel());
         avatarLabel.add(new JLabel(
                     new ImageIcon(avatars.get(findAvatarIndex(prefs.getAvatar())).getImage())));
+        
+        avatarLabel.get(ntracks-1)
+            .setBorder(BorderFactory
+                    .createEtchedBorder(EtchedBorder.RAISED, highlightColour, shadowColour));
 
         // System.out.println("adding track ... now " + ntracks + " tracks");
 
         tracks.get(ntracks-1)
             .setBorder(BorderFactory.createRaisedBevelBorder());
 
+        linePanel.get(ntracks-1).setBackground(goldColour);
         linePanel.get(ntracks-1).add(avatarLabel.get(ntracks-1));
         linePanel.get(ntracks-1).add(tracks.get(ntracks-1));
         linePanel.get(ntracks-1)
@@ -566,7 +576,6 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
         newDoc();
 
         // GUI Stuff ...
-        setBackground(new Color(0.75f,0.6f,0.1f));
         setLayout(new BorderLayout());
 
         mainPanel = new JPanel();
@@ -617,6 +626,8 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
         buttonPanel.setBorder(BorderFactory.createRaisedBevelBorder());
 
         JPanel outerMainPanel = new JPanel(new FlowLayout());
+        outerMainPanel.setBackground(goldColour);
+        mainPanel.setBackground(goldColour);
         outerMainPanel.add(mainPanel);
 
         MainScrollPane scrollPane = new MainScrollPane(outerMainPanel);
