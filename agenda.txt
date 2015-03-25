@@ -1,0 +1,36 @@
+
+client:
+- random access start time **
+- change volume sliders during playback (with effect!)
+  - have setVolume method in TrackData and
+    - each loop update playback volume (should be easy)
+    - protection so only your own tracks can be removed
+    - reorder tracks (open dialog and move 'em around)
+    - export to standard mixing software format (or not!)
+    - Filter options to remove noise and adjust pitch
+    - icon toolbar instead of buttonPanel
+    - Help system
+
+    -----
+    Track editor:
+    - Amplification "line" with handles and interpolation splines
+    - File save with chooser
+    - Load from web
+
+    -----
+    web server:
+    - google-like minimalist front page with search, and list of 
+    categories, instruments, keys (for search suggestions)
+    - each user has a Javascript(or PHP)-generated page with lists of jams 
+    contributed to, jams liked, "friends", favourite music styles and 
+    artists, bio
+    - all anonymous and optional!
+    - jam page has list of "requests and suggestions" for contributions
+
+    -----
+    tablet/smart-phone app
+
+    -----
+    C# version
+
+
