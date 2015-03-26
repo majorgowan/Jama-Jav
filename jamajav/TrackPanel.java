@@ -347,77 +347,17 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
             clock.toggle();
     }
 
-    private void save() {
-        // get filename root
-        String filename = JOptionPane.showInputDialog(
-                "Please enter a filename");
-
-        // open two files: root.bin for binary, root.jj for ASCII
-        try (FileWriter asciifw = new FileWriter(filename + ".jj");
-                FileOutputStream binfos 
-                = new FileOutputStream(filename + ".bin") ) {
-
-            // write Metronome settings to ASCII file
-            int[] mP = metronome.getParam();
-            asciifw.write("Metronome: " 
-                    + mP[0] + " bpMin "
-                    + mP[1] + " bpMeas "
-                    + "offset " + metronome.getOffset() + "\n");
-
-            // write number of tracks to ASCII file
-            asciifw.write("Tracks: " + tracks.size() + "\n");
-
-            // loop over tracks
-            for (int i = 0; i < tracks.size(); i++) {
-                Info in = tracks.get(i).getInfo();
-                asciifw.write("TRACK_" + i + "_INFO_BEGIN\n");
-                asciifw.write(in.getTitle() + "\n");
-                asciifw.write(in.getContributor() + "\n");
-                asciifw.write(in.getAvatar() + "\n");
-                asciifw.write(in.getDate() + "\n");
-                asciifw.write(in.getLocation() + "\n");
-                asciifw.write(in.getRunningTime() + " seconds\n");
-                asciifw.write(in.getNotesSize() + " notes\n");
-                for (int j = 0; j < in.getNotesSize(); j++)
-                    asciifw.write(in.getNote(j) + "\n");
-                asciifw.write("INFO_END\n");
-
-                // get byte array from track
-                byte[] bytes = tracks.get(i).getBytes();
-
-                // write byte-array length to jj file
-                asciifw.write("Byte_length: " + bytes.length + "\n");
-
-                // write bytes to binary file
-                binfos.write(bytes);
-
-                parent.setTitle("Major's Jama Jav - " + filename);
-            }
-        } catch (IOException e) {
-            System.out.println("Error reading from file " 
-                    + filename + ".jj" + " or " + filename + ".bin");
-        }
-    }
-
-    private void export(TrackData td) {
-        // get filename root
-        String filename = JOptionPane.showInputDialog(
-                "Please enter a filename");
-
-        td.writeToFile(filename);
-    }
-
-    // choose a jj file
-    private String chooseFile() {
+    // choose a file
+    private String chooseFile(String extension, String fileType) {
         JFileChooser chooser = new JFileChooser(
                 new File(System.getProperty("user.dir")));
         FileNameExtensionFilter filter = new FileNameExtensionFilter(
-                "Jama Jav files", "jj");
+                fileType, extension);
         chooser.setFileFilter(filter);
         int returnVal = chooser.showOpenDialog(
                 SwingUtilities.windowForComponent(this));
         if(returnVal == JFileChooser.APPROVE_OPTION) {
-            System.out.println("You chose to open this file: " +
+            System.out.println("You chose the file: " +
                     chooser.getSelectedFile().getAbsolutePath());
             return chooser.getSelectedFile().getAbsolutePath();
         } else {
@@ -425,8 +365,71 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
         }
     }
 
+    private void save() {
+        // get filename root
+        String filename = chooseFile("jj","Jama Jav files");
+        if (!(filename.equals("rathernot"))) {
+            filename = filename.split("\\.")[0];  // strip .jj from filename
+
+            // open two files: root.bin for binary, root.jj for ASCII
+            try (FileWriter asciifw = new FileWriter(filename + ".jj");
+                    FileOutputStream binfos 
+                    = new FileOutputStream(filename + ".bin") ) {
+
+                // write Metronome settings to ASCII file
+                int[] mP = metronome.getParam();
+                asciifw.write("Metronome: " 
+                        + mP[0] + " bpMin "
+                        + mP[1] + " bpMeas "
+                        + "offset " + metronome.getOffset() + "\n");
+
+                // write number of tracks to ASCII file
+                asciifw.write("Tracks: " + tracks.size() + "\n");
+
+                // loop over tracks
+                for (int i = 0; i < tracks.size(); i++) {
+                    Info in = tracks.get(i).getInfo();
+                    asciifw.write("TRACK_" + i + "_INFO_BEGIN\n");
+                    asciifw.write(in.getTitle() + "\n");
+                    asciifw.write(in.getContributor() + "\n");
+                    asciifw.write(in.getAvatar() + "\n");
+                    asciifw.write(in.getDate() + "\n");
+                    asciifw.write(in.getLocation() + "\n");
+                    asciifw.write(in.getRunningTime() + " seconds\n");
+                    asciifw.write(in.getNotesSize() + " notes\n");
+                    for (int j = 0; j < in.getNotesSize(); j++)
+                        asciifw.write(in.getNote(j) + "\n");
+                    asciifw.write("INFO_END\n");
+
+                    // get byte array from track
+                    byte[] bytes = tracks.get(i).getBytes();
+
+                    // write byte-array length to jj file
+                    asciifw.write("Byte_length: " + bytes.length + "\n");
+
+                    // write bytes to binary file
+                    binfos.write(bytes);
+
+                    parent.setTitle("Major's Jama Jav - " + filename);
+                }
+            } catch (IOException e) {
+                System.out.println("Error reading from file " 
+                        + filename + ".jj" + " or " + filename + ".bin");
+            }
+        }
+    }
+
+    private void export(TrackData td) {
+        // get filename root
+        String filename = chooseFile("wav", "Wave audio files");
+        if (!(filename.equals("rathernot"))) {
+            filename = filename.split("\\.")[0];
+            td.writeToFile(filename);
+        }
+    }
+
     private void open() {
-        String filename = chooseFile();
+        String filename = chooseFile("jj","Jama Jav files");
         if (!(filename.equals("rathernot"))) {
             newDoc();
             filename = filename.split("\\.")[0];  // strip .jj from filename
