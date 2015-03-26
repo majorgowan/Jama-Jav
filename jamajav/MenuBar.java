@@ -10,63 +10,78 @@ class MenuBar extends JMenuBar {
 
     TrackPanel trackPanel;    // the listener for buttons
 
+    private JMenuItem makeItem(JMenu menu, String string, 
+            String actionCommand, char mnemonic) {
+
+        JMenuItem menuItem = new JMenuItem(string);
+        menuItem.setActionCommand(actionCommand);
+        menuItem.addActionListener(trackPanel);
+        menuItem.setMnemonic(mnemonic);
+        menu.add(menuItem);
+
+        return menuItem;
+    }
+
     MenuBar(TrackPanel tpnl) {
 
         trackPanel = tpnl;
 
         JMenu fileMenu = new JMenu("File");
+        fileMenu.setMnemonic('F');
         JMenu playMenu = new JMenu("Play");
+        playMenu.setMnemonic('P');
+        JMenu editMenu = new JMenu("Edit");
+        playMenu.setMnemonic('E');
         JMenu helpMenu = new JMenu("Help");
+        helpMenu.setMnemonic('H');
 
         // File menu
-        fileMenu.setMnemonic('F');
-        JMenuItem fileNewItem = new JMenuItem("New Jam");
-        fileNewItem.setActionCommand("newjam");
-        fileNewItem.addActionListener(trackPanel);
-        JMenuItem fileOpenItem = new JMenuItem("Open ...");
-        fileOpenItem.setActionCommand("open");
-        fileOpenItem.addActionListener(trackPanel);
-        JMenuItem fileSaveItem = new JMenuItem("Save as ...");
-        fileSaveItem.setActionCommand("save");
-        fileSaveItem.addActionListener(trackPanel);
-        JMenuItem fileWebOpenItem = new JMenuItem("Open from Web ...");
-        fileWebOpenItem.setActionCommand("WWW");
-        fileWebOpenItem.addActionListener(trackPanel);
-        JMenuItem fileEditPrefsItem = new JMenuItem("Edit preferences ...");
-        fileEditPrefsItem.setActionCommand("editprefs");
-        fileEditPrefsItem.addActionListener(trackPanel);
-        JMenuItem fileExitItem = new JMenuItem("Exit");
-        fileExitItem.setActionCommand("exit");
-        fileExitItem.addActionListener(trackPanel);
-        fileMenu.add(fileNewItem);
-        fileMenu.add(fileOpenItem);
-        fileMenu.add(fileSaveItem);
+        JMenuItem fileNewItem = makeItem(fileMenu, "New Jam", "newjam", 'J');
+        JMenuItem fileOpenItem = makeItem(fileMenu, "Open ...", "open", 'O');
+        JMenuItem fileSaveItem = makeItem(fileMenu, "Save as ...", "save", 'S');
         fileMenu.addSeparator();
-        fileMenu.add(fileWebOpenItem);
+        JMenuItem fileWebOpenItem = makeItem(fileMenu, "Open from Web ...", "web", 'W');
         fileMenu.addSeparator();
-        fileMenu.add(fileEditPrefsItem);
+        JMenuItem fileEditPrefsItem = makeItem(fileMenu,"Edit preferences ...", "editprefs", 'P');
         fileMenu.addSeparator();
-        fileMenu.add(fileExitItem);
+        JMenuItem fileExitItem = makeItem(fileMenu, "Exit", "exit", 'X');
 
         // Play menu
-        playMenu.setMnemonic('P');
-        JMenuItem playAllItem = new JMenuItem("Play all");
-        playAllItem.setActionCommand("playall");
-        playAllItem.addActionListener(trackPanel);
-        playMenu.add(playAllItem);
+        JMenuItem playAllItem = makeItem(playMenu, "Play all", "playall", 'A');
+        playMenu.addSeparator();
+        JMenuItem playPlaySelectedItem = makeItem(playMenu, "Play selected", "playselected", 'P');
+        JMenuItem playPauseItem = makeItem(playMenu, "Pause", "pause", 'E');
+        JMenuItem playStopItem = makeItem(playMenu, "Stop", "stop", 'S');
+        playMenu.addSeparator();
+        JMenuItem playPlayRecordItem = makeItem(playMenu, 
+                "Play selected and record new", "playrecord", 'R');
+
+        // Edit menu
+        JMenuItem editSelectAllItem = makeItem(editMenu, "Select all", "selectall", 'A');
+        editMenu.addSeparator();
+        JMenuItem editRemoveSelectedItem = makeItem(editMenu, 
+                "Remove selected", "removeselected", 'R');
+        editMenu.addSeparator();
+        JMenuItem editMoveSelectedUpItem = makeItem(editMenu, 
+                "Move selected up", "moveselectedup", 'U');
+        JMenuItem editMoveSelectedDownItem = makeItem(editMenu, 
+                "Move selected down", "moveselecteddown", 'D');
+        editMenu.addSeparator();
+        JMenuItem editConcatenateItem = makeItem(editMenu, 
+                "Concatenate selected", "concatenateselected", 'C');
+        JMenuItem editCombineItem = makeItem(editMenu, 
+                "Combine selected", "combineselected", 'B');
+        editMenu.addSeparator();
+        JMenuItem editExportItem = makeItem(editMenu, 
+                "Combine and export selected to WAV file", "exportselected", 'E');
 
         // Help menu
-        helpMenu.setMnemonic('H');
-        JMenuItem helpInstItem = new JMenuItem("Instructions");
-        helpInstItem.addActionListener(trackPanel);
-        JMenuItem helpAboutItem = new JMenuItem("About Jama Jav");
-        helpAboutItem.setActionCommand("About");
-        helpAboutItem.addActionListener(trackPanel);
-        helpMenu.add(helpInstItem);
+        JMenuItem helpInstItem = makeItem(helpMenu,"Instructions","instructions", 'I');
         helpMenu.addSeparator();
-        helpMenu.add(helpAboutItem);
+        JMenuItem helpAboutItem = makeItem(helpMenu,"About","about", 'A');
 
         add(fileMenu);
+        add(editMenu);
         add(playMenu);
         add(helpMenu);
     }
