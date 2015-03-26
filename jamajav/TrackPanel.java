@@ -155,6 +155,8 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                     td.putInfo(info);
                     addNewTrack();
                     tracks.get(ntracks-1).setTrackData(td);
+                    // set monitor of new track to the TrackData
+                    td.setMonitor(tracks.get(ntracks-1).getMonitor());
                     tracks.get(ntracks-1).refreshVisualizerAndTimeLine();
                     refreshAvatars();
                 }

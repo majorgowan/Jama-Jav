@@ -471,10 +471,12 @@ class TrackEditor extends JPanel implements ActionListener, Observer {
     private void saveAsNew() {
         // Replace current Info with a copy (adds words "copy of" to title)
         trackData.putInfo(new Info(trackData.getInfo()));
+        trackData.setMonitor(new Monitor());
         // add a new track
         trackPanel.addNewTrack();
         // set trackData of new track (reorder in the future!)
         trackPanel.getTrack(trackPanel.getNTracks() - 1).setTrackData(trackData);
+        trackData.setMonitor(trackPanel.getTrack(trackPanel.getNTracks() - 1).getMonitor());
         trackPanel.getTrack(trackPanel.getNTracks() - 1).refreshVisualizerAndTimeLine();
         // clumsy, but necessary because new Track will otherwise have default avatar
         // instead of author of original track being copied

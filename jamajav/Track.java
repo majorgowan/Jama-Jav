@@ -222,6 +222,10 @@ class Track extends JPanel implements ActionListener {
         trackData.addStopperObserver(trackPanel);
     }
 
+    public Monitor getMonitor() {
+        return monitor;
+    }
+
     // Basic Track constructor
     Track(JFrame frm, TrackPanel tpnl, Metronome m, Clock c, Prefs p) {
 
