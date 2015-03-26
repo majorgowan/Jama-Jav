@@ -114,11 +114,11 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                 System.exit(0);
                 break;
 
-            case ("New Track") :
+            case ("addnewtrack") :
                 addNewTrack();
                 break;
 
-            case ("Remove Selected") :
+            case ("removeselected") :
                 for (int i = tracks.size() - 1; i >= 0; i--) {
                     // System.out.println("track " + i + " is " + tracks.get(i).isSelected());
                     if (tracks.get(i).isSelected()) {
@@ -598,70 +598,6 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
         mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel,BoxLayout.PAGE_AXIS));
 
-        // create and add buttons to buttonPanel:
-        JPanel buttonPanel = new JPanel(new GridLayout(3,4));
-
-        JButton newTrackButton = new JButton("New Track");
-        newTrackButton.addActionListener(this);
-
-        JButton selectAllButton = new JButton("(Un)select All");
-        selectAllButton.setActionCommand("selectall");
-        selectAllButton.addActionListener(this);
-
-        JButton playSelectedButton = new JButton("Play Selected");
-        playSelectedButton.setActionCommand("playselected");
-        playSelectedButton.addActionListener(this);
-
-        JButton combineSelectedButton = new JButton("Combine Selected");
-        combineSelectedButton.setActionCommand("combineselected");
-        combineSelectedButton.addActionListener(this);
-
-        JButton exportSelectedButton = new JButton("Export Selected");
-        exportSelectedButton.setActionCommand("exportselected");
-        exportSelectedButton.addActionListener(this);
-
-        JButton playRecordButton = new JButton("Play Sel + Rec new");
-        playRecordButton.setActionCommand("playrecord");
-        playRecordButton.addActionListener(this);
-
-        allStopButton = new JButton("All Stop!");
-        allStopButton.setActionCommand("allstop");
-        allStopButton.addActionListener(this);
-
-        JButton removeSelectedButton = new JButton("Remove Selected");
-        removeSelectedButton.addActionListener(this);
-
-        JButton playAllButton = new JButton("Play All");
-        playAllButton.setActionCommand("playall");
-        playAllButton.addActionListener(this);
-
-        JButton pauseButton = new JButton("Pause");
-        pauseButton.setActionCommand("pause");
-        pauseButton.addActionListener(this);
-
-        JButton openButton = new JButton("Open");
-        openButton.setActionCommand("open");
-        openButton.addActionListener(this);
-
-        JButton saveButton = new JButton("Save");
-        saveButton.setActionCommand("save");
-        saveButton.addActionListener(this);
-
-        buttonPanel.add(newTrackButton);
-        buttonPanel.add(selectAllButton);
-        buttonPanel.add(exportSelectedButton);
-        buttonPanel.add(playRecordButton);
-        buttonPanel.add(removeSelectedButton);
-        buttonPanel.add(playSelectedButton);
-        buttonPanel.add(combineSelectedButton);
-        buttonPanel.add(allStopButton);
-        buttonPanel.add(playAllButton);
-        buttonPanel.add(pauseButton);
-        buttonPanel.add(openButton);
-        buttonPanel.add(saveButton);
-
-        buttonPanel.setBorder(BorderFactory.createRaisedBevelBorder());
-
         JPanel outerMainPanel = new JPanel(new FlowLayout());
         outerMainPanel.setBackground(goldColour);
         mainPanel.setBackground(goldColour);
@@ -670,7 +606,6 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
         MainScrollPane scrollPane = new MainScrollPane(outerMainPanel);
 
         add(scrollPane,BorderLayout.CENTER);
-        add(buttonPanel,BorderLayout.SOUTH);
     }
 }
 

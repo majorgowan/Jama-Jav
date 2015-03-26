@@ -48,7 +48,12 @@
             Making a jar.
         </echo>
         <jar jarfile="JamaJav.jar" basedir="." 
-            includes="jamajav/*.class,Sounds/*.wav,Images/*.png,Images/Avatars/*.png,Images/Avatars/list.txt">
+            includes="jamajav/*.class,
+            Sounds/*.wav,Images/*.png,
+            Images/Avatars/*.png,
+            Images/Avatars/list.txt,
+            Icons/**/**/*.gif,
+            Icons/Toolbar/LICENSE">
             <manifest>
                 <attribute name="Main-Class" value="jamajav.JamaJav"/>
             </manifest>
