@@ -11,6 +11,12 @@ class ToolBar extends JToolBar {
 
     private TrackPanel trackPanel;    // the listener for buttons
 
+    private JButton allStopButton;    // so it can request focus
+    
+    public void focusOnStop() {
+        allStopButton.requestFocusInWindow();
+    }
+    
     private JButton makeButton(String buttonType, String imageName, 
             String actionCommand, String toolTipText, String altText) {
 
@@ -36,6 +42,7 @@ class ToolBar extends JToolBar {
     ToolBar(TrackPanel tpnl) {
 
         trackPanel = tpnl;
+        trackPanel.setToolBar(this);
 
         // Buttons ...
         JButton newJamButton = makeButton(
@@ -54,7 +61,7 @@ class ToolBar extends JToolBar {
                 "Media", "Play24", "playselected", "Play Selected", "Play Selected");
         JButton pauseButton = makeButton(
                 "Media", "Pause24", "pause", "Pause", "Pause");
-        JButton allStopButton = makeButton(
+        allStopButton = makeButton(
                 "Media", "Stop24", "allstop", "All Stop", "All Stop");
         JButton playRecordButton = makeButton(
                 "Media", "PlayRecord24", "playrecord", 

@@ -36,10 +36,9 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
     private int ntracks = 0;
 
     private JFrame parent;
+    private ToolBar toolBar;
 
     private JPanel mainPanel;
-
-    private JButton allStopButton;   // must be global to receive focus!
 
     private Metronome metronome;
     private Clock clock;
@@ -199,7 +198,7 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
 
                 // start new track recording
                 tracks.get(tracks.size()-1).startRecording();
-                allStopButton.requestFocusInWindow();
+                toolBar.focusOnStop();
                 break;
 
             case ("allstop") :
@@ -280,6 +279,10 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
 
     public int getNTracks() {
         return tracks.size();
+    }
+
+    public void setToolBar(ToolBar tb) {
+        toolBar = tb;
     }
 
     public void addNewTrack() {
