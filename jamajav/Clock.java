@@ -10,7 +10,7 @@ import java.text.DecimalFormat;
 
 class Clock extends PlainClock {
 
-    final private int DEFAULT_WIDTH = 200;
+    final private int DEFAULT_WIDTH = 210;
     final private int DEFAULT_HEIGHT = 100;
 
     public Dimension getPreferredSize() {

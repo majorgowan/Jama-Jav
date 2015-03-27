@@ -28,6 +28,7 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
 
     private ArrayList<Track> tracks;
     private ArrayList<JPanel> linePanel;
+    private ArrayList<JLabel> avatarLabel;
 
     private static Color goldColour = new Color(0.7f,0.7f,0.98f);
     private static Color highlightColour = new Color(0.8f,0.4f,0.2f);
@@ -44,8 +45,8 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
     private Clock clock;
     private Prefs prefs;
 
+    // avatar list (not mapped to tracks)
     private ArrayList<Avatar> avatars;
-    private ArrayList<JLabel> avatarLabel;
 
     // Observer method for stopping clock when playback or record is finished
     public void update(Observable obs, Object arg) {
@@ -82,12 +83,9 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
         String comStr = ae.getActionCommand();
 
         switch (comStr) {
+
             case ("newjam") :
                 newDoc();
-                break;
-
-            case ("save") :
-                save();
                 break;
 
             case ("open") :
@@ -101,24 +99,65 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                 merge();
                 break;
 
-            case ("editprefs") :
-                // open dialog with a prefspanel
-                final JDialog prefsDialog = new JDialog(parent, "Edit preferences", true);
-                prefsDialog.setLocationRelativeTo(parent);
-                prefsDialog.getContentPane().setLayout(new BorderLayout());
-                prefsDialog.getContentPane().add(
-                        new PrefsPanel(prefs, avatars, prefsDialog), BorderLayout.CENTER);
-                prefsDialog.revalidate();
-                prefsDialog.pack();
-                prefsDialog.setVisible(true);
-                break;
-
-            case ("exit") :
-                System.exit(0);
+            case ("save") :
+                save();
                 break;
 
             case ("addnewtrack") :
                 addNewTrack();
+                break;
+
+            case ("playall") :
+                // start all tracks playing:
+                for (int i = 0; i < tracks.size(); i++) 
+                    tracks.get(i).startPlaying();
+                break;
+
+            case ("playselected") :
+                noneSelected = true;
+                for (int i = 0; i < tracks.size(); i++) 
+                    if (tracks.get(i).isSelected() && tracks.get(i).isNotEmpty()) {
+                        noneSelected = false;
+                        tracks.get(i).playback();
+                    }
+                if (!noneSelected)
+                    clock.restart();
+                break;
+
+            case ("pause") :
+                allPause();
+                break;
+
+            case ("allstop") :
+                allStop();
+                break;
+
+            case ("playrecord") :
+                // add new track:
+                addNewTrack();
+
+                // start selected tracks playing:
+                for (int i = 0; i < tracks.size(); i++) 
+                    if (tracks.get(i).isSelected())
+                        tracks.get(i).startPlaying();
+
+                // start new track recording
+                tracks.get(tracks.size()-1).startRecording();
+                toolBar.focusOnStop();
+                break;
+
+            case ("selectall") :
+                boolean getState = false;    // none are selected
+                for (int i = 0; i < tracks.size(); i++)
+                    if (tracks.get(i).isSelected())
+                        getState = true;
+
+                if (getState)               // if any are selected, unselect-all
+                    for (int i = 0; i < tracks.size(); i++)
+                        tracks.get(i).setSelected(false);
+                else                        // else unselect-all
+                    for (int i = 0; i < tracks.size(); i++)
+                        tracks.get(i).setSelected(true);
                 break;
 
             case ("removeselected") :
@@ -131,15 +170,48 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                 refreshMainPanel();
                 break;
 
-            case ("playselected") :
+            case ("moveselectedup") :
+                for (int i = 1; i < tracks.size(); i++) {
+                    // System.out.println("track " + i + " is " + tracks.get(i).isSelected());
+                    if (tracks.get(i).isSelected() && !tracks.get(i-1).isSelected()) {
+                        swapTracks(i,i-1);
+                    }
+                }
+                refreshMainPanel();
+                break;
+
+            case ("moveselecteddown") :
+                for (int i = tracks.size()-2; i >= 0; i--) {
+                    // System.out.println("track " + i + " is " + tracks.get(i).isSelected());
+                    if (tracks.get(i).isSelected() && !tracks.get(i+1).isSelected()) {
+                        swapTracks(i,i+1);
+                    }
+                }
+                refreshMainPanel();
+                break;
+
+            case ("concatenateselected") :
                 noneSelected = true;
                 for (int i = 0; i < tracks.size(); i++) 
                     if (tracks.get(i).isSelected() && tracks.get(i).isNotEmpty()) {
                         noneSelected = false;
-                        tracks.get(i).playback();
                     }
-                if (!noneSelected)
-                    clock.restart();
+                if (!noneSelected) {
+                    TrackData td = concatenateSelected();
+                    Info info = new Info();
+                    info.setContributor(prefs.getUserName());
+                    info.setLocation(prefs.getUserCity());
+                    info.setAvatar(prefs.getAvatar());
+                    info.setRunningTime(td.getRunningTime());
+                    info.setTitle("Concatenated track");
+                    td.putInfo(info);
+                    addNewTrack();
+                    tracks.get(ntracks-1).setTrackData(td);
+                    // set monitor of new track to the TrackData
+                    td.setMonitor(tracks.get(ntracks-1).getMonitor());
+                    tracks.get(ntracks-1).refreshVisualizerAndTimeLine();
+                    refreshAvatars();
+                }
                 break;
 
             case ("combineselected") :
@@ -155,6 +227,7 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                     info.setLocation(prefs.getUserCity());
                     info.setAvatar(prefs.getAvatar());
                     info.setRunningTime(td.getRunningTime());
+                    info.setTitle("Combined track");
                     td.putInfo(info);
                     addNewTrack();
                     tracks.get(ntracks-1).setTrackData(td);
@@ -177,49 +250,22 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                 }
                 break;
 
-            case ("selectall") :
-                boolean getState = false;    // none are selected
-                for (int i = 0; i < tracks.size(); i++)
-                    if (tracks.get(i).isSelected())
-                        getState = true;
-
-                if (getState)               // if any are selected, unselect-all
-                    for (int i = 0; i < tracks.size(); i++)
-                        tracks.get(i).setSelected(false);
-                else                        // else unselect-all
-                    for (int i = 0; i < tracks.size(); i++)
-                        tracks.get(i).setSelected(true);
-                break;
-
-            case ("playrecord") :
-                // add new track:
-                addNewTrack();
-
-                // start selected tracks playing:
-                for (int i = 0; i < tracks.size(); i++) 
-                    if (tracks.get(i).isSelected())
-                        tracks.get(i).startPlaying();
-
-                // start new track recording
-                tracks.get(tracks.size()-1).startRecording();
-                toolBar.focusOnStop();
-                break;
-
-            case ("allstop") :
-                allStop();
-                break;
-
-            case ("pause") :
-                allPause();
-                break;
-
-            case ("playall") :
-                // start all tracks playing:
-                for (int i = 0; i < tracks.size(); i++) 
-                    tracks.get(i).startPlaying();
+            case ("editprefs") :
+                // open dialog with a prefspanel
+                final JDialog prefsDialog = new JDialog(parent, "Edit preferences", true);
+                prefsDialog.setLocationRelativeTo(parent);
+                prefsDialog.getContentPane().setLayout(new BorderLayout());
+                prefsDialog.getContentPane().add(
+                        new PrefsPanel(prefs, avatars, prefsDialog), BorderLayout.CENTER);
+                prefsDialog.revalidate();
+                prefsDialog.pack();
+                prefsDialog.setVisible(true);
                 break;
 
             case ("Instructions") :
+
+                // replace with a proper dialog with two panels with a
+                // list of topics and the help information
 
                 JDialog helpDialog = new JDialog(parent,"How to use Jama Jav");
 
@@ -258,6 +304,9 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                 aboutDialog.setVisible(true);
                 break;
 
+            case ("exit") :
+                System.exit(0);
+                break;
         }
     }
 
@@ -322,6 +371,24 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
         tracks.remove(i);
         linePanel.remove(i);
         ntracks--;
+    }
+
+    private void swapTracks(int i, int j) {
+        // swap positions of two tracks (intermediate method for shifting up and down)
+        // swap track
+        Track tempTrack = tracks.get(i);
+        tracks.set(i,tracks.get(j));
+        tracks.set(j,tempTrack);
+
+        // swap avatarLabel
+        JLabel tempLabel = avatarLabel.get(i);
+        avatarLabel.set(i,avatarLabel.get(j));
+        avatarLabel.set(j,tempLabel);
+
+        // swap linePanel
+        JPanel tempPanel = linePanel.get(i);
+        linePanel.set(i,linePanel.get(j));
+        linePanel.set(j,tempPanel);
     }
 
     public Track getTrack(int i) {
@@ -629,7 +696,7 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
 
     public TrackData combineSelected() {
 
-        // find longest selected track
+        // find longest selected track:
         int maxDataLength = 0;
         for (int i = 0; i < tracks.size(); i++) {
             if (tracks.get(i).isSelected())
@@ -654,6 +721,32 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
 
         return newTrackData;
 
+    }
+
+    public TrackData concatenateSelected() {
+        // compute length of concatenated track:
+        int totalByteLength = 0;
+        for (int i = 0; i < tracks.size(); i++) {
+            if (tracks.get(i).isSelected())
+                totalByteLength += tracks.get(i).getTrackData().getBytes().length;
+        }
+
+        byte[] newBytes = new byte[totalByteLength];
+
+        // copy bytes from each selected track to the newBytes array
+        int byteCount = 0;
+        for (int i = 0; i < tracks.size(); i++)
+            if (tracks.get(i).isSelected()) {
+                byte[] oldBytes = tracks.get(i).getTrackData().getBytes();
+                for (int j = 0; j < oldBytes.length; j++)
+                    newBytes[byteCount + j] = oldBytes[j];
+                byteCount += oldBytes.length;
+            }
+
+        TrackData newTrackData = new TrackData();
+        newTrackData.putBytes(newBytes);
+
+        return newTrackData;
     }
 
     TrackPanel(JFrame jfrm, Metronome m, Clock c, Prefs p) {

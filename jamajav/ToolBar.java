@@ -49,6 +49,8 @@ class ToolBar extends JToolBar {
                 "General", "NewJam24", "newjam", "New Jam", "New"); 
         JButton openButton = makeButton(
                 "General", "Open24", "open", "Open Jam", "Open"); 
+        JButton mergeButton = makeButton(
+                "General", "Merge24", "merge", "Import tracks", "Merge"); 
         JButton saveButton = makeButton(
                 "General", "Save24", "save", "Save Jam", "Save"); 
 
@@ -94,6 +96,7 @@ class ToolBar extends JToolBar {
 
         add(newJamButton);
         add(openButton);
+        add(mergeButton);
         add(saveButton);
         addSeparator();
         add(newTrackButton);

@@ -12,7 +12,7 @@ import java.net.URL;
 
 class Metronome extends JPanel implements ActionListener {
 
-    final private int DEFAULT_WIDTH = 200;
+    final private int DEFAULT_WIDTH = 210;
     final private int DEFAULT_HEIGHT = 165;
 
     private JPanel signalPanel;
