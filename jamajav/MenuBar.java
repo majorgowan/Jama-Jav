@@ -38,6 +38,7 @@ class MenuBar extends JMenuBar {
         // File menu
         JMenuItem fileNewItem = makeItem(fileMenu, "New Jam", "newjam", 'J');
         JMenuItem fileOpenItem = makeItem(fileMenu, "Open ...", "open", 'O');
+        JMenuItem fileMergeItem = makeItem(fileMenu, "Import tracks ...", "merge", 'M');
         JMenuItem fileSaveItem = makeItem(fileMenu, "Save as ...", "save", 'S');
         fileMenu.addSeparator();
         JMenuItem fileWebOpenItem = makeItem(fileMenu, "Open from Web ...", "web", 'W');

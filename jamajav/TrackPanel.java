@@ -96,6 +96,10 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                 // (doesn't go quite to the top for some reason but noone will notice)
                 mainPanel.scrollRectToVisible(new Rectangle(0,0,0,0));
                 break;
+                
+            case ("merge") :
+                merge();
+                break;
 
             case ("editprefs") :
                 // open dialog with a prefspanel
@@ -298,9 +302,6 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
 
         // System.out.println("adding track ... now " + ntracks + " tracks");
 
-        tracks.get(ntracks-1)
-            .setBorder(BorderFactory.createRaisedBevelBorder());
-
         linePanel.get(ntracks-1).setBackground(goldColour);
         linePanel.get(ntracks-1).add(avatarLabel.get(ntracks-1));
         linePanel.get(ntracks-1).add(tracks.get(ntracks-1));
@@ -459,12 +460,12 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
 
                 // create appropriate number of tracks,
                 words = br.readLine().split(" ");
-                int ntracks = Integer.parseInt(words[1]);
+                int newTracks = Integer.parseInt(words[1]);
 
-                System.out.println("Opening " + ntracks + " tracks.");
+                System.out.println("Opening " + newTracks + " tracks.");
 
                 // loop over tracks
-                for (int i = 0; i < ntracks; i++) {
+                for (int i = 0; i < newTracks; i++) {
                     addNewTrack();
 
                     Info info = tracks.get(i).getInfo();
@@ -503,7 +504,80 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                     tracks.get(i).putBytes(bytes);
                 }
             } catch (IOException e) {
-                System.out.println("Error reading from " + filename + ".MMM");
+                System.out.println("Error reading from " + filename + ".bin or " 
+                        + filename + ".jj");
+            }
+        }
+    }
+
+    private void merge() {
+        String filename = chooseFile("jj","Jama Jav files");
+        if (!(filename.equals("rathernot"))) {
+            filename = filename.split("\\.")[0];  // strip .jj from filename
+
+            System.out.println("Merging tracks from " + filename + ".jj"
+                    + " and " + filename + ".bin");
+            try (BufferedReader br 
+                    = new BufferedReader(new FileReader(filename + ".jj"));
+                    FileInputStream binfis 
+                    = new FileInputStream(filename + ".bin") ) 
+            { 
+
+                // parse jj file
+
+                // discard Metronome parameters (keep settings from existing tracks)
+                String[] words = br.readLine().split(" ");
+
+                // get number of additional tracks,
+                words = br.readLine().split(" ");
+                int newTracks = Integer.parseInt(words[1]);
+                int oldTracks = ntracks;
+
+                System.out.println("Adding " + newTracks + " tracks.");
+
+                // loop over new tracks
+                for (int i = oldTracks; i < oldTracks + newTracks; i++) {
+                    // System.out.println("Adding track number " + i + " of " + (oldTracks+newTracks));
+                    addNewTrack();
+
+                    Info info = tracks.get(i).getInfo();
+                    br.readLine(); // INFO_BEGIN
+                    info.setTitle(br.readLine());
+                    info.setContributor(br.readLine());
+                    info.setAvatar(br.readLine());
+
+                    avatarLabel.get(i).setIcon(
+                            new ImageIcon(avatars.get(findAvatarIndex(info.getAvatar())).getImage()));
+
+                    info.setDate(br.readLine());
+                    info.setLocation(br.readLine());
+
+                    words = br.readLine().split(" ");
+                    info.setRunningTime(Integer.parseInt(words[0]));
+
+                    words = br.readLine().split(" ");
+                    int numNotes = Integer.parseInt(words[0]);
+                    for (int j = 0; j < numNotes; j++)
+                        info.addNote(br.readLine());
+
+                    br.readLine(); // INFO_END
+                    tracks.get(i).setToolTip(info);
+
+                    // read number of bytes
+                    words = br.readLine().split(" ");
+                    int nbytes = Integer.parseInt(words[1]);
+                    byte[] bytes = new byte[nbytes];
+
+                    // read bytes from bin file
+                    int bytesread = binfis.read(bytes);
+                    // System.out.println("Track " + i + ":"
+                    //         + " read " + bytesread
+                    //         + " bytes");
+                    tracks.get(i).putBytes(bytes);
+                }
+            } catch (IOException e) {
+                System.out.println("Error reading from " + filename + ".bin or " 
+                        + filename + ".jj");
             }
         }
     }

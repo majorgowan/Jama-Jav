@@ -316,6 +316,9 @@ class Track extends JPanel implements ActionListener {
         add(outerMonitorPanel);
         add(outerSliderPanel);
 
+        // create border for Track
+        setBorder(BorderFactory.createRaisedSoftBevelBorder());
+
         addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent me) {
                 if (SwingUtilities.isLeftMouseButton(me)) {
