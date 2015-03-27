@@ -23,8 +23,8 @@ class Avatar {
         name = nme;
 
         try {
-            ClassLoader cl = this.getClass().getClassLoader();
-            URL url = cl.getResource("Images/Avatars/" + name + ".png");
+            //ClassLoader cl = this.getClass().getClassLoader();
+            URL url = Avatar.class.getResource("/Images/Avatars/" + name + ".png");
             image = ImageIO.read(url);
         } catch (IOException e) {
             System.out.println("Logo image not found!");

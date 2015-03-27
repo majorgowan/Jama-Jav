@@ -56,9 +56,8 @@ class Prefs {
     }
 
     private void readPrefsFile() {
-        try (BufferedReader br 
-                = new BufferedReader(new FileReader(filename)) )
-        {
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(filename));
             // read metronome settings
             String[] words = br.readLine().split(" ");
             int[] ms = new int[2];
@@ -84,13 +83,16 @@ class Prefs {
             setPrefs(ms, un, uc, av);
 
         } catch (IOException ie) {
+            System.out.println(ie);
+            ie.printStackTrace();
             System.out.println("No valid preferences file found, using defaults.");
             setDefaults();
         }
     }
 
     public void writePrefsFile() {
-        try (FileWriter fw = new FileWriter(filename)) {
+        try {
+            FileWriter fw = new FileWriter(filename);
 
             fw.write("Metronome: " 
                     + metroset[0] + " bpMin "
@@ -105,6 +107,8 @@ class Prefs {
             fw.write("Avatar:\n");
             fw.write(avatar + "\n\n");
         } catch (IOException ie) {
+            System.out.println(ie);
+            ie.printStackTrace();
             System.out.println("Problem writing preferences to file.  Aborting.");
         }
     }

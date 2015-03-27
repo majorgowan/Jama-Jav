@@ -94,7 +94,7 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                 // (doesn't go quite to the top for some reason but noone will notice)
                 mainPanel.scrollRectToVisible(new Rectangle(0,0,0,0));
                 break;
-                
+
             case ("merge") :
                 merge();
                 break;
@@ -440,9 +440,9 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
             filename = filename.split("\\.")[0];  // strip .jj from filename
 
             // open two files: root.bin for binary, root.jj for ASCII
-            try (FileWriter asciifw = new FileWriter(filename + ".jj");
-                    FileOutputStream binfos 
-                    = new FileOutputStream(filename + ".bin") ) {
+            try {
+                FileWriter asciifw = new FileWriter(filename + ".jj");
+                FileOutputStream binfos = new FileOutputStream(filename + ".bin"); 
 
                 // write Metronome settings to ASCII file
                 int[] mP = metronome.getParam();
@@ -506,11 +506,9 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
 
             System.out.println("Opening " + filename + ".jj"
                     + " and " + filename + ".bin");
-            try (BufferedReader br 
-                    = new BufferedReader(new FileReader(filename + ".jj"));
-                    FileInputStream binfis 
-                    = new FileInputStream(filename + ".bin") ) 
-            { 
+            try {
+                BufferedReader br = new BufferedReader(new FileReader(filename + ".jj"));
+                FileInputStream binfis = new FileInputStream(filename + ".bin"); 
 
                 // parse jj file
 
@@ -584,12 +582,9 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
 
             System.out.println("Merging tracks from " + filename + ".jj"
                     + " and " + filename + ".bin");
-            try (BufferedReader br 
-                    = new BufferedReader(new FileReader(filename + ".jj"));
-                    FileInputStream binfis 
-                    = new FileInputStream(filename + ".bin") ) 
-            { 
-
+            try {
+                BufferedReader br = new BufferedReader(new FileReader(filename + ".jj"));
+                FileInputStream binfis = new FileInputStream(filename + ".bin");
                 // parse jj file
 
                 // discard Metronome parameters (keep settings from existing tracks)

@@ -151,9 +151,9 @@ class Metronome extends JPanel implements ActionListener {
         // load sound files
         try {
             // get sounds from jar file (not sure why URL is appropriate but it works)
-            ClassLoader cl = this.getClass().getClassLoader();
-            URL sound1 = cl.getResource("Sounds/junhui.wav");
-            URL sound2 = cl.getResource("Sounds/ding.wav");
+            // ClassLoader cl = this.getClass().getClassLoader();
+            URL sound1 = Metronome.class.getResource("/Sounds/junhui.wav");
+            URL sound2 = Metronome.class.getResource("/Sounds/ding.wav");
 
             AudioInputStream audioInputStream1 
                 = AudioSystem.getAudioInputStream(sound1);

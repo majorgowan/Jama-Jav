@@ -57,8 +57,8 @@ public class JamaJav {
         // add logo to app
         try {
             JPanel logoPanel = new JPanel();
-            ClassLoader cl = this.getClass().getClassLoader();
-            URL logoURL = cl.getResource("Images/logo.png");
+            //ClassLoader cl = this.getClass().getClassLoader();
+            URL logoURL = JamaJav.class.getResource("/Images/logo.png");
             BufferedImage logoImage;
             logoImage = ImageIO.read(logoURL);
             JPanel imagePanel = new JPanel(new BorderLayout());
