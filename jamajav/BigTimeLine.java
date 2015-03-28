@@ -21,11 +21,11 @@ class BigTimeLine extends PlainTimeLine implements ActionListener {
     private final DecimalFormat df = new DecimalFormat("##0.0");
 
     private static Color darkGoldColour = new Color(0.4f,0.4f,0.68f);
-    private static Color goldColour = new Color(0.7f,0.7f,0.98f);
-    private static Color highlightColour = new Color(0.8f,0.4f,0.2f);
-    private static Color shadowColour = new Color(0.3f,0.1f,0.04f);
-    private static Color startColour = Color.GREEN;
-    private static Color stopColour = Color.RED;
+    private static Color startColour = new Color(0.0f,0.8f,0.1f);
+    private static Color stopColour = new Color(0.8f,0.0f,0.1f);
+
+    private static Font tickFont = new Font("SansSerif",Font.PLAIN,10);
+    private static Font endsFont = new Font("SansSerif",Font.BOLD,11);
 
     private double minTime, maxTime;
     private double factor = 0.0;
@@ -69,16 +69,17 @@ class BigTimeLine extends PlainTimeLine implements ActionListener {
             // normalize:
             factor = (double)getWidth()/(double)runningTime;
 
+
             // draw a horizontal line at height lineHeight
             g.setColor(Color.BLUE);
             g.drawLine(0, lineHeight,
                     getWidth(), lineHeight);
 
-            // draw a vertical line at tickInterval intervals
+            // draw a vertical line and a label at tickInterval intervals
+            g.setFont(tickFont);
             for (int i = 0; i <= runningTime/tickInterval; i++) {
                 g.drawLine((int)(factor*i*tickInterval), lineHeight-5,
                         (int)(factor*i*tickInterval), lineHeight+5);
-                // write the times above the ticks
                 if (i%2 == 0)
                     g.drawString("" + i*tickInterval,(int)(factor*i*tickInterval)+1, lineHeight-6);
             }
@@ -113,6 +114,7 @@ class BigTimeLine extends PlainTimeLine implements ActionListener {
 
             g.setColor(Color.BLACK);
 
+            g.setFont(endsFont);
             String s = "" + df.format(minTime);
             g.drawString(s, 
                     (int)(factor*minTime+1), 

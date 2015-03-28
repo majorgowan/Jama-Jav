@@ -112,10 +112,28 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                 addNewTrack();
                 break;
 
+            case("playallfromtop") :
+                // start all tracks playing from the beginning
+                for (int i = 0; i < tracks.size(); i++) 
+                    tracks.get(i).startPlaying();
+                break;
+
             case ("playall") :
                 // start all tracks playing:
                 for (int i = 0; i < tracks.size(); i++) 
                     tracks.get(i).startPlaying();
+                break;
+
+            case ("playselectedfromtop") :
+                // play selected tracks from beginning to end
+                noneSelected = true;
+                for (int i = 0; i < tracks.size(); i++) 
+                    if (tracks.get(i).isSelected() && tracks.get(i).isNotEmpty()) {
+                        noneSelected = false;
+                        tracks.get(i).playback();
+                    }
+                if (!noneSelected)
+                    clock.restart();
                 break;
 
             case ("playselected") :
@@ -437,14 +455,20 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
     }
 
     // choose a file
-    private String chooseFile(String extension, String fileType) {
+    private String chooseFile(String extension, String fileType, String operation) {
         JFileChooser chooser = new JFileChooser(
                 new File(System.getProperty("user.dir")));
         FileNameExtensionFilter filter = new FileNameExtensionFilter(
                 fileType, extension);
         chooser.setFileFilter(filter);
-        int returnVal = chooser.showOpenDialog(
-                SwingUtilities.windowForComponent(this));
+        int returnVal = 0;
+        if (operation.equals("save") || operation.equals("export"))
+            returnVal = chooser.showSaveDialog(
+                    SwingUtilities.windowForComponent(this));
+        else
+            returnVal = chooser.showOpenDialog(
+                    SwingUtilities.windowForComponent(this));
+
         if(returnVal == JFileChooser.APPROVE_OPTION) {
             System.out.println("You chose the file: " +
                     chooser.getSelectedFile().getAbsolutePath());
@@ -456,7 +480,7 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
 
     private void save() {
         // get filename root
-        String filename = chooseFile("jj","Jama Jav files");
+        String filename = chooseFile("jj","Jama Jav files","save");
         if (!(filename.equals("rathernot"))) {
             filename = filename.split("\\.")[0];  // strip .jj from filename
 
@@ -519,7 +543,7 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
 
     private void export(TrackData td) {
         // get filename root
-        String filename = chooseFile("wav", "Wave audio files");
+        String filename = chooseFile("wav", "Wave audio files", "export");
         if (!(filename.equals("rathernot"))) {
             filename = filename.split("\\.")[0];
             td.writeToFile(filename);
@@ -527,7 +551,7 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
     }
 
     private void open() {
-        String filename = chooseFile("jj","Jama Jav files");
+        String filename = chooseFile("jj","Jama Jav files","open");
         if (!(filename.equals("rathernot"))) {
             newDoc();
             filename = filename.split("\\.")[0];  // strip .jj from filename
@@ -616,7 +640,7 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
     }
 
     private void merge() {
-        String filename = chooseFile("jj","Jama Jav files");
+        String filename = chooseFile("jj","Jama Jav files","merge");
         if (!(filename.equals("rathernot"))) {
             filename = filename.split("\\.")[0];  // strip .jj from filename
 
