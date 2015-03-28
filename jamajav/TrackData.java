@@ -91,9 +91,18 @@ class TrackData {
         notEmpty = true;
     }
 
+    private double bytesToSeconds(int nbytes) {
+        return (double)(nbytes) / 
+                (double)(audioFormat.getFrameSize() * audioFormat.getFrameRate());
+    }
+
+    private int secondsToBytes(double seconds) {
+        return (int)(seconds *
+                audioFormat.getFrameSize() * audioFormat.getFrameRate());
+    }
+
     public double getRunningTime() {
-        return (double)(audioData.length) / 
-                (double)(audioFormat.getFrameSize() * audioFormat.getFrameRate()); 
+        return bytesToSeconds(getBytes().length);
     }
 
     public Info getInfo() {
