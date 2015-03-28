@@ -440,9 +440,11 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
             filename = filename.split("\\.")[0];  // strip .jj from filename
 
             // open two files: root.bin for binary, root.jj for ASCII
+            FileWriter asciifw = null;
+            FileOutputStream binfos = null;
             try {
-                FileWriter asciifw = new FileWriter(filename + ".jj");
-                FileOutputStream binfos = new FileOutputStream(filename + ".bin"); 
+                asciifw = new FileWriter(filename + ".jj");
+                binfos = new FileOutputStream(filename + ".bin"); 
 
                 // write Metronome settings to ASCII file
                 int[] mP = metronome.getParam();
@@ -483,6 +485,13 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
             } catch (IOException e) {
                 System.out.println("Error reading from file " 
                         + filename + ".jj" + " or " + filename + ".bin");
+            } finally {
+                try {
+                    if (asciifw != null) asciifw.close();
+                    if (binfos != null) binfos.close();
+                } catch(IOException ie) {
+                    System.out.println("Error closing jj or bin file");
+                }
             }
         }
     }
@@ -506,9 +515,12 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
 
             System.out.println("Opening " + filename + ".jj"
                     + " and " + filename + ".bin");
+
+            BufferedReader br = null;
+            FileInputStream binfis = null;
             try {
-                BufferedReader br = new BufferedReader(new FileReader(filename + ".jj"));
-                FileInputStream binfis = new FileInputStream(filename + ".bin"); 
+                br = new BufferedReader(new FileReader(filename + ".jj"));
+                binfis = new FileInputStream(filename + ".bin"); 
 
                 // parse jj file
 
@@ -571,6 +583,13 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
             } catch (IOException e) {
                 System.out.println("Error reading from " + filename + ".bin or " 
                         + filename + ".jj");
+            } finally {
+                try {
+                    if (br != null) br.close();
+                    if (binfis != null) binfis.close();
+                } catch(IOException ie) {
+                    System.out.println("Error closing jj or bin file");
+                }
             }
         }
     }
@@ -582,9 +601,13 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
 
             System.out.println("Merging tracks from " + filename + ".jj"
                     + " and " + filename + ".bin");
+
+            BufferedReader br = null;
+            FileInputStream binfis = null;
+
             try {
-                BufferedReader br = new BufferedReader(new FileReader(filename + ".jj"));
-                FileInputStream binfis = new FileInputStream(filename + ".bin");
+                br = new BufferedReader(new FileReader(filename + ".jj"));
+                binfis = new FileInputStream(filename + ".bin");
                 // parse jj file
 
                 // discard Metronome parameters (keep settings from existing tracks)
@@ -640,6 +663,13 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
             } catch (IOException e) {
                 System.out.println("Error reading from " + filename + ".bin or " 
                         + filename + ".jj");
+            } finally {
+                try {
+                    if (br != null) br.close();
+                    if (binfis != null) binfis.close();
+                } catch(IOException ie) {
+                    System.out.println("Error closing jj or bin file");
+                }
             }
         }
     }
