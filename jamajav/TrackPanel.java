@@ -40,6 +40,7 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
     private ToolBar toolBar;
 
     private JPanel mainPanel;
+    private BigTimeLine bigTimeLine;
 
     private Metronome metronome;
     private Clock clock;
@@ -71,6 +72,7 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                     // System.out.println("Running time: " + tracks.get(i).getInfo().getRunningTime());
                     tracks.get(i).resetToolTip(); // reset ToolTip to set running time
                 }
+                refreshBigTimeLine();
             }
         }
     }
@@ -90,6 +92,9 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
 
             case ("open") :
                 open();
+                // set bigTimeLine to full timespan
+                refreshBigTimeLine();
+                bigTimeLine.setFull();
                 // Scroll the TrackPanel to the top to show first Track:
                 // (doesn't go quite to the top for some reason but noone will notice)
                 mainPanel.scrollRectToVisible(new Rectangle(0,0,0,0));
@@ -168,6 +173,7 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                     }
                 }
                 refreshMainPanel();
+                refreshBigTimeLine();
                 break;
 
             case ("moveselectedup") :
@@ -212,6 +218,7 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                     tracks.get(ntracks-1).refreshVisualizerAndTimeLine();
                     refreshAvatars();
                 }
+                refreshBigTimeLine();
                 break;
 
             case ("combineselected") :
@@ -308,6 +315,20 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                 System.exit(0);
                 break;
         }
+    }
+
+    public void refreshBigTimeLine() {
+        if (tracks.size() > 0) {
+            double running = 0.0;
+            for (int i = 0; i < tracks.size(); i++)
+                running = Math.max(running, tracks.get(i).getInfo().getRunningTime());
+
+            bigTimeLine.setRunningTime(running);
+        } else
+            bigTimeLine.setRunningTime(0.0);
+
+        bigTimeLine.rehash();
+        bigTimeLine.repaint();
     }
 
     private void refreshMainPanel() {
@@ -558,7 +579,7 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                     info.setLocation(br.readLine());
 
                     words = br.readLine().split(" ");
-                    info.setRunningTime(Integer.parseInt(words[0]));
+                    info.setRunningTime(Double.parseDouble(words[0]));
 
                     words = br.readLine().split(" ");
                     int numNotes = Integer.parseInt(words[0]);
@@ -638,7 +659,7 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                     info.setLocation(br.readLine());
 
                     words = br.readLine().split(" ");
-                    info.setRunningTime(Integer.parseInt(words[0]));
+                    info.setRunningTime(Double.parseDouble(words[0]));
 
                     words = br.readLine().split(" ");
                     int numNotes = Integer.parseInt(words[0]);
@@ -695,9 +716,9 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
     }
 
     private void initAvatars() {
-        ClassLoader cl = this.getClass().getClassLoader();
+        // ClassLoader cl = this.getClass().getClassLoader();
         try {
-            InputStream is = cl.getResourceAsStream("Images/Avatars/list.txt");
+            InputStream is = TrackPanel.class.getResourceAsStream("/Images/Avatars/list.txt");
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
             String s;
             while ((s = br.readLine()) != null) {
@@ -795,6 +816,8 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
         // GUI Stuff ...
         setLayout(new BorderLayout());
 
+        bigTimeLine = new BigTimeLine();
+
         mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel,BoxLayout.PAGE_AXIS));
 
@@ -805,6 +828,7 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
 
         MainScrollPane scrollPane = new MainScrollPane(outerMainPanel);
 
+        add(bigTimeLine,BorderLayout.PAGE_START);
         add(scrollPane,BorderLayout.CENTER);
     }
 }

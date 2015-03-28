@@ -91,9 +91,9 @@ class TrackData {
         notEmpty = true;
     }
 
-    public int getRunningTime() {
-        return (int)((double)(audioData.length) / 
-                (double)(audioFormat.getFrameSize() * audioFormat.getFrameRate())); 
+    public double getRunningTime() {
+        return (double)(audioData.length) / 
+                (double)(audioFormat.getFrameSize() * audioFormat.getFrameRate()); 
     }
 
     public Info getInfo() {

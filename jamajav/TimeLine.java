@@ -5,38 +5,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-class TimeLine extends JPanel implements ActionListener {
+class TimeLine extends PlainTimeLine implements ActionListener {
 
     final private int DEFAULT_WIDTH = 250;
     final private int DEFAULT_HEIGHT = 9;
 
-    private int runningTime;
-    private int tickInterval;
-    private double runnerPosition;
-    private Timer timer;
-
     public Dimension getPreferredSize() {
         return (new Dimension(DEFAULT_WIDTH, DEFAULT_HEIGHT));
-    }
-
-    public void setRunningTime(int t) {
-        runningTime = t;
-    }
-
-    public void start() {
-        runnerPosition = 0;
-        timer.start();
-    }
-
-    public void stop() {
-        timer.stop();
-    }
-
-    public void toggle() {
-        if (timer.isRunning())
-            timer.stop();
-        else
-            timer.start();
     }
 
     public void actionPerformed(ActionEvent ae) {
@@ -51,8 +26,8 @@ class TimeLine extends JPanel implements ActionListener {
 
         // normalize:
         double factor = 0.0;
-        if (runningTime != 0)
-            factor = (double)getWidth()/(double)runningTime;
+        if (runningTime != 0.0)
+            factor = (double)getWidth()/runningTime;
 
         // draw a horizontal line across middle of panel
         g.setColor(Color.BLUE);
@@ -71,13 +46,8 @@ class TimeLine extends JPanel implements ActionListener {
     }
 
     TimeLine() {
-        runningTime = 0;
-        tickInterval = 5;
-        runnerPosition = 0.0;
-
+        super();
         setBackground(Color.WHITE);
-
-        timer = new Timer(100, this);
     }
 }
 

@@ -66,6 +66,7 @@ class Track extends JPanel implements ActionListener {
 
             case ("edittrack") :
                 editTrack();
+                trackPanel.refreshBigTimeLine();
                 break;
         }
     }
