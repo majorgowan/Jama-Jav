@@ -284,7 +284,7 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                 prefsDialog.setVisible(true);
                 break;
 
-            case ("Instructions") :
+            case ("instructions") :
 
                 // replace with a proper dialog with two panels with a
                 // list of topics and the help information
@@ -306,7 +306,7 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
 
                 break;
 
-            case ("About") :
+            case ("about") :
 
                 JDialog aboutDialog = new JDialog(parent,"About Jama Jav");
 
@@ -398,6 +398,9 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
         revalidate();
         //Scroll the TrackPanel to the bottom to show the new Track:
         mainPanel.scrollRectToVisible(new Rectangle(0,(int)mainPanel.getPreferredSize().getHeight(),10,10));
+
+        // Make new track selected
+        tracks.get(ntracks-1).setSelected(true);
     }
 
     public void removeTrack(int i) {
