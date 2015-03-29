@@ -66,7 +66,8 @@ class ToolBar extends JToolBar {
                 "Media", "PlayFromTop24", "playselectedfromtop", 
                 "Play Selected Tracks from the Top", "Play Selected f. Top");
         JButton playSelectedButton = makeButton(
-                "Media", "Play24", "playselected", "Play Interval from Selected", "Play Selected");
+                "Media", "Play24", "playselected", 
+                "Play Interval from Selected Tracks", "Play Selected");
         JButton pauseButton = makeButton(
                 "Media", "Pause24", "pause", "Pause", "Pause");
         allStopButton = makeButton(
@@ -79,8 +80,8 @@ class ToolBar extends JToolBar {
                 "General", "SelectAll24", "selectall", "Toggle Select All", "Select All");
 
         JButton removeSelectedButton = makeButton(
-                "General", "Remove24", "removeselected", 
-                "Remove Selected", "Remove Selected");
+                "General", "RemoveSelected24", "removeselected", 
+                "Remove Selected Tracks", "Remove Selected");
 
         JButton moveSelectedUpButton = makeButton(
                 "Navigation", "UpSelected24", "moveselectedup", 

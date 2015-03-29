@@ -7,10 +7,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
+// For icon images
+import java.awt.image.*;
+import java.net.URL;
+
 class Track extends JPanel implements ActionListener {
 
     final private int DEFAULT_WIDTH = 425;
-    final private int DEFAULT_HEIGHT = 120;
+    final private int DEFAULT_HEIGHT = 130;
 
     private TrackData trackData;
 
@@ -25,10 +29,6 @@ class Track extends JPanel implements ActionListener {
     private Metronome metronome;
     private Clock clock; 
 
-    private JButton recordButton;
-    private JButton playButton;
-    private JButton editButton;
-    private JButton infoButton;
     private VolumeSlider slider;
 
     private TimeLine timeLine;
@@ -45,7 +45,7 @@ class Track extends JPanel implements ActionListener {
         String comStr = ae.getActionCommand();
 
         switch (comStr) {
-            case ("Rec/Stop") :
+            case ("recordstop") :
                 if (!trackData.isCapturing()) {
                     startRecording();
                 } else {
@@ -53,7 +53,7 @@ class Track extends JPanel implements ActionListener {
                 }
                 break;
 
-            case ("Play") :
+            case ("playtrack") :
                 stopPlaying();
                 startPlaying();
                 break;
@@ -65,8 +65,10 @@ class Track extends JPanel implements ActionListener {
                 break;
 
             case ("edittrack") :
-                editTrack();
-                trackPanel.refreshBigTimeLine();
+                if (isNotEmpty()) {
+                    editTrack();
+                    trackPanel.refreshBigTimeLine();
+                }
                 break;
         }
     }
@@ -213,7 +215,7 @@ class Track extends JPanel implements ActionListener {
         resetToolTip();
         revalidate();
     }
-    
+
     public TrackData getTrackData() {
         return trackData;
     }
@@ -226,6 +228,7 @@ class Track extends JPanel implements ActionListener {
     public Monitor getMonitor() {
         return monitor;
     }
+
 
     // Basic Track constructor
     Track(JFrame frm, TrackPanel tpnl, Metronome m, Clock c, Prefs p) {
@@ -257,9 +260,23 @@ class Track extends JPanel implements ActionListener {
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel,BoxLayout.PAGE_AXIS));
 
-        titlePanel = new JPanel(new FlowLayout());
+        // title Panel
+        titlePanel = new JPanel();
+        titlePanel.setLayout(new BoxLayout(titlePanel,BoxLayout.LINE_AXIS));
+        TrackButton editInfoButton = new TrackButton();
+        editInfoButton.addActionListener(this);
+        editInfoButton.setActionCommand("editinfo");
+        URL imageURL = Track.class.getResource(
+                "/Icons/Toolbar/General/EditInfo24.gif");
+        editInfoButton.setIcon(new ImageIcon(imageURL));
+        editInfoButton.setToolTipText("Edit Track Info");
         titleLabel = new JLabel(info.getTitle());
+        titlePanel.add(Box.createRigidArea(new Dimension(20,0)));
+        titlePanel.add(editInfoButton);
+        titlePanel.add(Box.createRigidArea(new Dimension(20,0)));
         titlePanel.add(titleLabel);
+        titlePanel.add(Box.createRigidArea(new Dimension(20,0)));
+        titlePanel.add(Box.createHorizontalGlue());
 
         visualizer = new Visualizer();
         setToolTip(info);
@@ -273,49 +290,23 @@ class Track extends JPanel implements ActionListener {
         outerTimePanel.add(timeLine);
         mainPanel.add(outerTimePanel);
         mainPanel.add(outerVisualPanel);
+        mainPanel.add(Box.createRigidArea(new Dimension(0,3)));
         mainPanel.add(titlePanel);
         JPanel outerMonitorPanel = new JPanel(new FlowLayout());
         outerMonitorPanel.add(monitor);
 
-        // Buttons
-        Font buttonFont = new Font("SansSerif",Font.BOLD,10);
-
-        recordButton = new JButton("Rec/Stop");
-        playButton = new JButton("Play");
-        editButton = new JButton("Edit");
-        editButton.setActionCommand("edittrack");
-        infoButton = new JButton("Edit info");
-        infoButton.setActionCommand("editinfo");
-
-        recordButton.addActionListener(this);
-        playButton.addActionListener(this);
-        editButton.addActionListener(this);
-        infoButton.addActionListener(this);
-
-        recordButton.setFont(buttonFont);
-        playButton.setFont(buttonFont);
-        editButton.setFont(buttonFont);
-        infoButton.setFont(buttonFont);
-
+        // Volume slider
         slider = new VolumeSlider(JSlider.VERTICAL, 0, 10, 7);
-        slider.setFont(buttonFont);
         JPanel outerSliderPanel = new JPanel(new FlowLayout());
         outerSliderPanel.add(slider);
 
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new GridLayout(4,1));
-
-        buttonPanel.add(recordButton);
-        buttonPanel.add(playButton);
-        buttonPanel.add(editButton);
-        buttonPanel.add(infoButton);
-        buttonPanel.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
-
-        add(buttonPanel);
-        add(Box.createRigidArea(new Dimension(5,0)));
+        add(new LeftTrackButtonPanel(this));
+        add(Box.createRigidArea(new Dimension(4,0)));
         add(mainPanel);
         add(outerMonitorPanel);
         add(outerSliderPanel);
+        add(Box.createRigidArea(new Dimension(4,0)));
+        add(new NavTrackButtonPanel(this));
 
         // create border for Track
         setBorder(BorderFactory.createRaisedSoftBevelBorder());

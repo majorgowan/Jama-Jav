@@ -16,6 +16,10 @@ class Visualizer extends JPanel {
         return (new Dimension(DEFAULT_WIDTH, DEFAULT_HEIGHT));
     }
 
+    public Dimension getMinimumSize() {
+        return getPreferredSize();
+    }
+
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
@@ -50,7 +54,7 @@ class Visualizer extends JPanel {
         }
 
         maxValue = 0.0;
-        for (int i=100; i<data.length; i++)
+        for (int i=0; i<data.length; i++)
             if (data[i] > maxValue)
                 maxValue = data[i];
 
