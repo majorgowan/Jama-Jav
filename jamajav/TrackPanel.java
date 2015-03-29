@@ -635,6 +635,7 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                     //         + " read " + bytesread
                     //         + " bytes");
                     tracks.get(i).putBytes(bytes);
+                    tracks.get(i).setSelected(false);
                 }
             } catch (IOException e) {
                 System.out.println("Error reading from " + filename + ".bin or " 
@@ -715,6 +716,7 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                     //         + " read " + bytesread
                     //         + " bytes");
                     tracks.get(i).putBytes(bytes);
+                    tracks.get(i).setSelected(false);
                 }
             } catch (IOException e) {
                 System.out.println("Error reading from " + filename + ".bin or " 
