@@ -9,14 +9,26 @@ import java.net.URL;
 
 class LeftTrackButtonPanel extends TrackButtonPanel {
 
+    private TrackButton recordStopButton, playButton;
+
+    public void disableRecordPlay() {
+        recordStopButton.setEnabled(false);
+        playButton.setEnabled(false);
+    }
+
+    public void enableRecordPlay() {
+        recordStopButton.setEnabled(true);
+        playButton.setEnabled(true);
+    }
+
     LeftTrackButtonPanel(Track trck) {
 
         super(trck);
 
         // Buttons ...
-        TrackButton recordStopButton = makeButton(
+        recordStopButton = makeButton(
                 "Media", "RecordStop24", "recordstop", "Record / Stop", "Rec/Stop"); 
-        TrackButton playButton = makeButton(
+        playButton = makeButton(
                 "Media", "PlayFromTop24", "playtrack", "Play Track", "Play"); 
         TrackButton stopButton = makeButton(
                 "Media", "Stop24", "allstop", "Stop Playing", "Stop"); 

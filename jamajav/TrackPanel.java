@@ -61,6 +61,8 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                 for (int j = 0; j < tracks.size(); j++) {
                     if (!tracks.get(j).getTrackData().getStopPlay().getValue())
                         allStopped = false;
+                    else
+                        tracks.get(j).enableRecordPlay();
                 }
                 if (allStopped)
                     clock.stop();
@@ -71,6 +73,7 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                     // System.out.println("Stopped clock, resetting toolTip");
                     // System.out.println("Running time: " + tracks.get(i).getInfo().getRunningTime());
                     tracks.get(i).resetToolTip(); // reset ToolTip to set running time
+                    tracks.get(i).enableRecordPlay();
                 }
                 refreshBigTimeLine();
             }
@@ -88,6 +91,7 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
 
             case ("newjam") :
                 newDoc();
+                refreshBigTimeLine();
                 break;
 
             case ("open") :
@@ -102,6 +106,7 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
 
             case ("merge") :
                 merge();
+                refreshBigTimeLine();
                 break;
 
             case ("save") :
@@ -113,15 +118,21 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                 break;
 
             case("playallfromtop") :
+                allStop();
+                waitASecond(1000);
                 // start all tracks playing from the beginning
-                for (int i = 0; i < tracks.size(); i++) 
+                for (int i = 0; i < tracks.size(); i++) {
                     tracks.get(i).startPlaying();
+                }
                 break;
 
             case ("playall") :
+                allStop();
+                waitASecond(1000);
                 // start all tracks playing:
-                for (int i = 0; i < tracks.size(); i++) 
+                for (int i = 0; i < tracks.size(); i++) { 
                     tracks.get(i).startPlaying();
+                }
                 break;
 
             case ("playselectedfromtop") :
@@ -130,7 +141,8 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                 for (int i = 0; i < tracks.size(); i++) 
                     if (tracks.get(i).isSelected() && tracks.get(i).isNotEmpty()) {
                         noneSelected = false;
-                        tracks.get(i).playback();
+                        tracks.get(i).stopPlaying();
+                        tracks.get(i).startPlaying();
                     }
                 if (!noneSelected)
                     clock.restart();
@@ -141,7 +153,8 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                 for (int i = 0; i < tracks.size(); i++) 
                     if (tracks.get(i).isSelected() && tracks.get(i).isNotEmpty()) {
                         noneSelected = false;
-                        tracks.get(i).playback();
+                        tracks.get(i).stopPlaying();
+                        tracks.get(i).startPlaying();
                     }
                 if (!noneSelected)
                     clock.restart();
@@ -159,6 +172,8 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                 // add new track:
                 addNewTrack();
 
+                waitASecond(1000);
+                allStop();
                 // start selected tracks playing:
                 for (int i = 0; i < tracks.size(); i++) 
                     if (tracks.get(i).isSelected())
@@ -417,7 +432,7 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
         // do everything modulo ntracks:
         int i = (tracks.size() + ii) % tracks.size();
         int j = (tracks.size() + jj) % tracks.size();
-        
+
         // swap positions of two tracks (intermediate method for shifting up and down)
         // swap track
         Track tempTrack = tracks.get(i);
@@ -443,6 +458,14 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
 
     public int whichTrackAmI(Track trk) {
         return tracks.indexOf(trk);
+    }
+
+    private void waitASecond(int milliseconds) {
+        try {
+            Thread.sleep(1000);                 //1000 milliseconds is one second.
+        } catch(InterruptedException ex) {
+            Thread.currentThread().interrupt();
+        }
     }
 
     private void allStop() {
@@ -734,6 +757,8 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
 
     private void newDoc() {
         for (int i = tracks.size()-1; i >= 0; i--) {
+            tracks.get(i).stopRecording();
+            tracks.get(i).stopPlaying();
             mainPanel.remove(linePanel.get(i));
             linePanel.remove(i);
             tracks.remove(i);

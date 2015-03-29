@@ -29,6 +29,7 @@ class Track extends JPanel implements ActionListener {
     private Metronome metronome;
     private Clock clock; 
 
+    private LeftTrackButtonPanel trackButtonPanel;
     private VolumeSlider slider;
 
     private TimeLine timeLine;
@@ -126,6 +127,7 @@ class Track extends JPanel implements ActionListener {
     public void startPlaying() {
         if (trackData.isNotEmpty()) {
             clock.restart();
+            disableRecordPlay();
             playback();
         }
     }
@@ -247,6 +249,13 @@ class Track extends JPanel implements ActionListener {
         return monitor;
     }
 
+    public void disableRecordPlay() {
+        trackButtonPanel.disableRecordPlay();
+    }
+
+    public void enableRecordPlay() {
+        trackButtonPanel.enableRecordPlay();
+    }
 
     // Basic Track constructor
     Track(JFrame frm, TrackPanel tpnl, Metronome m, Clock c, Prefs p) {
@@ -318,7 +327,8 @@ class Track extends JPanel implements ActionListener {
         JPanel outerSliderPanel = new JPanel(new FlowLayout());
         outerSliderPanel.add(slider);
 
-        add(new LeftTrackButtonPanel(this));
+        trackButtonPanel = new LeftTrackButtonPanel(this);
+        add(trackButtonPanel);
         add(Box.createRigidArea(new Dimension(4,0)));
         add(mainPanel);
         add(outerMonitorPanel);
