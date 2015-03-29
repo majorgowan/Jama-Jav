@@ -190,7 +190,6 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                         removeTrack(i);
                     }
                 }
-                refreshMainPanel();
                 refreshBigTimeLine();
                 break;
 
@@ -201,7 +200,6 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                         swapTracks(i,i-1);
                     }
                 }
-                refreshMainPanel();
                 break;
 
             case ("moveselecteddown") :
@@ -211,7 +209,6 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                         swapTracks(i,i+1);
                     }
                 }
-                refreshMainPanel();
                 break;
 
             case ("concatenateselected") :
@@ -403,16 +400,21 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
         mainPanel.scrollRectToVisible(new Rectangle(0,(int)mainPanel.getPreferredSize().getHeight(),10,10));
     }
 
-    private void removeTrack(int i) {
+    public void removeTrack(int i) {
         tracks.get(i).stopRecording();
         tracks.get(i).stopPlaying();
         mainPanel.remove(linePanel.get(i));
         tracks.remove(i);
         linePanel.remove(i);
         ntracks--;
+        refreshMainPanel();
     }
 
-    private void swapTracks(int i, int j) {
+    public void swapTracks(int ii, int jj) {
+        // do everything modulo ntracks:
+        int i = (tracks.size() + ii) % tracks.size();
+        int j = (tracks.size() + jj) % tracks.size();
+        
         // swap positions of two tracks (intermediate method for shifting up and down)
         // swap track
         Track tempTrack = tracks.get(i);
@@ -428,10 +430,16 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
         JPanel tempPanel = linePanel.get(i);
         linePanel.set(i,linePanel.get(j));
         linePanel.set(j,tempPanel);
+
+        refreshMainPanel();
     }
 
     public Track getTrack(int i) {
         return tracks.get(i);
+    }
+
+    public int whichTrackAmI(Track trk) {
+        return tracks.indexOf(trk);
     }
 
     private void allStop() {

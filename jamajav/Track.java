@@ -45,6 +45,7 @@ class Track extends JPanel implements ActionListener {
         String comStr = ae.getActionCommand();
 
         switch (comStr) {
+
             case ("recordstop") :
                 if (!trackData.isCapturing()) {
                     startRecording();
@@ -58,17 +59,34 @@ class Track extends JPanel implements ActionListener {
                 startPlaying();
                 break;
 
+            case ("edittrack") :
+                if (isNotEmpty()) {
+                    editTrack();
+                    trackPanel.refreshBigTimeLine();
+                }
+                break;
+
+            case ("clonetrack") :
+                break;
+
             case ("editinfo") :
                 Info info = editInfo();
                 trackData.putInfo(info);
                 setToolTip(info);
                 break;
 
-            case ("edittrack") :
-                if (isNotEmpty()) {
-                    editTrack();
-                    trackPanel.refreshBigTimeLine();
-                }
+            case ("moveup") :
+                int jup = trackPanel.whichTrackAmI(this);
+                trackPanel.swapTracks(jup, jup-1);
+                break;
+
+            case ("movedown") :
+                int jdown = trackPanel.whichTrackAmI(this);
+                trackPanel.swapTracks(jdown, jdown+1);
+                break;
+
+            case ("remove") :
+                trackPanel.removeTrack(trackPanel.whichTrackAmI(this));
                 break;
         }
     }
