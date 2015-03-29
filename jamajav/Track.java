@@ -124,12 +124,17 @@ class Track extends JPanel implements ActionListener {
         trackData.stopCapturing();
     }
 
-    public void startPlaying() {
+    public void startPlaying(double start, double end) {
         if (trackData.isNotEmpty()) {
-            clock.restart();
+            clock.setTime(start);
+            clock.start();
             disableRecordPlay();
-            playback();
+            playback(start, end);
         }
+    }
+
+    public void startPlaying() {
+        startPlaying(0.0, getRunningTime());
     }
 
     public void pausePlaying() {
@@ -201,6 +206,10 @@ class Track extends JPanel implements ActionListener {
         return trackData.getInfo();
     }
 
+    public double getRunningTime() {
+        return trackData.getRunningTime();
+    }
+
     public int getVolume() {
         return slider.getValue();
     }
@@ -219,8 +228,8 @@ class Track extends JPanel implements ActionListener {
         timeLine.setRunningTime(trackData.getInfo().getRunningTime());
     }
 
-    public void playback() {
-        trackData.playback(slider.getValue(), timeLine);
+    public void playback(double start, double end) {
+        trackData.playback(start, end, slider.getValue(), timeLine);
     }
 
     public void putTrackData(TrackData td) {

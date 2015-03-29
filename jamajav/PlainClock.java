@@ -41,6 +41,14 @@ class PlainClock extends JPanel implements ActionListener {
         return theTime;
     }
 
+    public void setTime(double t) {
+        theTime = t;
+    }
+
+    public void start() {
+        timer.start();
+    }
+
     public void restart() {
         timer.stop();
         theTime = 0.0;

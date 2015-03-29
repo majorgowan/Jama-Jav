@@ -55,21 +55,21 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
         // System.out.println("I THINK WE GOT SOMETHING THERE!");
         for (int i = 0; i < tracks.size(); i++) {
             if (obs == tracks.get(i).getTrackData().getStopPlay()) {
-                // loop over all tracks - if all are stopped playing
-                // then stop clock
-                boolean allStopped = true;
+                // loop over all tracks - if any are stopped, then
+                // (re)enable the Record and Play buttons
                 for (int j = 0; j < tracks.size(); j++) {
-                    if (!tracks.get(j).getTrackData().getStopPlay().getValue())
-                        allStopped = false;
-                    else
+                    if (tracks.get(j).getTrackData().getStopPlay().getValue())
                         tracks.get(j).enableRecordPlay();
                 }
-                if (allStopped)
+                if (allStopped()) {
                     clock.stop();
+                    bigTimeLine.stop();
+                }
             } else if (obs == tracks.get(i).getTrackData().getStopCapture()) {
                 // if firing track is stopped recording, stop the clock
                 if (tracks.get(i).getTrackData().getStopCapture().getValue()) {
                     clock.stop(); // stop clock (probably redundant)
+                    bigTimeLine.stop();
                     // System.out.println("Stopped clock, resetting toolTip");
                     // System.out.println("Running time: " + tracks.get(i).getInfo().getRunningTime());
                     tracks.get(i).resetToolTip(); // reset ToolTip to set running time
@@ -118,46 +118,67 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                 break;
 
             case("playallfromtop") :
-                allStop();
-                waitASecond(1000);
-                // start all tracks playing from the beginning
-                for (int i = 0; i < tracks.size(); i++) {
-                    tracks.get(i).startPlaying();
+                if (!allStopped()) {
+                    allStop();
+                    waitASecond(1000);
                 }
+                // start all tracks playing from the beginning
+                for (int i = 0; i < tracks.size(); i++) 
+                    tracks.get(i).startPlaying();
+                bigTimeLine.setTime(0.0);
+                bigTimeLine.start();
                 break;
 
             case ("playall") :
-                allStop();
-                waitASecond(1000);
-                // start all tracks playing:
-                for (int i = 0; i < tracks.size(); i++) { 
-                    tracks.get(i).startPlaying();
+                if (!allStopped()) {
+                    allStop();
+                    waitASecond(1000);
                 }
+                // start all tracks playing:
+                for (int i = 0; i < tracks.size(); i++) 
+                    tracks.get(i).startPlaying(
+                            bigTimeLine.getMinTime(), bigTimeLine.getMaxTime());
+                bigTimeLine.setTime(bigTimeLine.getMinTime());
+                bigTimeLine.start();
                 break;
 
             case ("playselectedfromtop") :
                 // play selected tracks from beginning to end
                 noneSelected = true;
                 for (int i = 0; i < tracks.size(); i++) 
-                    if (tracks.get(i).isSelected() && tracks.get(i).isNotEmpty()) {
+                    if (tracks.get(i).isSelected() && tracks.get(i).isNotEmpty()) 
                         noneSelected = false;
-                        tracks.get(i).stopPlaying();
-                        tracks.get(i).startPlaying();
+                if (!noneSelected) {
+                    if (!allStopped()) {
+                        allStop();
+                        waitASecond(1000);
                     }
-                if (!noneSelected)
+                    for (int i = 0; i < tracks.size(); i++) 
+                        if (tracks.get(i).isSelected() && tracks.get(i).isNotEmpty()) 
+                            tracks.get(i).startPlaying();
+                    bigTimeLine.setTime(0.0);
+                    bigTimeLine.start(); 
                     clock.restart();
+                }
                 break;
 
             case ("playselected") :
                 noneSelected = true;
                 for (int i = 0; i < tracks.size(); i++) 
-                    if (tracks.get(i).isSelected() && tracks.get(i).isNotEmpty()) {
+                    if (tracks.get(i).isSelected() && tracks.get(i).isNotEmpty()) 
                         noneSelected = false;
-                        tracks.get(i).stopPlaying();
-                        tracks.get(i).startPlaying();
+                if (!noneSelected) {
+                    if (!allStopped()) {
+                        allStop();
+                        waitASecond(1000);
                     }
-                if (!noneSelected)
-                    clock.restart();
+                    for (int i = 0; i < tracks.size(); i++)
+                        if (tracks.get(i).isSelected() && tracks.get(i).isNotEmpty()) 
+                            tracks.get(i).startPlaying(
+                                    bigTimeLine.getMinTime(), bigTimeLine.getMaxTime());
+                    bigTimeLine.setTime(bigTimeLine.getMinTime());
+                    bigTimeLine.start();
+                }
                 break;
 
             case ("pause") :
@@ -172,12 +193,18 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                 // add new track:
                 addNewTrack();
 
-                waitASecond(1000);
-                allStop();
+                // check if any are playing and if so, stop them
+                if (!allStopped()) {
+                    allStop();
+                    waitASecond(1000);
+                }
                 // start selected tracks playing:
                 for (int i = 0; i < tracks.size(); i++) 
                     if (tracks.get(i).isSelected())
                         tracks.get(i).startPlaying();
+
+                bigTimeLine.setTime(0.0);
+                bigTimeLine.start();
 
                 // start new track recording
                 tracks.get(tracks.size()-1).startRecording();
@@ -475,17 +502,25 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
         }
     }
 
+    private boolean allStopped() {
+        boolean result = true;
+        for (int j = 0; j < tracks.size(); j++) 
+            if (!tracks.get(j).getTrackData().getStopPlay().getValue()) 
+                result = false;
+
+        return result;
+    }
+
     private void allPause() {
-        boolean allStopped = true;
-        for (int j = 0; j < tracks.size(); j++) {
-            if (!tracks.get(j).getTrackData().getStopPlay().getValue()) {
+        // if any are running, then pause them and pause clock
+        for (int j = 0; j < tracks.size(); j++) 
+            if (!tracks.get(j).getTrackData().getStopPlay().getValue()) 
                 tracks.get(j).pausePlaying();
-                allStopped = false;
-            }
-        }
-        // if any are running, then pause clock
-        if (!allStopped) 
+
+        if (!allStopped()) {
             clock.toggle();
+            bigTimeLine.toggle();
+        }
     }
 
     // choose a file

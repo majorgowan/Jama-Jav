@@ -12,12 +12,15 @@ class PlainTimeLine extends JPanel implements ActionListener {
     protected double runnerPosition;
     protected Timer timer;
 
+    public void setTime(double time) {
+        runnerPosition = time;
+    }
+
     public void setRunningTime(double t) {
         runningTime = t;
     }
 
     public void start() {
-        runnerPosition = 0;
         timer.start();
     }
 

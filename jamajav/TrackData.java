@@ -93,7 +93,7 @@ class TrackData {
 
     private double bytesToSeconds(int nbytes) {
         return (double)(nbytes) / 
-                (double)(audioFormat.getFrameSize() * audioFormat.getFrameRate());
+            (double)(audioFormat.getFrameSize() * audioFormat.getFrameRate());
     }
 
     private int secondsToBytes(double seconds) {
@@ -215,15 +215,29 @@ class TrackData {
         }
     }
 
-    public void playback(int volume, TimeLine tl) {
+    public void playback(double startTime, double endTime, int volume, TimeLine tl) {
         timeLine = tl;
+        tl.setTime(startTime);
         timeLine.start();
         // System.out.println("Playing back . . . ");
         stopPlay.start();
         isPaused = false;
         try {
+            // truncate audioData to cover (startTime, endTime)
+            int startByte = secondsToBytes(startTime);
+            startByte = Math.min(startByte-startByte%2, audioData.length-1);  // even number
+
+            int endByte = secondsToBytes(endTime);
+            endByte = Math.min(endByte-endByte%2+1, audioData.length-1);      // odd number
+
+            // System.out.println("Playing bytes " + startByte + " to " + endByte);
+            
+            byte[] toPlay = new byte[endByte - startByte + 1];
+            for (int i = 0; i < toPlay.length; i++)
+                toPlay[i] = audioData[i+startByte];
+
             InputStream byteArrayInputStream 
-                = new ByteArrayInputStream(audioData);
+                = new ByteArrayInputStream(toPlay);
 
             audioInputStream = 
                 new AudioInputStream(
@@ -251,9 +265,14 @@ class TrackData {
 
         } catch (Exception e) {
             System.out.println(e);
-            e.printStackTrace();
+            System.out.println("Array size is " + audioData.length); 
+            // e.printStackTrace();
             // System.exit(0);
         }
+    }
+
+    public void playback(int volume, TimeLine tl) {
+        playback(0.0, getRunningTime(), volume, tl);
     }
 
     class PlayThread extends Thread {
