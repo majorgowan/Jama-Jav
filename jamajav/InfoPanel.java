@@ -124,6 +124,7 @@ class InfoPanel extends JPanel implements ActionListener {
         add(buttonPanel, BorderLayout.SOUTH);
 
         titleField.requestFocusInWindow();
+        titleField.selectAll();
     }
 
 }
