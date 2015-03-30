@@ -455,11 +455,7 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
         refreshMainPanel();
     }
 
-    public void swapTracks(int ii, int jj) {
-        // do everything modulo ntracks:
-        int i = (tracks.size() + ii) % tracks.size();
-        int j = (tracks.size() + jj) % tracks.size();
-
+    public void swapTracks(int i, int j) {
         // swap positions of two tracks (intermediate method for shifting up and down)
         // swap track
         Track tempTrack = tracks.get(i);

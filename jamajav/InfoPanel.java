@@ -11,10 +11,14 @@ import java.io.*;
 // For resizable arrays
 import java.util.ArrayList;
 
+// for icon images
+import java.awt.image.*;
+import java.net.URL;
+
 class InfoPanel extends JPanel implements ActionListener {
 
     final private int DEFAULT_WIDTH = 500;
-    final private int DEFAULT_HEIGHT = 200;
+    final private int DEFAULT_HEIGHT = 250;
 
     private Info info;
 
@@ -23,8 +27,10 @@ class InfoPanel extends JPanel implements ActionListener {
     private JPanel notesPanel;
     private JButton addNoteButton;
     private ArrayList<JTextField> noteField;
-    private ArrayList<JButton> removeButton;
     private ArrayList<JPanel> noteLine;
+    private ArrayList<TrackButton> removeButton;
+    private ArrayList<TrackButton> upButton;
+    private ArrayList<TrackButton> downButton;
 
     private JButton okButton;
     private JButton cancelButton;
@@ -33,21 +39,58 @@ class InfoPanel extends JPanel implements ActionListener {
         return (new Dimension(DEFAULT_WIDTH, DEFAULT_HEIGHT));
     }
 
+    // copied from TrackButtonPanel (hence strange nomenclature!)
+    private TrackButton makeButton(String buttonType, String imageName, 
+            String toolTipText) {
+
+        String imgLocation = "/Icons/Toolbar/" + buttonType + "/" + imageName + ".gif";
+        URL imageURL = ToolBar.class.getResource(imgLocation);
+
+        TrackButton button = new TrackButton();
+        button.setToolTipText(toolTipText);
+        button.addActionListener(this);
+
+        button.setIcon(new ImageIcon(imageURL));
+
+        return button;
+    }
+
+    private void addNote() {
+        noteLine.add(new JPanel());
+        noteField.add(new JTextField(30));
+        removeButton.add(makeButton("General","Remove24","Remove Note"));
+        upButton.add(makeButton("Navigation","Up24","Move Note Up"));
+        downButton.add(makeButton("Navigation","Down24","Move Note Down"));
+        int newNoteNum = noteLine.size()-1;
+        noteLine.get(newNoteNum).setLayout(
+                new BoxLayout(noteLine.get(newNoteNum),BoxLayout.LINE_AXIS));
+        noteLine.get(newNoteNum).add(noteField.get(newNoteNum));
+        noteLine.get(newNoteNum).add(Box.createRigidArea(new Dimension(8,0)));
+        noteLine.get(newNoteNum).add(upButton.get(newNoteNum));
+        noteLine.get(newNoteNum).add(Box.createRigidArea(new Dimension(2,0)));
+        noteLine.get(newNoteNum).add(downButton.get(newNoteNum));
+        noteLine.get(newNoteNum).add(Box.createRigidArea(new Dimension(15,0)));
+        noteLine.get(newNoteNum).add(removeButton.get(newNoteNum));
+
+        noteLine.get(newNoteNum).setBorder(BorderFactory.createEmptyBorder(5,0,5,0));
+        notesPanel.add(noteLine.get(newNoteNum));
+
+        notesPanel.revalidate();
+        noteField.get(newNoteNum).requestFocusInWindow();
+    }
+
+    private void swapNotes (int i, int j) {
+        // swap noteFields
+        String temp = noteField.get(i).getText();
+        noteField.get(i).setText(noteField.get(j).getText());
+        noteField.get(j).setText(temp);
+    }
+
     public void actionPerformed(ActionEvent ae) {
         //
         // use if instead of switch because of loop
         if (ae.getSource() == addNoteButton) {
-            noteLine.add(new JPanel());
-            noteField.add(new JTextField(30));
-            removeButton.add(new JButton("Remove"));
-            int newNoteNum = noteLine.size()-1;
-            noteLine.get(newNoteNum).add(removeButton.get(newNoteNum));
-            noteLine.get(newNoteNum).add(noteField.get(newNoteNum));
-
-            notesPanel.add(noteLine.get(newNoteNum));
-
-            notesPanel.revalidate();
-            noteField.get(newNoteNum).requestFocusInWindow();
+            addNote();
         }
 
         for (int i = 0; i < noteLine.size(); i++) {
@@ -55,8 +98,17 @@ class InfoPanel extends JPanel implements ActionListener {
                 notesPanel.remove(noteLine.get(i));
                 noteField.remove(i);
                 removeButton.remove(i);
+                upButton.remove(i);
+                downButton.remove(i);
                 noteLine.remove(i);
                 notesPanel.revalidate();
+                notesPanel.repaint();
+            } else if (ae.getSource() == upButton.get(i)) {
+                if (i > 0)
+                    swapNotes(i,i-1);
+            } else if (ae.getSource() == downButton.get(i)) {
+                if (i < noteLine.size()-1)
+                    swapNotes(i,i+1);
             }
         }
 
@@ -80,8 +132,10 @@ class InfoPanel extends JPanel implements ActionListener {
         info = inf;
 
         noteField = new ArrayList<JTextField>(0);
-        removeButton = new ArrayList<JButton>(0);
         noteLine = new ArrayList<JPanel>(0);
+        removeButton = new ArrayList<TrackButton>(0);
+        upButton = new ArrayList<TrackButton>(0);
+        downButton = new ArrayList<TrackButton>(0);
 
         JPanel titlePanel = new JPanel();
         titlePanel.add(new JLabel("Title: "));
@@ -92,16 +146,13 @@ class InfoPanel extends JPanel implements ActionListener {
         notesPanel.setLayout(new BoxLayout(notesPanel,BoxLayout.PAGE_AXIS));
 
         for (int i = 0; i < info.getNotesSize(); i++) {
-            noteLine.add(new JPanel());
-            removeButton.add(new JButton("Remove"));
-            noteField.add(new JTextField(info.getNote(i),30));
-            noteLine.get(i).add(removeButton.get(i));
-            noteLine.get(i).add(noteField.get(i));
-
-            notesPanel.add(noteLine.get(i));
+            addNote();
+            noteField.get(i).setText(info.getNote(i));
         }
 
-        JScrollPane scrollPane = new JScrollPane(notesPanel);
+        JPanel outerNotesPanel = new JPanel(new FlowLayout());
+        outerNotesPanel.add(notesPanel);
+        JScrollPane scrollPane = new JScrollPane(outerNotesPanel);
 
         JPanel buttonPanel = new JPanel(new FlowLayout());
 

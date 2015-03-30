@@ -78,12 +78,14 @@ class Track extends JPanel implements ActionListener {
 
             case ("moveup") :
                 int jup = trackPanel.whichTrackAmI(this);
-                trackPanel.swapTracks(jup, jup-1);
+                if (jup > 0)
+                    trackPanel.swapTracks(jup, jup-1);
                 break;
 
             case ("movedown") :
                 int jdown = trackPanel.whichTrackAmI(this);
-                trackPanel.swapTracks(jdown, jdown+1);
+                if (jdown < trackPanel.getNTracks()-1)
+                    trackPanel.swapTracks(jdown, jdown+1);
                 break;
 
             case ("remove") :

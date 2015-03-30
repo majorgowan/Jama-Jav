@@ -4,6 +4,8 @@ package jamajav;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+
+// for icon images
 import java.awt.image.*;
 import java.net.URL;
 
