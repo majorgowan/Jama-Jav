@@ -14,9 +14,7 @@ import java.net.URL;
 class Track extends JPanel implements ActionListener {
 
     final private int DEFAULT_WIDTH = 525;
-    final private int DEFAULT_HEIGHT = 160;
-
-    private static Color goldColour = new Color(0.7f,0.7f,0.98f);
+    final private int DEFAULT_HEIGHT = 150;
 
     private TrackData trackData;
 
@@ -348,6 +346,7 @@ class Track extends JPanel implements ActionListener {
         JPanel rightPanel = new JPanel(new FlowLayout());
         rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.LINE_AXIS));
 
+        rightPanel.add(Box.createRigidArea(new Dimension(4,0)));
         rightPanel.add(trackButtonPanel);
         rightPanel.add(Box.createRigidArea(new Dimension(4,0)));
         rightPanel.add(mainPanel);
@@ -361,11 +360,10 @@ class Track extends JPanel implements ActionListener {
         JPanel outerPanel = new JPanel();
         outerPanel.add(avatarLabel);
         outerPanel.add(rightPanel);
-        outerPanel.setBorder(BorderFactory.createRaisedSoftBevelBorder());
+        outerPanel.setBorder(BorderFactory.createRaisedBevelBorder());
 
         add(outerPanel);
-        setBackground(goldColour);
-        setBorder(BorderFactory.createEmptyBorder(10,0,10,0));
+        setBorder(BorderFactory.createEmptyBorder(5,0,5,0));
 
         addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent me) {

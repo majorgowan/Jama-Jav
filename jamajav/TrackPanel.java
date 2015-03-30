@@ -409,6 +409,7 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
         tracks.add(new Track(parent, this, metronome, clock, prefs));
         tracks.get(ntracks-1).setAvatar
                     (avatars.get(findAvatarIndex(prefs.getAvatar())).getImage());
+        tracks.get(ntracks-1).setBackground(goldColour);
 
         // System.out.println("adding track ... now " + ntracks + " tracks");
 
