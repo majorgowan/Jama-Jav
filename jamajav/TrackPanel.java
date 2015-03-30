@@ -27,8 +27,6 @@ import java.util.Observer;
 class TrackPanel extends JPanel implements ActionListener, Observer {
 
     private ArrayList<Track> tracks;
-    private ArrayList<JPanel> linePanel;
-    private ArrayList<JLabel> avatarLabel;
 
     private static Color goldColour = new Color(0.7f,0.7f,0.98f);
     private static Color highlightColour = new Color(0.8f,0.4f,0.2f);
@@ -273,7 +271,6 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                     // set monitor of new track to the TrackData
                     td.setMonitor(tracks.get(ntracks-1).getMonitor());
                     tracks.get(ntracks-1).refreshVisualizerAndTimeLine();
-                    refreshAvatars();
                 }
                 refreshBigTimeLine();
                 break;
@@ -298,7 +295,6 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                     // set monitor of new track to the TrackData
                     td.setMonitor(tracks.get(ntracks-1).getMonitor());
                     tracks.get(ntracks-1).refreshVisualizerAndTimeLine();
-                    refreshAvatars();
                 }
                 break;
 
@@ -381,8 +377,9 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                 running = Math.max(running, tracks.get(i).getInfo().getRunningTime());
 
             bigTimeLine.setRunningTime(running);
-        } else
+        } else 
             bigTimeLine.setRunningTime(0.0);
+
 
         bigTimeLine.rehash();
         bigTimeLine.repaint();
@@ -393,19 +390,10 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
         mainPanel.removeAll();
 
         for (int i=0; i<ntracks; i++) {
-            mainPanel.add(linePanel.get(i));
+            mainPanel.add(tracks.get(i));
         }
         mainPanel.revalidate();
         repaint();
-    }
-
-    public void refreshAvatars() {
-        for (int i = 0; i < tracks.size(); i++)
-            avatarLabel.get(i).setIcon(
-                    new ImageIcon(avatars.get(
-                            findAvatarIndex(
-                                tracks.get(i).getInfo().getAvatar())).getImage()));
-        revalidate();
     }
 
     public int getNTracks() {
@@ -419,23 +407,12 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
     public void addNewTrack() {
         ntracks++;
         tracks.add(new Track(parent, this, metronome, clock, prefs));
-        linePanel.add(new JPanel());
-        avatarLabel.add(new JLabel(
-                    new ImageIcon(avatars.get(findAvatarIndex(prefs.getAvatar())).getImage())));
-
-        avatarLabel.get(ntracks-1)
-            .setBorder(BorderFactory
-                    .createEtchedBorder(EtchedBorder.RAISED, highlightColour, shadowColour));
+        tracks.get(ntracks-1).setAvatar
+                    (avatars.get(findAvatarIndex(prefs.getAvatar())).getImage());
 
         // System.out.println("adding track ... now " + ntracks + " tracks");
 
-        linePanel.get(ntracks-1).setBackground(goldColour);
-        linePanel.get(ntracks-1).add(avatarLabel.get(ntracks-1));
-        linePanel.get(ntracks-1).add(tracks.get(ntracks-1));
-        linePanel.get(ntracks-1)
-            .setBorder(BorderFactory.createEmptyBorder(0,0,0,10));
-
-        mainPanel.add(linePanel.get(ntracks-1));
+        mainPanel.add(tracks.get(ntracks-1));
 
         revalidate();
         //Scroll the TrackPanel to the bottom to show the new Track:
@@ -448,11 +425,11 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
     public void removeTrack(int i) {
         tracks.get(i).stopRecording();
         tracks.get(i).stopPlaying();
-        mainPanel.remove(linePanel.get(i));
+        mainPanel.remove(tracks.get(i));
         tracks.remove(i);
-        linePanel.remove(i);
         ntracks--;
         refreshMainPanel();
+        refreshBigTimeLine();
     }
 
     public void swapTracks(int i, int j) {
@@ -461,16 +438,6 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
         Track tempTrack = tracks.get(i);
         tracks.set(i,tracks.get(j));
         tracks.set(j,tempTrack);
-
-        // swap avatarLabel
-        JLabel tempLabel = avatarLabel.get(i);
-        avatarLabel.set(i,avatarLabel.get(j));
-        avatarLabel.set(j,tempLabel);
-
-        // swap linePanel
-        JPanel tempPanel = linePanel.get(i);
-        linePanel.set(i,linePanel.get(j));
-        linePanel.set(j,tempPanel);
 
         refreshMainPanel();
     }
@@ -661,8 +628,8 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                     info.setContributor(br.readLine());
                     info.setAvatar(br.readLine());
 
-                    avatarLabel.get(i).setIcon(
-                            new ImageIcon(avatars.get(findAvatarIndex(info.getAvatar())).getImage()));
+                    tracks.get(i).setAvatar(
+                            avatars.get(findAvatarIndex(info.getAvatar())).getImage());
 
                     info.setDate(br.readLine());
                     info.setLocation(br.readLine());
@@ -742,8 +709,8 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                     info.setContributor(br.readLine());
                     info.setAvatar(br.readLine());
 
-                    avatarLabel.get(i).setIcon(
-                            new ImageIcon(avatars.get(findAvatarIndex(info.getAvatar())).getImage()));
+                    tracks.get(i).setAvatar(
+                            avatars.get(findAvatarIndex(info.getAvatar())).getImage());
 
                     info.setDate(br.readLine());
                     info.setLocation(br.readLine());
@@ -790,8 +757,7 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
         for (int i = tracks.size()-1; i >= 0; i--) {
             tracks.get(i).stopRecording();
             tracks.get(i).stopPlaying();
-            mainPanel.remove(linePanel.get(i));
-            linePanel.remove(i);
+            mainPanel.remove(tracks.get(i));
             tracks.remove(i);
             ntracks--;
         }
@@ -896,8 +862,6 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
         prefs = p;
 
         tracks = new ArrayList<Track>(0);
-        linePanel = new ArrayList<JPanel>(0);
-        avatarLabel = new ArrayList<JLabel>(0);
 
         // initialize Avatars
         avatars = new ArrayList<Avatar>(0);

@@ -13,8 +13,10 @@ import java.net.URL;
 
 class Track extends JPanel implements ActionListener {
 
-    final private int DEFAULT_WIDTH = 425;
-    final private int DEFAULT_HEIGHT = 130;
+    final private int DEFAULT_WIDTH = 525;
+    final private int DEFAULT_HEIGHT = 160;
+
+    private static Color goldColour = new Color(0.7f,0.7f,0.98f);
 
     private TrackData trackData;
 
@@ -32,6 +34,7 @@ class Track extends JPanel implements ActionListener {
     private LeftTrackButtonPanel trackButtonPanel;
     private VolumeSlider slider;
 
+    private JLabel avatarLabel;
     private TimeLine timeLine;
     private Visualizer visualizer;
     private Monitor monitor;
@@ -181,6 +184,10 @@ class Track extends JPanel implements ActionListener {
         return info;
     }
 
+    public void setAvatar(BufferedImage img) {
+        avatarLabel.setIcon(new ImageIcon(img));
+    }
+
     public void setToolTip(Info info) {
         String toolTip = "<html><h3>" + info.getTitle() + "<br>";
 
@@ -291,8 +298,6 @@ class Track extends JPanel implements ActionListener {
         info.setAvatar(prefs.getAvatar());
         trackData.putInfo(info);
 
-        setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
-
         timeLine = new TimeLine();
 
         JPanel mainPanel = new JPanel();
@@ -339,16 +344,28 @@ class Track extends JPanel implements ActionListener {
         outerSliderPanel.add(slider);
 
         trackButtonPanel = new LeftTrackButtonPanel(this);
-        add(trackButtonPanel);
-        add(Box.createRigidArea(new Dimension(4,0)));
-        add(mainPanel);
-        add(outerMonitorPanel);
-        add(outerSliderPanel);
-        add(Box.createRigidArea(new Dimension(4,0)));
-        add(new NavTrackButtonPanel(this));
 
-        // create border for Track
-        setBorder(BorderFactory.createRaisedSoftBevelBorder());
+        JPanel rightPanel = new JPanel(new FlowLayout());
+        rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.LINE_AXIS));
+
+        rightPanel.add(trackButtonPanel);
+        rightPanel.add(Box.createRigidArea(new Dimension(4,0)));
+        rightPanel.add(mainPanel);
+        rightPanel.add(outerMonitorPanel);
+        rightPanel.add(outerSliderPanel);
+        rightPanel.add(Box.createRigidArea(new Dimension(4,0)));
+        rightPanel.add(new NavTrackButtonPanel(this));
+
+        avatarLabel = new JLabel();
+
+        JPanel outerPanel = new JPanel();
+        outerPanel.add(avatarLabel);
+        outerPanel.add(rightPanel);
+        outerPanel.setBorder(BorderFactory.createRaisedSoftBevelBorder());
+
+        add(outerPanel);
+        setBackground(goldColour);
+        setBorder(BorderFactory.createEmptyBorder(10,0,10,0));
 
         addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent me) {

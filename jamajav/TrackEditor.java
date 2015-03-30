@@ -478,9 +478,6 @@ class TrackEditor extends JPanel implements ActionListener, Observer {
         trackPanel.getTrack(trackPanel.getNTracks() - 1).setTrackData(trackData);
         trackData.setMonitor(trackPanel.getTrack(trackPanel.getNTracks() - 1).getMonitor());
         trackPanel.getTrack(trackPanel.getNTracks() - 1).refreshVisualizerAndTimeLine();
-        // clumsy, but necessary because new Track will otherwise have default avatar
-        // instead of author of original track being copied
-        trackPanel.refreshAvatars();
     }
 
 
