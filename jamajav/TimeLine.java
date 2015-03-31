@@ -59,7 +59,7 @@ class TimeLine extends PlainTimeLine implements ActionListener {
 
     TimeLine() {
         super();
-        setBackground(Color.WHITE);
+        //setBackground(Color.WHITE);
     }
 }
 

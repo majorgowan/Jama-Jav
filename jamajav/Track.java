@@ -19,8 +19,9 @@ class Track extends JPanel implements ActionListener {
     private TrackData trackData;
 
     private boolean isClicked = false;
-    
-    private Color clickedColor, unclickedColor;
+
+    private final Color clickedColour = JamaJav.clickedColour;
+    private final Color unclickedColour = JamaJav.unclickedColour;
 
     // ancestors
     private JFrame jfrm;
@@ -130,25 +131,79 @@ class Track extends JPanel implements ActionListener {
 
     public void collapse() {
         displaySlim();
+        setSelected(isSelected());
         trackPanel.refreshMainPanel();
     }
 
     public void expand() {
         displayFat();
+        setSelected(isSelected());
         trackPanel.refreshMainPanel();
     }
 
     public void setSelected(boolean b) {
+        Component[] components = this.getComponents();  // get all Components in this container
+        Component[] subcomponents;
+        Component[] subsubcomponents;
+        Component[] subsubsubcomponents;
+
         isClicked = b;
         if (isClicked) {
-           // outerPanel.setBorder(
-           //         BorderFactory.createStrokeBorder(new BasicStroke(3.0f),Color.BLACK));
-            titlePanel.setBackground(clickedColor);
-            slimTitlePanel.setBackground(clickedColor);
+            for (Component c : components) {
+                c.setBackground(clickedColour);
+
+                if (c instanceof Container) {
+                    subcomponents = ((Container)c).getComponents();
+                    for (Component csub : subcomponents) {
+                        csub.setBackground(clickedColour);
+
+                        if (csub instanceof Container) {
+                            subsubcomponents = ((Container)csub).getComponents();
+                            for (Component csubsub : subsubcomponents) {
+                                csubsub.setBackground(clickedColour);
+
+                                if (csubsub instanceof Container) {
+                                    subsubsubcomponents = ((Container)csubsub).getComponents();
+                                    for (Component csubsubsub : subsubsubcomponents)
+                                        csubsubsub.setBackground(clickedColour);
+                                }
+
+                            }
+                        }
+                        
+                    }
+                }
+
+            }
+            timeLine.setBackground(clickedColour);
         } else {
-            //outerPanel.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
-            titlePanel.setBackground(unclickedColor);
-            slimTitlePanel.setBackground(unclickedColor);
+            for (Component c : components) {
+                c.setBackground(unclickedColour);
+
+                if (c instanceof Container) {
+                    subcomponents = ((Container)c).getComponents();
+                    for (Component csub : subcomponents) {
+                        csub.setBackground(unclickedColour);
+
+                        if (csub instanceof Container) {
+                            subsubcomponents = ((Container)csub).getComponents();
+                            for (Component csubsub : subsubcomponents) {
+                                csubsub.setBackground(unclickedColour);
+
+                                if (csubsub instanceof Container) {
+                                    subsubsubcomponents = ((Container)csubsub).getComponents();
+                                    for (Component csubsubsub : subsubsubcomponents)
+                                        csubsubsub.setBackground(unclickedColour);
+                                }
+
+                            }
+                        }
+                        
+                    }
+                }
+
+            }
+            timeLine.setBackground(unclickedColour);
         }
         repaint();
     }
@@ -326,7 +381,7 @@ class Track extends JPanel implements ActionListener {
     public void displayFat() {
         this.removeAll();
         DEFAULT_HEIGHT = 150;
-        
+
         avatarLabel.setIcon(new ImageIcon(avatarImage));
 
         JPanel mainPanel = new JPanel();
@@ -387,11 +442,14 @@ class Track extends JPanel implements ActionListener {
         leftPanel.add(outerTimePanel);
         leftPanel.add(slimTitlePanel);
 
+        JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        rightPanel.add(slimTrackButtonPanel);
+
         outerPanel.removeAll();
         outerPanel.setLayout(new BoxLayout(outerPanel,BoxLayout.LINE_AXIS));
         outerPanel.add(leftPanel);
         outerPanel.add(Box.createHorizontalGlue());
-        outerPanel.add(slimTrackButtonPanel);
+        outerPanel.add(rightPanel);
         //outerPanel.setBorder(BorderFactory.createRaisedBevelBorder());
 
         add(outerPanel);
@@ -407,8 +465,7 @@ class Track extends JPanel implements ActionListener {
         clock = c;
         prefs = p;
 
-        clickedColor = Color.LIGHT_GRAY;
-        unclickedColor = getBackground();
+        setBackground(JamaJav.goldColour);
 
         // trackData has the audio stuff and info
         trackData = new TrackData();
@@ -445,7 +502,7 @@ class Track extends JPanel implements ActionListener {
         slimTitlePanel.setLayout(new BoxLayout(slimTitlePanel,BoxLayout.LINE_AXIS));
         slimTitleLabel = new JLabel(info.getTitle());
         slimTitlePanel.add(slimTitleLabel);
-        
+
         visualizer = new Visualizer();
         setToolTip(info);
 

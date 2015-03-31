@@ -28,9 +28,9 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
 
     private ArrayList<Track> tracks;
 
-    private static Color goldColour = new Color(0.7f,0.7f,0.98f);
-    private static Color highlightColour = new Color(0.8f,0.4f,0.2f);
-    private static Color shadowColour = new Color(0.3f,0.1f,0.04f);
+    private Color goldColour = JamaJav.goldColour;
+    private Color highlightColour = new Color(0.8f,0.4f,0.2f);
+    private Color shadowColour = new Color(0.3f,0.1f,0.04f);
 
     private int ntracks = 0;
 
@@ -409,7 +409,6 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
         tracks.add(new Track(parent, this, metronome, clock, prefs));
         tracks.get(ntracks-1).setAvatar
             (avatars.get(findAvatarIndex(prefs.getAvatar())).getImage());
-        tracks.get(ntracks-1).setBackground(goldColour);
         tracks.get(ntracks-1).expand();
 
         // System.out.println("adding track ... now " + ntracks + " tracks");

@@ -24,6 +24,10 @@ import javax.sound.sampled.*;
 
 public class JamaJav {
 
+    static final Color goldColour = new Color(0.7f,0.7f,0.98f);
+    static final Color clickedColour = new Color(0.9999f,0.9333f,0.9333f);
+    static final Color unclickedColour = new Color(0.9333f,0.9333f,0.9333f);
+
     private JFrame jfrm;
     private Clock clock;
     private Metronome metronome;
@@ -31,8 +35,6 @@ public class JamaJav {
     private TrackPanel trackPanel;
 
     JamaJav(String[] args) {
-
-        Color goldColour = new Color(0.7f,0.7f,0.98f);
 
         jfrm = new JFrame("Major's Jama Jav");
         JPanel contentPane = (JPanel)jfrm.getContentPane(); 
@@ -83,8 +85,8 @@ public class JamaJav {
         JPanel outerControlPanel = new JPanel();
         outerControlPanel.add(controlPanel);
         outerControlPanel.setBorder(BorderFactory.createRaisedBevelBorder());
-        controlPanel.setBackground(goldColour);
-        outerControlPanel.setBackground(goldColour);
+        //controlPanel.setBackground(goldColour);
+        //outerControlPanel.setBackground(goldColour);
 
         // Toolbar!!
         ToolBar toolBar = new ToolBar(trackPanel);
