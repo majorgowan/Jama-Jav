@@ -44,6 +44,15 @@ class ToolBar extends JToolBar {
         trackPanel = tpnl;
         trackPanel.setToolBar(this);
 
+        JToolBar mediaToolBar = new JToolBar();
+        JToolBar utilityToolBar = new JToolBar();
+
+        mediaToolBar.setFloatable(false);
+        utilityToolBar.setFloatable(false);
+
+        mediaToolBar.setBackground(JamaJav.unclickedColour);
+        utilityToolBar.setBackground(JamaJav.unclickedColour);
+
         // Buttons ...
         JButton newJamButton = makeButton(
                 "General", "NewJam24", "newjam", "New Jam", "New"); 
@@ -101,34 +110,44 @@ class ToolBar extends JToolBar {
                 "General", "Export24", "exportselected", 
                 "Combine and Export Selected to WAVE file", "Export Selected");
 
-        add(newJamButton);
-        add(openButton);
-        add(mergeButton);
-        add(saveButton);
-        addSeparator();
-        add(newTrackButton);
-        addSeparator();
-        add(playAllFromTopButton);
-        add(playAllButton);
-        addSeparator();
-        add(playSelectedFromTopButton);
-        add(playSelectedButton);
-        add(pauseButton);
-        add(allStopButton);
-        add(playRecordButton);
-        addSeparator();
-        add(selectAllButton);
-        addSeparator();
-        add(removeSelectedButton);
-        addSeparator();
-        add(moveSelectedUpButton);
-        add(moveSelectedDownButton);
-        addSeparator();
-        add(concatenateSelectedButton);
-        add(combineSelectedButton);
-        addSeparator();
-        add(exportSelectedButton);
+        utilityToolBar.add(newJamButton);
+        utilityToolBar.addSeparator();
+        utilityToolBar.add(openButton);
+        utilityToolBar.add(mergeButton);
+        utilityToolBar.addSeparator();
+        utilityToolBar.add(saveButton);
+        utilityToolBar.add(Box.createHorizontalGlue());
+        utilityToolBar.add(newTrackButton);
+        utilityToolBar.addSeparator();
+        utilityToolBar.add(concatenateSelectedButton);
+        utilityToolBar.add(combineSelectedButton);
+        utilityToolBar.addSeparator();
+        utilityToolBar.addSeparator();
+        utilityToolBar.addSeparator();
+        utilityToolBar.add(exportSelectedButton);
 
+        mediaToolBar.add(Box.createHorizontalGlue());
+        mediaToolBar.add(playAllFromTopButton);
+        mediaToolBar.add(playAllButton);
+        mediaToolBar.addSeparator();
+        mediaToolBar.add(playSelectedFromTopButton);
+        mediaToolBar.add(playSelectedButton);
+        mediaToolBar.addSeparator();
+        mediaToolBar.add(pauseButton);
+        mediaToolBar.add(allStopButton);
+        mediaToolBar.add(playRecordButton);
+        mediaToolBar.add(Box.createHorizontalGlue());
+        mediaToolBar.addSeparator();
+        mediaToolBar.add(selectAllButton);
+        mediaToolBar.addSeparator();
+        mediaToolBar.add(removeSelectedButton);
+        mediaToolBar.addSeparator();
+        mediaToolBar.add(moveSelectedUpButton);
+        mediaToolBar.add(moveSelectedDownButton);
+
+        setLayout(new BoxLayout(this,BoxLayout.PAGE_AXIS));
+        add(utilityToolBar);
+        add(mediaToolBar);
     }
 }
 

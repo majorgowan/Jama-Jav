@@ -149,60 +149,70 @@ class Track extends JPanel implements ActionListener {
 
         isClicked = b;
         if (isClicked) {
-            for (Component c : components) {
-                c.setBackground(clickedColour);
+            for (Component c : components) 
+                if ((c != monitor) && (c != visualizer)) {
+                    c.setBackground(clickedColour);
 
-                if (c instanceof Container) {
-                    subcomponents = ((Container)c).getComponents();
-                    for (Component csub : subcomponents) {
-                        csub.setBackground(clickedColour);
+                    if (c instanceof Container) {
+                        subcomponents = ((Container)c).getComponents();
+                        for (Component csub : subcomponents) 
+                            if ((csub != monitor) && (csub != visualizer)) {
+                                csub.setBackground(clickedColour);
 
-                        if (csub instanceof Container) {
-                            subsubcomponents = ((Container)csub).getComponents();
-                            for (Component csubsub : subsubcomponents) {
-                                csubsub.setBackground(clickedColour);
+                                if (csub instanceof Container) {
+                                    subsubcomponents = ((Container)csub).getComponents();
+                                    for (Component csubsub : subsubcomponents) 
+                                        if ((csubsub != monitor) && (csubsub != visualizer)) {
+                                            csubsub.setBackground(clickedColour);
 
-                                if (csubsub instanceof Container) {
-                                    subsubsubcomponents = ((Container)csubsub).getComponents();
-                                    for (Component csubsubsub : subsubsubcomponents)
-                                        csubsubsub.setBackground(clickedColour);
+                                            if (csubsub instanceof Container) {
+                                                subsubsubcomponents = ((Container)csubsub).getComponents();
+                                                for (Component csubsubsub : subsubsubcomponents)
+                                                    if ((csubsubsub != monitor) && (csubsubsub != visualizer)) {
+                                                        csubsubsub.setBackground(clickedColour);
+                                                    }
+                                            }
+
+                                        }
                                 }
 
                             }
-                        }
-                        
                     }
-                }
 
-            }
+                }
             timeLine.setBackground(clickedColour);
         } else {
-            for (Component c : components) {
-                c.setBackground(unclickedColour);
+            for (Component c : components) 
+                if ((c != monitor) && (c != visualizer)) {
+                    c.setBackground(unclickedColour);
 
-                if (c instanceof Container) {
-                    subcomponents = ((Container)c).getComponents();
-                    for (Component csub : subcomponents) {
-                        csub.setBackground(unclickedColour);
+                    if (c instanceof Container) {
+                        subcomponents = ((Container)c).getComponents();
+                        for (Component csub : subcomponents) 
+                            if ((csub != monitor) && (csub != visualizer)) {
+                                csub.setBackground(unclickedColour);
 
-                        if (csub instanceof Container) {
-                            subsubcomponents = ((Container)csub).getComponents();
-                            for (Component csubsub : subsubcomponents) {
-                                csubsub.setBackground(unclickedColour);
+                                if (csub instanceof Container) {
+                                    subsubcomponents = ((Container)csub).getComponents();
+                                    for (Component csubsub : subsubcomponents) 
+                                        if ((csubsub != monitor) && (csubsub != visualizer)) {
+                                            csubsub.setBackground(unclickedColour);
 
-                                if (csubsub instanceof Container) {
-                                    subsubsubcomponents = ((Container)csubsub).getComponents();
-                                    for (Component csubsubsub : subsubsubcomponents)
-                                        csubsubsub.setBackground(unclickedColour);
+                                            if (csubsub instanceof Container) {
+                                                subsubsubcomponents = ((Container)csubsub).getComponents();
+                                                for (Component csubsubsub : subsubsubcomponents)
+                                                    if ((csubsubsub != monitor) && (csubsubsub != visualizer)) {
+                                                        csubsubsub.setBackground(unclickedColour);
+                                                    }
+                                            }
+
+                                        }
                                 }
 
                             }
-                        }
-                        
                     }
-                }
 
-            }
+                }
             timeLine.setBackground(unclickedColour);
         }
         repaint();

@@ -345,23 +345,8 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                 break;
 
             case ("about") :
-
-                JDialog aboutDialog = new JDialog(parent,"About Jama Jav");
-
-                JLabel aboutText = new JLabel("<html><p align=center>"
-                        + "The Major's Jama Jav<br><br><br>"
-                        + "Copyright (c) 2015<br>"
-                        + "by Mark D. Fruman<br>"
-                        );
-
-                aboutDialog.setLayout(new BorderLayout());
-
-                aboutDialog.add(aboutText);
-                aboutDialog.setLocationRelativeTo(parent);
-                aboutDialog.getRootPane().setBorder(
-                        BorderFactory.createEmptyBorder(30,30,30,30));
-                aboutDialog.pack();
-                aboutDialog.setVisible(true);
+                JOptionPane.showMessageDialog(parent, new AboutPanel(),
+                        "About JamaJav", JOptionPane.PLAIN_MESSAGE);
                 break;
 
             case ("exit") :

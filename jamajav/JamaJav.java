@@ -2,24 +2,7 @@ package jamajav;
 
 // Swing packages
 import javax.swing.*;
-import javax.swing.filechooser.*;
 import java.awt.*;
-import java.awt.event.*;
-import java.awt.image.*;
-
-// For reading and writing files
-import java.io.*;
-import javax.imageio.*;
-import java.net.URL;
-
-// For resizable arrays
-import java.util.ArrayList;
-
-// For printing arrays to screen
-import java.util.Arrays;
-
-// For sound stuff
-import javax.sound.sampled.*;
 
 
 public class JamaJav {
@@ -42,7 +25,7 @@ public class JamaJav {
 
         // left panel
         JPanel controlPanel = new JPanel();
-        controlPanel.setLayout(new BoxLayout(controlPanel,BoxLayout.PAGE_AXIS));
+        controlPanel.setLayout(new BoxLayout(controlPanel,BoxLayout.LINE_AXIS));
 
         clock = new Clock();
         clock.setBorder(BorderFactory.createRaisedBevelBorder());
@@ -55,27 +38,6 @@ public class JamaJav {
         //metronome.setBorder(BorderFactory.createLineBorder(goldColour));
         controlPanel.add(metronome);
         controlPanel.add(Box.createRigidArea(new Dimension(0,5)));
-
-        // add logo to app
-        try {
-            JPanel logoPanel = new JPanel();
-            //ClassLoader cl = this.getClass().getClassLoader();
-            URL logoURL = JamaJav.class.getResource("/Images/logo.png");
-            BufferedImage logoImage;
-            logoImage = ImageIO.read(logoURL);
-            JPanel imagePanel = new JPanel(new BorderLayout());
-            imagePanel.add(new JLabel(new ImageIcon(logoImage)),
-                    BorderLayout.CENTER);
-            JPanel imageBackPanel = new JPanel(new BorderLayout());
-            imageBackPanel.add(imagePanel,BorderLayout.CENTER);
-            imageBackPanel.setBackground(new Color(0.75f,0.6f,0.1f));
-            imageBackPanel.setBorder(BorderFactory.createRaisedBevelBorder());
-            //imageBackPanel.setBorder(BorderFactory.createLineBorder(goldColour));
-            controlPanel.add(Box.createVerticalGlue());
-            controlPanel.add(imageBackPanel);
-        } catch (IOException e) {
-            System.out.println("Logo image not found!");
-        }
 
         prefs = new Prefs("jamajav.cfg");
 
@@ -91,9 +53,14 @@ public class JamaJav {
         // Toolbar!!
         ToolBar toolBar = new ToolBar(trackPanel);
 
+        JPanel mainPanel = new JPanel(new BorderLayout());
+        mainPanel.add(outerControlPanel, BorderLayout.PAGE_END);
+        mainPanel.add(trackPanel, BorderLayout.CENTER);
+
         contentPane.add(toolBar,BorderLayout.PAGE_START);
-        contentPane.add(outerControlPanel,BorderLayout.WEST);
-        contentPane.add(trackPanel,BorderLayout.CENTER);
+        //contentPane.add(outerControlPanel,BorderLayout.WEST);
+        //contentPane.add(trackPanel,BorderLayout.CENTER);
+        contentPane.add(mainPanel,BorderLayout.CENTER);
 
         // Menus!! 
         MenuBar menuBar = new MenuBar(trackPanel);
