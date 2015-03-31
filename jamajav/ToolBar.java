@@ -88,6 +88,9 @@ class ToolBar extends JToolBar {
         JButton selectAllButton = makeButton(
                 "General", "SelectAll24", "selectall", "Toggle Select All", "Select All");
 
+        JButton showMetronomeButton = makeButton(
+                "Media", "Metronome24", "showmetronome", "Show/Hide Metronome", "Metronome");
+
         JButton removeSelectedButton = makeButton(
                 "General", "RemoveSelected24", "removeselected", 
                 "Remove Selected Tracks", "Remove Selected");
@@ -136,6 +139,8 @@ class ToolBar extends JToolBar {
         mediaToolBar.add(allStopButton);
         mediaToolBar.add(playRecordButton);
         mediaToolBar.add(Box.createHorizontalGlue());
+        mediaToolBar.addSeparator();
+        mediaToolBar.add(showMetronomeButton);
         mediaToolBar.addSeparator();
         mediaToolBar.add(selectAllButton);
         mediaToolBar.addSeparator();

@@ -67,6 +67,7 @@ class Track extends JPanel implements ActionListener {
         switch (comStr) {
 
             case ("recordstop") :
+                trackPanel.toggleMetronome(true);
                 if (!trackData.isCapturing()) {
                     startRecording();
                 } else {

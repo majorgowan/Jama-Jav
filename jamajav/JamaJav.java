@@ -9,7 +9,7 @@ public class JamaJav {
 
     static final Color goldColour = new Color(0.7f,0.7f,0.98f);
     static final Color darkGoldColour = new Color(0.4f,0.4f,0.68f);
-    static final Color clickedColour = new Color(0.9999f,0.9333f,0.9333f);
+    static final Color clickedColour = new Color(0.9999f,0.8667f,0.8677f);
     static final Color unclickedColour = new Color(0.9333f,0.9333f,0.9333f);
 
     private JFrame jfrm;
@@ -28,29 +28,22 @@ public class JamaJav {
         JPanel controlPanel = new JPanel();
         controlPanel.setLayout(new BoxLayout(controlPanel,BoxLayout.LINE_AXIS));
 
-        /*
-        clock = new Clock();
-        clock.setBorder(BorderFactory.createRaisedBevelBorder());
-        //clock.setBorder(BorderFactory.createLineBorder(goldColour));
-        controlPanel.add(clock);
-        controlPanel.add(Box.createRigidArea(new Dimension(0,5)));
-        */
         clock = new Clock();
 
         metronome = new Metronome();
-        metronome.setBorder(BorderFactory.createRaisedBevelBorder());
+        //metronome.setBorder(BorderFactory.createRaisedBevelBorder());
         //metronome.setBorder(BorderFactory.createLineBorder(goldColour));
-        controlPanel.add(metronome);
-        controlPanel.add(Box.createRigidArea(new Dimension(0,5)));
+        //controlPanel.add(metronome);
+        //controlPanel.add(Box.createRigidArea(new Dimension(0,5)));
 
         prefs = new Prefs("jamajav.cfg");
 
         trackPanel = new TrackPanel(jfrm, metronome, clock, prefs);
         trackPanel.setBorder(BorderFactory.createRaisedBevelBorder());
 
-        JPanel outerControlPanel = new JPanel();
-        outerControlPanel.add(controlPanel);
-        outerControlPanel.setBorder(BorderFactory.createRaisedBevelBorder());
+        //JPanel outerControlPanel = new JPanel();
+        //outerControlPanel.add(controlPanel);
+        //outerControlPanel.setBorder(BorderFactory.createRaisedBevelBorder());
         //controlPanel.setBackground(goldColour);
         //outerControlPanel.setBackground(goldColour);
 
@@ -58,7 +51,7 @@ public class JamaJav {
         ToolBar toolBar = new ToolBar(trackPanel, clock);
 
         JPanel mainPanel = new JPanel(new BorderLayout());
-        mainPanel.add(outerControlPanel, BorderLayout.PAGE_END);
+        //mainPanel.add(outerControlPanel, BorderLayout.PAGE_END);
         mainPanel.add(trackPanel, BorderLayout.CENTER);
 
         contentPane.add(toolBar,BorderLayout.PAGE_START);

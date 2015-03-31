@@ -198,9 +198,10 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                 }
                 // start selected tracks playing:
                 for (int i = 0; i < tracks.size(); i++) 
-                    if (tracks.get(i).isSelected())
+                    if (tracks.get(i).isSelected() && tracks.get(i).isNotEmpty())
                         tracks.get(i).startPlaying();
 
+                toggleMetronome(true);
                 bigTimeLine.setTime(0.0);
                 bigTimeLine.start();
 
@@ -221,6 +222,13 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                 else                        // else unselect-all
                     for (int i = 0; i < tracks.size(); i++)
                         tracks.get(i).setSelected(true);
+                break;
+
+            case ("showmetronome") :
+                if (this.isAncestorOf(metronome))
+                    toggleMetronome(false);
+                else
+                    toggleMetronome(true);
                 break;
 
             case ("removeselected") :
@@ -355,6 +363,16 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
         }
     }
 
+    public void toggleMetronome(boolean onoff) {
+        if (onoff) {
+            if (!this.isAncestorOf(metronome))
+                add(metronome,BorderLayout.PAGE_END);
+        } else
+            if (this.isAncestorOf(metronome))
+                remove(metronome);
+        revalidate();
+    }
+
     public void refreshBigTimeLine() {
         if (tracks.size() > 0) {
             double running = 0.0;
@@ -452,9 +470,12 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
 
     private boolean allStopped() {
         boolean result = true;
-        for (int j = 0; j < tracks.size(); j++) 
+        for (int j = 0; j < tracks.size(); j++) {
             if (!tracks.get(j).getTrackData().getStopPlay().getValue()) 
                 result = false;
+            if (!tracks.get(j).getTrackData().getStopCapture().getValue()) 
+                result = false;
+        }
 
         return result;
     }
@@ -874,6 +895,7 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
 
         add(bigTimeLine,BorderLayout.PAGE_START);
         add(scrollPane,BorderLayout.CENTER);
+        add(metronome,BorderLayout.PAGE_END);
     }
 }
 
