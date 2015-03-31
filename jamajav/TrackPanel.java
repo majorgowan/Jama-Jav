@@ -385,13 +385,13 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
         bigTimeLine.repaint();
     }
 
-    private void refreshMainPanel() {
+    public void refreshMainPanel() {
 
         mainPanel.removeAll();
 
-        for (int i=0; i<ntracks; i++) {
+        for (int i=0; i<ntracks; i++) 
             mainPanel.add(tracks.get(i));
-        }
+
         mainPanel.revalidate();
         repaint();
     }
@@ -408,14 +408,14 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
         ntracks++;
         tracks.add(new Track(parent, this, metronome, clock, prefs));
         tracks.get(ntracks-1).setAvatar
-                    (avatars.get(findAvatarIndex(prefs.getAvatar())).getImage());
+            (avatars.get(findAvatarIndex(prefs.getAvatar())).getImage());
         tracks.get(ntracks-1).setBackground(goldColour);
+        tracks.get(ntracks-1).expand();
 
         // System.out.println("adding track ... now " + ntracks + " tracks");
 
-        mainPanel.add(tracks.get(ntracks-1));
+        refreshMainPanel();
 
-        revalidate();
         //Scroll the TrackPanel to the bottom to show the new Track:
         mainPanel.scrollRectToVisible(new Rectangle(0,(int)mainPanel.getPreferredSize().getHeight(),10,10));
 
@@ -658,6 +658,7 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                     //         + " bytes");
                     tracks.get(i).putBytes(bytes);
                     tracks.get(i).setSelected(false);
+                    tracks.get(i).collapse();
                 }
             } catch (IOException e) {
                 System.out.println("Error reading from " + filename + ".bin or " 
@@ -739,6 +740,7 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                     //         + " bytes");
                     tracks.get(i).putBytes(bytes);
                     tracks.get(i).setSelected(false);
+                    tracks.get(i).collapse();
                 }
             } catch (IOException e) {
                 System.out.println("Error reading from " + filename + ".bin or " 

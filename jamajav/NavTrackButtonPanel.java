@@ -16,6 +16,9 @@ class NavTrackButtonPanel extends TrackButtonPanel {
         TrackButton cancelButton = makeButton(
                 "General", "Remove24", "remove", 
                 "Remove Track", "Remove");
+        TrackButton collapseButton = makeButton(
+                "Navigation", "Collapse24", "collapse",
+                "Collapse", "Col");
         TrackButton moveUpButton = makeButton(
                 "Navigation", "Up24", "moveup", 
                 "Move Up", "Up");
@@ -26,11 +29,13 @@ class NavTrackButtonPanel extends TrackButtonPanel {
         JPanel navPanel = new JPanel();
         navPanel.setLayout(new BoxLayout(navPanel,BoxLayout.PAGE_AXIS));
         navPanel.add(cancelButton);
-        navPanel.add(Box.createRigidArea(new Dimension(0,40)));
+        navPanel.add(Box.createRigidArea(new Dimension(0,9)));
         navPanel.add(moveUpButton);
         navPanel.add(moveDownButton);
+        navPanel.add(Box.createRigidArea(new Dimension(0,9)));
+        navPanel.add(collapseButton);
 
-        setLayout(new FlowLayout());
+        setLayout(new FlowLayout(FlowLayout.RIGHT));
         add(navPanel);
     }
 }

@@ -13,12 +13,13 @@ import java.net.URL;
 
 class Track extends JPanel implements ActionListener {
 
-    final private int DEFAULT_WIDTH = 525;
-    final private int DEFAULT_HEIGHT = 150;
+    private int DEFAULT_WIDTH = 550;
+    private int DEFAULT_HEIGHT = 150;
 
     private TrackData trackData;
 
     private boolean isClicked = false;
+    
     private Color clickedColor, unclickedColor;
 
     // ancestors
@@ -32,15 +33,31 @@ class Track extends JPanel implements ActionListener {
     private LeftTrackButtonPanel trackButtonPanel;
     private VolumeSlider slider;
 
+    private BufferedImage avatarImage;
+
     private JLabel avatarLabel;
     private TimeLine timeLine;
     private Visualizer visualizer;
     private Monitor monitor;
+
+    private JPanel outerPanel;
+
     private JPanel titlePanel;
     private JLabel titleLabel;
 
+    private JPanel slimTitlePanel;
+    private JLabel slimTitleLabel;
+
     public Dimension getPreferredSize() {
         return (new Dimension(DEFAULT_WIDTH, DEFAULT_HEIGHT));
+    }
+
+    public Dimension getMinimumSize() {
+        return getPreferredSize();
+    }
+
+    public Dimension getMaximumSize() {
+        return getPreferredSize();
     }
 
     public void actionPerformed(ActionEvent ae) {
@@ -92,6 +109,14 @@ class Track extends JPanel implements ActionListener {
             case ("remove") :
                 trackPanel.removeTrack(trackPanel.whichTrackAmI(this));
                 break;
+
+            case ("collapse") :
+                collapse();
+                break;
+
+            case ("expand") :
+                expand();
+                break;
         }
     }
 
@@ -103,12 +128,27 @@ class Track extends JPanel implements ActionListener {
         return trackData.isNotEmpty();
     }
 
+    public void collapse() {
+        displaySlim();
+        trackPanel.refreshMainPanel();
+    }
+
+    public void expand() {
+        displayFat();
+        trackPanel.refreshMainPanel();
+    }
+
     public void setSelected(boolean b) {
         isClicked = b;
         if (isClicked) {
-            titlePanel.setBackground(clickedColor);
+            outerPanel.setBorder(
+                    BorderFactory.createStrokeBorder(new BasicStroke(3.0f),Color.BLACK));
+            //titlePanel.setBackground(clickedColor);
+            //slimTitlePanel.setBackground(clickedColor);
         } else {
-            titlePanel.setBackground(unclickedColor);
+            outerPanel.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
+            //titlePanel.setBackground(unclickedColor);
+            //slimTitlePanel.setBackground(unclickedColor);
         }
         repaint();
     }
@@ -183,7 +223,16 @@ class Track extends JPanel implements ActionListener {
     }
 
     public void setAvatar(BufferedImage img) {
+        avatarImage = img;
         avatarLabel.setIcon(new ImageIcon(img));
+    }
+
+    public BufferedImage getAvatarImage() {
+        return avatarImage;
+    }
+
+    public TimeLine getTimeLine() {
+        return timeLine;
     }
 
     public void setToolTip(Info info) {
@@ -199,10 +248,11 @@ class Track extends JPanel implements ActionListener {
 
         toolTip += ", " + info.getLocation();
 
-        visualizer.setToolTipText(toolTip);
+        this.setToolTipText(toolTip);
 
         // probably bad form to put this here, but ...
         titleLabel.setText(info.getTitle());
+        slimTitleLabel.setText(info.getTitle());
     }
 
     public void resetToolTip() {
@@ -273,6 +323,78 @@ class Track extends JPanel implements ActionListener {
         trackButtonPanel.enableRecordPlay();
     }
 
+    public void displayFat() {
+        this.removeAll();
+        DEFAULT_HEIGHT = 150;
+        
+        avatarLabel.setIcon(new ImageIcon(avatarImage));
+
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new BoxLayout(mainPanel,BoxLayout.PAGE_AXIS));
+
+        JPanel outerVisualPanel = new JPanel(new FlowLayout());
+        outerVisualPanel.add(visualizer);
+        JPanel outerTimePanel = new JPanel(new FlowLayout());
+        outerTimePanel.add(timeLine);
+        mainPanel.add(outerTimePanel);
+        mainPanel.add(outerVisualPanel);
+        mainPanel.add(Box.createRigidArea(new Dimension(0,3)));
+        mainPanel.add(titlePanel);
+        JPanel outerMonitorPanel = new JPanel(new FlowLayout());
+        outerMonitorPanel.add(monitor);
+
+        JPanel outerSliderPanel = new JPanel(new FlowLayout());
+        outerSliderPanel.add(slider);
+
+        JPanel rightPanel = new JPanel(new FlowLayout());
+        rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.LINE_AXIS));
+
+        rightPanel.add(Box.createRigidArea(new Dimension(12,0)));
+        rightPanel.add(trackButtonPanel);
+        rightPanel.add(Box.createRigidArea(new Dimension(12,0)));
+        rightPanel.add(mainPanel);
+        rightPanel.add(outerMonitorPanel);
+        rightPanel.add(outerSliderPanel);
+        rightPanel.add(Box.createRigidArea(new Dimension(18,0)));
+        rightPanel.add(new NavTrackButtonPanel(this));
+
+        outerPanel.removeAll();
+        outerPanel.setLayout(new FlowLayout());
+        outerPanel.add(avatarLabel);
+        outerPanel.add(rightPanel);
+        //outerPanel.setBorder(BorderFactory.createRaisedBevelBorder());
+
+        add(outerPanel);
+    }
+
+    public void displaySlim() {
+        this.removeAll();
+        DEFAULT_HEIGHT = 60;
+
+        avatarLabel.setIcon(
+                new ImageIcon(avatarImage.getScaledInstance(35,35,Image.SCALE_SMOOTH)));
+
+        JPanel outerTimePanel = new JPanel(new FlowLayout());
+        outerTimePanel.add(timeLine);
+
+        SlimNavTrackButtonPanel slimTrackButtonPanel = new SlimNavTrackButtonPanel(this);
+        //slimTrackButtonPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+
+        JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        leftPanel.add(avatarLabel);
+        leftPanel.add(outerTimePanel);
+        leftPanel.add(slimTitlePanel);
+
+        outerPanel.removeAll();
+        outerPanel.setLayout(new BoxLayout(outerPanel,BoxLayout.LINE_AXIS));
+        outerPanel.add(leftPanel);
+        outerPanel.add(Box.createHorizontalGlue());
+        outerPanel.add(slimTrackButtonPanel);
+        //outerPanel.setBorder(BorderFactory.createRaisedBevelBorder());
+
+        add(outerPanel);
+    }
+
     // Basic Track constructor
     Track(JFrame frm, TrackPanel tpnl, Metronome m, Clock c, Prefs p) {
 
@@ -298,9 +420,6 @@ class Track extends JPanel implements ActionListener {
 
         timeLine = new TimeLine();
 
-        JPanel mainPanel = new JPanel();
-        mainPanel.setLayout(new BoxLayout(mainPanel,BoxLayout.PAGE_AXIS));
-
         // title Panel
         titlePanel = new JPanel();
         titlePanel.setLayout(new BoxLayout(titlePanel,BoxLayout.LINE_AXIS));
@@ -319,50 +438,28 @@ class Track extends JPanel implements ActionListener {
         titlePanel.add(Box.createRigidArea(new Dimension(20,0)));
         titlePanel.add(Box.createHorizontalGlue());
 
+        // slim title Panel
+        slimTitlePanel = new JPanel();
+        slimTitlePanel.setLayout(new BoxLayout(slimTitlePanel,BoxLayout.LINE_AXIS));
+        slimTitleLabel = new JLabel(info.getTitle());
+        slimTitlePanel.add(slimTitleLabel);
+        
         visualizer = new Visualizer();
         setToolTip(info);
 
         monitor = new Monitor();
         trackData.setMonitor(monitor);
 
-        JPanel outerVisualPanel = new JPanel(new FlowLayout());
-        outerVisualPanel.add(visualizer);
-        JPanel outerTimePanel = new JPanel(new FlowLayout());
-        outerTimePanel.add(timeLine);
-        mainPanel.add(outerTimePanel);
-        mainPanel.add(outerVisualPanel);
-        mainPanel.add(Box.createRigidArea(new Dimension(0,3)));
-        mainPanel.add(titlePanel);
-        JPanel outerMonitorPanel = new JPanel(new FlowLayout());
-        outerMonitorPanel.add(monitor);
-
         // Volume slider
         slider = new VolumeSlider(JSlider.VERTICAL, 0, 10, 7);
-        JPanel outerSliderPanel = new JPanel(new FlowLayout());
-        outerSliderPanel.add(slider);
 
         trackButtonPanel = new LeftTrackButtonPanel(this);
 
-        JPanel rightPanel = new JPanel(new FlowLayout());
-        rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.LINE_AXIS));
-
-        rightPanel.add(Box.createRigidArea(new Dimension(4,0)));
-        rightPanel.add(trackButtonPanel);
-        rightPanel.add(Box.createRigidArea(new Dimension(4,0)));
-        rightPanel.add(mainPanel);
-        rightPanel.add(outerMonitorPanel);
-        rightPanel.add(outerSliderPanel);
-        rightPanel.add(Box.createRigidArea(new Dimension(4,0)));
-        rightPanel.add(new NavTrackButtonPanel(this));
-
         avatarLabel = new JLabel();
 
-        JPanel outerPanel = new JPanel();
-        outerPanel.add(avatarLabel);
-        outerPanel.add(rightPanel);
-        outerPanel.setBorder(BorderFactory.createRaisedBevelBorder());
+        outerPanel = new JPanel();
 
-        add(outerPanel);
+        setLayout(new BoxLayout(this,BoxLayout.LINE_AXIS));
         setBorder(BorderFactory.createEmptyBorder(5,0,5,0));
 
         addMouseListener(new MouseAdapter() {
