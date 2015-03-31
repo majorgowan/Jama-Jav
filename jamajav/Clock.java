@@ -10,12 +10,13 @@ import java.text.DecimalFormat;
 
 class Clock extends PlainClock {
 
-    final private int DEFAULT_WIDTH = 210;
-    final private int DEFAULT_HEIGHT = 100;
+    final private int DEFAULT_WIDTH = 50;
+    final private int DEFAULT_HEIGHT = 50;
 
     public Dimension getPreferredSize() {
         return (new Dimension(DEFAULT_WIDTH, DEFAULT_HEIGHT));
     }
+
 
     public void actionPerformed(ActionEvent ae) {
 
@@ -43,7 +44,10 @@ class Clock extends PlainClock {
 
         setBackground(new Color(0.75f,0.6f,0.1f));
 
-        // start and reset buttons:
+        timeLabel.setForeground(JamaJav.darkGoldColour);
+        timeLabel.setFont(new Font("SansSerif",Font.BOLD,40));
+
+/*        // start and reset buttons:
         JButton startButton = new JButton("start/stop");
         startButton.setActionCommand("start");
         JButton resetButton = new JButton("reset");
@@ -64,6 +68,7 @@ class Clock extends PlainClock {
 
         add(titlePanel,BorderLayout.NORTH);
         add(buttonPanel,BorderLayout.SOUTH);
+        */
     }
 
 }

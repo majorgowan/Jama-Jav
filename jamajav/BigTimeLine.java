@@ -20,12 +20,12 @@ class BigTimeLine extends PlainTimeLine implements ActionListener {
 
     private final DecimalFormat df = new DecimalFormat("##0.0");
 
-    private static Color darkGoldColour = new Color(0.4f,0.4f,0.68f);
-    private static Color startColour = new Color(0.0f,0.8f,0.1f);
-    private static Color stopColour = new Color(0.8f,0.0f,0.1f);
+    private final Color darkGoldColour = JamaJav.darkGoldColour;
+    private final Color startColour = new Color(0.0f,0.8f,0.1f);
+    private final Color stopColour = new Color(0.8f,0.0f,0.1f);
 
-    private static Font tickFont = new Font("SansSerif",Font.PLAIN,10);
-    private static Font endsFont = new Font("SansSerif",Font.BOLD,11);
+    private final Font tickFont = new Font("SansSerif",Font.PLAIN,10);
+    private final Font endsFont = new Font("SansSerif",Font.BOLD,11);
 
     private double minTime, maxTime;
     private double factor = 0.0;

@@ -8,6 +8,7 @@ import java.awt.*;
 public class JamaJav {
 
     static final Color goldColour = new Color(0.7f,0.7f,0.98f);
+    static final Color darkGoldColour = new Color(0.4f,0.4f,0.68f);
     static final Color clickedColour = new Color(0.9999f,0.9333f,0.9333f);
     static final Color unclickedColour = new Color(0.9333f,0.9333f,0.9333f);
 
@@ -27,11 +28,14 @@ public class JamaJav {
         JPanel controlPanel = new JPanel();
         controlPanel.setLayout(new BoxLayout(controlPanel,BoxLayout.LINE_AXIS));
 
+        /*
         clock = new Clock();
         clock.setBorder(BorderFactory.createRaisedBevelBorder());
         //clock.setBorder(BorderFactory.createLineBorder(goldColour));
         controlPanel.add(clock);
         controlPanel.add(Box.createRigidArea(new Dimension(0,5)));
+        */
+        clock = new Clock();
 
         metronome = new Metronome();
         metronome.setBorder(BorderFactory.createRaisedBevelBorder());
@@ -51,7 +55,7 @@ public class JamaJav {
         //outerControlPanel.setBackground(goldColour);
 
         // Toolbar!!
-        ToolBar toolBar = new ToolBar(trackPanel);
+        ToolBar toolBar = new ToolBar(trackPanel, clock);
 
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.add(outerControlPanel, BorderLayout.PAGE_END);

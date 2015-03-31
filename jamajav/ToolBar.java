@@ -39,7 +39,7 @@ class ToolBar extends JToolBar {
         return button;
     }
 
-    ToolBar(TrackPanel tpnl) {
+    ToolBar(TrackPanel tpnl, Clock clock) {
 
         trackPanel = tpnl;
         trackPanel.setToolBar(this);
@@ -123,7 +123,6 @@ class ToolBar extends JToolBar {
         utilityToolBar.add(combineSelectedButton);
         utilityToolBar.addSeparator();
         utilityToolBar.addSeparator();
-        utilityToolBar.addSeparator();
         utilityToolBar.add(exportSelectedButton);
 
         mediaToolBar.add(Box.createHorizontalGlue());
@@ -145,9 +144,15 @@ class ToolBar extends JToolBar {
         mediaToolBar.add(moveSelectedUpButton);
         mediaToolBar.add(moveSelectedDownButton);
 
-        setLayout(new BoxLayout(this,BoxLayout.PAGE_AXIS));
-        add(utilityToolBar);
-        add(mediaToolBar);
+        JPanel barsPanel = new JPanel();
+        barsPanel.setLayout(new BoxLayout(barsPanel,BoxLayout.PAGE_AXIS));
+        barsPanel.add(utilityToolBar);
+        barsPanel.add(mediaToolBar);
+
+        setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
+        add(barsPanel);
+        add(Box.createHorizontalGlue());
+        add(clock);
     }
 }
 

@@ -28,12 +28,12 @@ class NavTrackButtonPanel extends TrackButtonPanel {
 
         JPanel navPanel = new JPanel();
         navPanel.setLayout(new BoxLayout(navPanel,BoxLayout.PAGE_AXIS));
-        navPanel.add(cancelButton);
+        navPanel.add(collapseButton);
         navPanel.add(Box.createRigidArea(new Dimension(0,9)));
         navPanel.add(moveUpButton);
         navPanel.add(moveDownButton);
         navPanel.add(Box.createRigidArea(new Dimension(0,9)));
-        navPanel.add(collapseButton);
+        navPanel.add(cancelButton);
 
         setLayout(new FlowLayout(FlowLayout.RIGHT));
         add(navPanel);

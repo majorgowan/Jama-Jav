@@ -429,7 +429,6 @@ class Track extends JPanel implements ActionListener {
         outerPanel.setLayout(new FlowLayout());
         outerPanel.add(avatarLabel);
         outerPanel.add(rightPanel);
-        //outerPanel.setBorder(BorderFactory.createRaisedBevelBorder());
 
         add(outerPanel);
     }
@@ -445,7 +444,6 @@ class Track extends JPanel implements ActionListener {
         outerTimePanel.add(timeLine);
 
         SlimNavTrackButtonPanel slimTrackButtonPanel = new SlimNavTrackButtonPanel(this);
-        //slimTrackButtonPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
         JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         leftPanel.add(avatarLabel);
@@ -460,7 +458,6 @@ class Track extends JPanel implements ActionListener {
         outerPanel.add(leftPanel);
         outerPanel.add(Box.createHorizontalGlue());
         outerPanel.add(rightPanel);
-        //outerPanel.setBorder(BorderFactory.createRaisedBevelBorder());
 
         add(outerPanel);
     }
