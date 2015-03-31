@@ -141,14 +141,14 @@ class Track extends JPanel implements ActionListener {
     public void setSelected(boolean b) {
         isClicked = b;
         if (isClicked) {
-            outerPanel.setBorder(
-                    BorderFactory.createStrokeBorder(new BasicStroke(3.0f),Color.BLACK));
-            //titlePanel.setBackground(clickedColor);
-            //slimTitlePanel.setBackground(clickedColor);
+           // outerPanel.setBorder(
+           //         BorderFactory.createStrokeBorder(new BasicStroke(3.0f),Color.BLACK));
+            titlePanel.setBackground(clickedColor);
+            slimTitlePanel.setBackground(clickedColor);
         } else {
-            outerPanel.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
-            //titlePanel.setBackground(unclickedColor);
-            //slimTitlePanel.setBackground(unclickedColor);
+            //outerPanel.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
+            titlePanel.setBackground(unclickedColor);
+            slimTitlePanel.setBackground(unclickedColor);
         }
         repaint();
     }
@@ -349,13 +349,15 @@ class Track extends JPanel implements ActionListener {
         JPanel rightPanel = new JPanel(new FlowLayout());
         rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.LINE_AXIS));
 
-        rightPanel.add(Box.createRigidArea(new Dimension(12,0)));
+        rightPanel.add(Box.createRigidArea(new Dimension(10,0)));
         rightPanel.add(trackButtonPanel);
-        rightPanel.add(Box.createRigidArea(new Dimension(12,0)));
+        rightPanel.add(Box.createRigidArea(new Dimension(10,0)));
         rightPanel.add(mainPanel);
+        rightPanel.add(Box.createRigidArea(new Dimension(2,0)));
         rightPanel.add(outerMonitorPanel);
+        rightPanel.add(Box.createRigidArea(new Dimension(6,0)));
         rightPanel.add(outerSliderPanel);
-        rightPanel.add(Box.createRigidArea(new Dimension(18,0)));
+        rightPanel.add(Box.createRigidArea(new Dimension(10,0)));
         rightPanel.add(new NavTrackButtonPanel(this));
 
         outerPanel.removeAll();
