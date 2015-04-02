@@ -249,7 +249,6 @@ class Track extends JPanel implements ActionListener {
     public void pausePlaying() {
         if (trackData.isNotEmpty() && (!trackData.getStopPlay().getValue())) {
             trackData.togglePause();
-            timeLine.toggle();
         }
     }
 
@@ -485,7 +484,7 @@ class Track extends JPanel implements ActionListener {
         info.setAvatar(prefs.getAvatar());
         trackData.putInfo(info);
 
-        timeLine = new TimeLine();
+        timeLine = new TimeLine(trackPanel.getBigTimeLine(), trackPanel.getClock());
 
         // title Panel
         titlePanel = new JPanel();

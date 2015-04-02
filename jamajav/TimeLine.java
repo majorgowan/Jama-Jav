@@ -5,22 +5,18 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-class TimeLine extends PlainTimeLine implements ActionListener {
+class TimeLine extends PlainTimeLine {
 
     final private int DEFAULT_WIDTH = 250;
     final private int DEFAULT_HEIGHT = 19;
 
     private static Font tickFont = new Font("SansSerif",Font.PLAIN,9);
 
+    private BigTimeLine bigTimeLine = null;
+    private PlainClock clock = null;
+
     public Dimension getPreferredSize() {
         return (new Dimension(DEFAULT_WIDTH, DEFAULT_HEIGHT));
-    }
-
-    public void actionPerformed(ActionEvent ae) {
-        if (ae.getSource() == timer) {
-            runnerPosition += 0.1;
-            repaint();
-        }
     }
 
     public void paintComponent(Graphics g) {
@@ -57,9 +53,31 @@ class TimeLine extends PlainTimeLine implements ActionListener {
                 (int)(2*rad), (int)(2*rad));
     }
 
+    public void setTime(double time) {
+        super.setTime(time);
+        if (bigTimeLine != null) {
+            bigTimeLine.setTime(time);
+            clock.setTime(time);
+        }
+    }
+
+    public void addTime(double time) {
+        super.addTime(time);
+        if (bigTimeLine != null) {
+            bigTimeLine.setTime(runnerPosition);
+            clock.setTime(runnerPosition);
+        }
+    }
+
     TimeLine() {
         super();
         //setBackground(Color.WHITE);
+    }
+
+    TimeLine(BigTimeLine btl, PlainClock pc) {
+        super();
+        bigTimeLine = btl;
+        clock = pc;
     }
 }
 

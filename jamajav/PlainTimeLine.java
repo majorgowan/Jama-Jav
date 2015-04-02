@@ -5,15 +5,24 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-class PlainTimeLine extends JPanel implements ActionListener {
+class PlainTimeLine extends JPanel {
 
     protected double runningTime;
     protected int tickInterval;
     protected double runnerPosition;
-    protected Timer timer;
 
     public void setTime(double time) {
         runnerPosition = time;
+        repaint();
+    }
+
+    public void addTime(double time) {
+        runnerPosition += time;
+        repaint();
+    }
+
+    public double getTime() {
+        return runnerPosition;
     }
 
     public void setRunningTime(double t) {
@@ -21,34 +30,10 @@ class PlainTimeLine extends JPanel implements ActionListener {
         // System.out.println("TimeLine running time set at " + runningTime + " seconds");
     }
 
-    public void start() {
-        timer.start();
-    }
-
-    public void stop() {
-        timer.stop();
-        // System.out.println("TimeLine stopped at " + runnerPosition + " seconds");
-    }
-
-    public void toggle() {
-        if (timer.isRunning())
-            timer.stop();
-        else
-            timer.start();
-    }
-
-    public void actionPerformed(ActionEvent ae) {
-        if (ae.getSource() == timer) {
-            runnerPosition += 0.1;
-            repaint();
-        }
-    }
-
     PlainTimeLine() {
         runningTime = 0.0;
         tickInterval = 5;
         runnerPosition = 0.0;
-        timer = new Timer(100, this);
     }
 }
 

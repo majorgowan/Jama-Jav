@@ -8,7 +8,7 @@ import java.awt.event.*;
 // for formatting numbers:
 import java.text.DecimalFormat;
 
-class BigTimeLine extends PlainTimeLine implements ActionListener {
+class BigTimeLine extends PlainTimeLine {
 
     final private int DEFAULT_WIDTH = 300;
     final private int DEFAULT_HEIGHT = 65;
@@ -34,13 +34,6 @@ class BigTimeLine extends PlainTimeLine implements ActionListener {
 
     public Dimension getPreferredSize() {
         return (new Dimension(DEFAULT_WIDTH, DEFAULT_HEIGHT));
-    }
-
-    public void actionPerformed(ActionEvent ae) {
-        if (ae.getSource() == timer) {
-            runnerPosition += 0.1;
-            repaint();
-        }
     }
 
     public double getMinTime() {

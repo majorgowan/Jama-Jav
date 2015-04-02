@@ -62,14 +62,12 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                 }
                 if (allStopped()) {
                     clock.stop();
-                    bigTimeLine.stop();
                 }
             } else if (obs == tracks.get(i).getTrackData().getStopCapture()) {
                 System.out.println("Observable: track " + i + " stopped recording");
                 // if firing track is stopped recording, stop the clock
                 if (tracks.get(i).getTrackData().getStopCapture().getValue()) {
                     clock.stop(); // stop clock (probably redundant)
-                    bigTimeLine.stop();
                     // System.out.println("Stopped clock, resetting toolTip");
                     // System.out.println("Running time: " + tracks.get(i).getInfo().getRunningTime());
                     tracks.get(i).resetToolTip(); // reset ToolTip to set running time
@@ -126,7 +124,6 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                 for (int i = 0; i < tracks.size(); i++) 
                     tracks.get(i).startPlaying();
                 bigTimeLine.setTime(0.0);
-                bigTimeLine.start();
                 break;
 
             case ("playall") :
@@ -139,7 +136,6 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                     tracks.get(i).startPlaying(
                             bigTimeLine.getMinTime(), bigTimeLine.getMaxTime());
                 bigTimeLine.setTime(bigTimeLine.getMinTime());
-                bigTimeLine.start();
                 break;
 
             case ("playselectedfromtop") :
@@ -157,7 +153,6 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                         if (tracks.get(i).isSelected() && tracks.get(i).isNotEmpty()) 
                             tracks.get(i).startPlaying();
                     bigTimeLine.setTime(0.0);
-                    bigTimeLine.start(); 
                     clock.restart();
                 }
                 break;
@@ -177,7 +172,6 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                             tracks.get(i).startPlaying(
                                     bigTimeLine.getMinTime(), bigTimeLine.getMaxTime());
                     bigTimeLine.setTime(bigTimeLine.getMinTime());
-                    bigTimeLine.start();
                 }
                 break;
 
@@ -205,7 +199,6 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
 
                 toggleMetronome(true);
                 bigTimeLine.setTime(0.0);
-                bigTimeLine.start();
 
                 // start new track recording
                 tracks.get(tracks.size()-1).startRecording();
@@ -498,7 +491,6 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
 
         if (!allStopped()) {
             clock.toggle();
-            bigTimeLine.toggle();
         }
     }
 
@@ -870,6 +862,14 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
         newTrackData.putBytes(newBytes);
 
         return newTrackData;
+    }
+
+    public BigTimeLine getBigTimeLine() {
+        return bigTimeLine;
+    }
+
+    public PlainClock getClock() {
+        return (PlainClock)clock;
     }
 
     TrackPanel(JFrame jfrm, Metronome m, Clock c, Prefs p) {

@@ -192,6 +192,7 @@ class TrackData {
                         // Save data in output stream object.
                         byteArrayOutputStream.write(tempBuffer, 0, cnt);
                         byteCount += 1000;
+                        timeLine.setTime(bytesToSeconds(byteCount));
                     }
                 }
                 byteArrayOutputStream.close();
@@ -224,7 +225,6 @@ class TrackData {
     public void playback(double startTime, double endTime, int volume, TimeLine tl) {
         timeLine = tl;
         tl.setTime(startTime);
-        timeLine.start();
         // System.out.println("Playing back . . . ");
         stopPlay.start();
         isPaused = false;
@@ -306,6 +306,7 @@ class TrackData {
                         if (monitor != null)
                             monitor.setData(tempBuffer);
                         byteCount += 1000;
+                        timeLine.addTime(bytesToSeconds(tempBuffer.length));
                     }
                     // check if paused and wait
                     do {
@@ -317,7 +318,6 @@ class TrackData {
                 // empty.
                 sourceDataLine.drain();
                 sourceDataLine.close();
-                timeLine.stop();
 
                 /* System.out.println("That's it, I've had it!");
                 System.out.println("Played " + byteCount + " out of " + audioData.length + " bytes");
