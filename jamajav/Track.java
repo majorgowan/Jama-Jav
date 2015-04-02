@@ -4,6 +4,7 @@ package jamajav;
 
 // Swing packages:
 import javax.swing.*;
+import javax.swing.event.*;
 import java.awt.*;
 import java.awt.event.*;
 
@@ -11,7 +12,7 @@ import java.awt.event.*;
 import java.awt.image.*;
 import java.net.URL;
 
-class Track extends JPanel implements ActionListener {
+class Track extends JPanel implements ActionListener, ChangeListener {
 
     private int DEFAULT_WIDTH = 550;
     private int DEFAULT_HEIGHT = 150;
@@ -62,6 +63,7 @@ class Track extends JPanel implements ActionListener {
         return getPreferredSize();
     }
 
+    // ActionListener method
     public void actionPerformed(ActionEvent ae) {
         String comStr = ae.getActionCommand();
 
@@ -120,6 +122,14 @@ class Track extends JPanel implements ActionListener {
             case ("expand") :
                 expand();
                 break;
+        }
+    }
+
+    // ChangeListener method (for volume slider
+    public void stateChanged(ChangeEvent ce) {
+        if (ce.getSource() == slider) {
+            trackData.setVolume(getVolume());
+            //System.out.println("Changing volume to " + getVolume());
         }
     }
 
@@ -347,7 +357,7 @@ class Track extends JPanel implements ActionListener {
     }
 
     public void playback(double start, double end) {
-        trackData.playback(start, end, slider.getValue());
+        trackData.playback(start, end);
     }
 
     public void putTrackData(TrackData td) {
@@ -518,6 +528,7 @@ class Track extends JPanel implements ActionListener {
 
         // Volume slider
         slider = new VolumeSlider(JSlider.VERTICAL, 0, 10, 7);
+        slider.addChangeListener(this);
 
         trackButtonPanel = new LeftTrackButtonPanel(this);
 
@@ -539,7 +550,6 @@ class Track extends JPanel implements ActionListener {
                 }
             }
         });
-
     }
 
 

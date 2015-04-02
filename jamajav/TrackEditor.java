@@ -37,7 +37,7 @@ class TrackEditor extends JPanel implements ActionListener {
         switch (cmdStr) {
             case "preview" :
                 clock.reset(0.0);
-                trackData.playback(7);
+                trackData.playback();
                 break;
 
             case "stop" :

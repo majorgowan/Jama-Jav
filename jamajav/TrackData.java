@@ -20,6 +20,8 @@ class TrackData {
     private boolean isCapturing = false;
     private boolean notEmpty = false;
 
+    private Volume volume;
+
     private byte[] audioData;
     private AudioFormat audioFormat;
     private TargetDataLine targetDataLine;
@@ -114,6 +116,10 @@ class TrackData {
 
     public void setMonitor(Monitor mon) {
         monitor = mon;
+    }
+
+    public void setVolume(int vol) {
+        volume.setValue(vol);
     }
 
     // Create and return an AudioFormat object for a given set
@@ -218,7 +224,7 @@ class TrackData {
         }
     }
 
-    public void playback(double startTime, double endTime, int volume) {
+    public void playback(double startTime, double endTime) {
         timeKeeper.reset(startTime);
 
         // System.out.println("Playing back . . . ");
@@ -233,7 +239,7 @@ class TrackData {
             endByte = Math.min(endByte-endByte%2+1, audioData.length-1);      // odd number
 
             // System.out.println("Playing bytes " + startByte + " to " + endByte);
-            
+
             byte[] toPlay = new byte[endByte - startByte + 1];
             for (int i = 0; i < toPlay.length; i++)
                 toPlay[i] = audioData[i+startByte];
@@ -255,11 +261,6 @@ class TrackData {
             sourceDataLine.open(audioFormat);
             sourceDataLine.start();
 
-            FloatControl volume_control = 
-                (FloatControl)sourceDataLine.getControl(FloatControl.Type.MASTER_GAIN);
-
-            volume_control.setValue((float)(-2.5*(10.0-volume)));
-
             // Create a thread to play back the data and start it running.  
             // It will run until all the data has been played back.
             Thread playThread = new Thread(new PlayThread());
@@ -273,13 +274,15 @@ class TrackData {
         }
     }
 
-    public void playback(int volume) {
-        playback(0.0, getRunningTime(), volume);
+    public void playback() {
+        playback(0.0, getRunningTime());
     }
 
     class PlayThread extends Thread {
 
         byte tempBuffer[] = new byte[2000];
+        FloatControl volume_control = 
+            (FloatControl)sourceDataLine.getControl(FloatControl.Type.MASTER_GAIN);
 
         public void run(){
 
@@ -293,6 +296,9 @@ class TrackData {
                                     tempBuffer, 0,
                                     tempBuffer.length)) != -1) && (!stopPlay.getValue()))
                 {
+                    volume_control.setValue((float)(-2.5*(10.0-volume.getValue())));
+                    // System.out.println("volume is " + volume.getValue());
+
                     if (cnt > 0) {
                         // Write data to the internal
                         // buffer of the data line
@@ -352,6 +358,7 @@ class TrackData {
     // Basic TrackData constructor
     TrackData() {
         audioFormat = getAudioFormat();
+        volume = new Volume();
     }
 
     // Copy constructor

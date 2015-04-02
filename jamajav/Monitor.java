@@ -25,7 +25,7 @@ class Monitor extends JPanel {
 
         // normalize:
         double factor = (double)(DEFAULT_HEIGHT-8)
-            / maxValue / 20000;
+            / maxValue / 15000;
 
         g.setColor(Color.YELLOW);
         bottom = DEFAULT_HEIGHT-4;
