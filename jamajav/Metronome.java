@@ -124,6 +124,7 @@ class Metronome extends JPanel implements ActionListener {
                     if (timer.isRunning()) {
                         stop();
                     } else {
+                        theTime = 0.0; // override offset if in manual mode
                         start();
                     }
                     break;
@@ -216,7 +217,7 @@ class Metronome extends JPanel implements ActionListener {
         signalLabel.setFont(new Font("SansSerif",Font.BOLD,24));
 
         JLabel titleLabel = new JLabel("Metronome");
-        titleLabel.setFont(new Font("SansSerif",Font.BOLD,20));
+        titleLabel.setFont(new Font("SansSerif",Font.BOLD,13));
 
         JLabel bpmLabel = new JLabel("bpm");
         bpmField = new JTextField("" + bpMin, 2);
@@ -264,7 +265,11 @@ class Metronome extends JPanel implements ActionListener {
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel,BoxLayout.LINE_AXIS));
 
-        mainPanel.add(titleLabel);
+        JPanel titlePanel = new JPanel(new GridLayout(2,1));
+        titlePanel.add(titleLabel);
+        titlePanel.add(soundCheckBox);
+
+        mainPanel.add(titlePanel);
         mainPanel.add(Box.createHorizontalGlue());
 
         JPanel signalPanel = new JPanel();
@@ -279,20 +284,22 @@ class Metronome extends JPanel implements ActionListener {
         JPanel bpmPanel = new JPanel();
         bpmPanel.add(bpmField);
         bpmPanel.add(bpmLabel);
-        bpmPanel.add(Box.createRigidArea(new Dimension(5,0)));
-        mainPanel.add(bpmPanel);
 
         JPanel bpMeasPanel = new JPanel();
         bpMeasPanel.add(bpMeasField);
         bpMeasPanel.add(bpMeasLabel);
-        bpMeasPanel.add(Box.createRigidArea(new Dimension(5,0)));
-        mainPanel.add(bpMeasPanel);
 
         JPanel offsetPanel = new JPanel();
         offsetPanel.add(offsetLabel);
         offsetPanel.add(offsetField);
         offsetPanel.add(offsetSecLabel);
-        mainPanel.add(offsetPanel);
+
+        JPanel fieldsPanel = new JPanel();
+        fieldsPanel.add(bpmPanel);
+        fieldsPanel.add(bpMeasPanel);
+        fieldsPanel.add(offsetPanel);
+
+        mainPanel.add(fieldsPanel);
 
         setLayout(new BorderLayout());
         add(mainPanel);
