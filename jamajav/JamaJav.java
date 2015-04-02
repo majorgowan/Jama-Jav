@@ -38,7 +38,7 @@ public class JamaJav {
 
         prefs = new Prefs("jamajav.cfg");
 
-        trackPanel = new TrackPanel(jfrm, metronome, clock, prefs);
+        trackPanel = new TrackPanel(args, jfrm, metronome, clock, prefs);
         trackPanel.setBorder(BorderFactory.createRaisedBevelBorder());
 
         //JPanel outerControlPanel = new JPanel();

@@ -464,9 +464,9 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
         for (int j = 0; j < tracks.size(); j++) {
 
             /* System.out.println("track " + j + " playing " + 
-                    tracks.get(j).getTrackData().getStopPlay().getValue()
-                    + " ... recording " + 
-                    tracks.get(j).getTrackData().getStopCapture().getValue()); */
+               tracks.get(j).getTrackData().getStopPlay().getValue()
+               + " ... recording " + 
+               tracks.get(j).getTrackData().getStopCapture().getValue()); */
 
             if (!tracks.get(j).getTrackData().getStopPlay().getValue()) 
                 result = false;
@@ -584,91 +584,98 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
 
     private void open() {
         String filename = chooseFile("jj","Jama Jav files","open");
-        if (!(filename.equals("rathernot"))) {
-            newDoc();
-            filename = filename.split("\\.")[0];  // strip .jj from filename
 
-            parent.setTitle("Major's Jama Jav - " + filename);
+        if (!(filename.equals("rathernot"))) 
+            open(filename);
+    }
 
-            System.out.println("Opening " + filename + ".jj"
-                    + " and " + filename + ".bin");
+    private void open(String fn) {
 
-            BufferedReader br = null;
-            FileInputStream binfis = null;
-            try {
-                br = new BufferedReader(new FileReader(filename + ".jj"));
-                binfis = new FileInputStream(filename + ".bin"); 
+        String filename = fn;
 
-                // parse jj file
+        newDoc();
+        filename = filename.split("\\.")[0];  // strip .jj from filename
 
-                // get and set Metronome parameters
-                String[] words = br.readLine().split(" ");
-                int bpMin = Integer.parseInt(words[1]);
-                int bpMeas = Integer.parseInt(words[3]);
-                metronome.setParam(bpMin, bpMeas);
-                if (words.length >= 7) {
-                    double offset = Double.parseDouble(words[6]);
-                    metronome.setOffset(offset);
-                } else
-                    metronome.setOffset(0.0);
+        parent.setTitle("Major's Jama Jav - " + filename);
 
-                // create appropriate number of tracks,
+        System.out.println("Opening " + filename + ".jj"
+                + " and " + filename + ".bin");
+
+        BufferedReader br = null;
+        FileInputStream binfis = null;
+        try {
+            br = new BufferedReader(new FileReader(filename + ".jj"));
+            binfis = new FileInputStream(filename + ".bin"); 
+
+            // parse jj file
+
+            // get and set Metronome parameters
+            String[] words = br.readLine().split(" ");
+            int bpMin = Integer.parseInt(words[1]);
+            int bpMeas = Integer.parseInt(words[3]);
+            metronome.setParam(bpMin, bpMeas);
+            if (words.length >= 7) {
+                double offset = Double.parseDouble(words[6]);
+                metronome.setOffset(offset);
+            } else
+                metronome.setOffset(0.0);
+
+            // create appropriate number of tracks,
+            words = br.readLine().split(" ");
+            int newTracks = Integer.parseInt(words[1]);
+
+            System.out.println("Opening " + newTracks + " tracks.");
+
+            // loop over tracks
+            for (int i = 0; i < newTracks; i++) {
+                addNewTrack();
+
+                Info info = tracks.get(i).getInfo();
+                br.readLine(); // INFO_BEGIN
+                info.setTitle(br.readLine());
+                info.setContributor(br.readLine());
+                info.setAvatar(br.readLine());
+
+                tracks.get(i).setAvatar(
+                        avatars.get(findAvatarIndex(info.getAvatar())).getImage());
+
+                info.setDate(br.readLine());
+                info.setLocation(br.readLine());
+
                 words = br.readLine().split(" ");
-                int newTracks = Integer.parseInt(words[1]);
+                info.setRunningTime(Double.parseDouble(words[0]));
 
-                System.out.println("Opening " + newTracks + " tracks.");
+                words = br.readLine().split(" ");
+                int numNotes = Integer.parseInt(words[0]);
+                for (int j = 0; j < numNotes; j++)
+                    info.addNote(br.readLine());
 
-                // loop over tracks
-                for (int i = 0; i < newTracks; i++) {
-                    addNewTrack();
+                br.readLine(); // INFO_END
+                tracks.get(i).setToolTip(info);
 
-                    Info info = tracks.get(i).getInfo();
-                    br.readLine(); // INFO_BEGIN
-                    info.setTitle(br.readLine());
-                    info.setContributor(br.readLine());
-                    info.setAvatar(br.readLine());
+                // read number of bytes
+                words = br.readLine().split(" ");
+                int nbytes = Integer.parseInt(words[1]);
+                byte[] bytes = new byte[nbytes];
 
-                    tracks.get(i).setAvatar(
-                            avatars.get(findAvatarIndex(info.getAvatar())).getImage());
-
-                    info.setDate(br.readLine());
-                    info.setLocation(br.readLine());
-
-                    words = br.readLine().split(" ");
-                    info.setRunningTime(Double.parseDouble(words[0]));
-
-                    words = br.readLine().split(" ");
-                    int numNotes = Integer.parseInt(words[0]);
-                    for (int j = 0; j < numNotes; j++)
-                        info.addNote(br.readLine());
-
-                    br.readLine(); // INFO_END
-                    tracks.get(i).setToolTip(info);
-
-                    // read number of bytes
-                    words = br.readLine().split(" ");
-                    int nbytes = Integer.parseInt(words[1]);
-                    byte[] bytes = new byte[nbytes];
-
-                    // read bytes from bin file
-                    int bytesread = binfis.read(bytes);
-                    // System.out.println("Track " + i + ":"
-                    //         + " read " + bytesread
-                    //         + " bytes");
-                    tracks.get(i).putBytes(bytes);
-                    tracks.get(i).setSelected(false);
-                    tracks.get(i).collapse();
-                }
-            } catch (IOException e) {
-                System.out.println("Error reading from " + filename + ".bin or " 
-                        + filename + ".jj");
-            } finally {
-                try {
-                    if (br != null) br.close();
-                    if (binfis != null) binfis.close();
-                } catch(IOException ie) {
-                    System.out.println("Error closing jj or bin file");
-                }
+                // read bytes from bin file
+                int bytesread = binfis.read(bytes);
+                // System.out.println("Track " + i + ":"
+                //         + " read " + bytesread
+                //         + " bytes");
+                tracks.get(i).putBytes(bytes);
+                tracks.get(i).setSelected(false);
+                tracks.get(i).collapse();
+            }
+        } catch (IOException e) {
+            System.out.println("Error reading from " + filename + ".bin or " 
+                    + filename + ".jj");
+        } finally {
+            try {
+                if (br != null) br.close();
+                if (binfis != null) binfis.close();
+            } catch(IOException ie) {
+                System.out.println("Error closing jj or bin file");
             }
         }
     }
@@ -860,7 +867,7 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
         return bigTimeLine;
     }
 
-    TrackPanel(JFrame jfrm, Metronome m, Clock c, Prefs p) {
+    TrackPanel(String[] args, JFrame jfrm, Metronome m, Clock c, Prefs p) {
 
         parent = jfrm;
         metronome = m;
@@ -898,6 +905,13 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
         add(bigTimeLine,BorderLayout.PAGE_START);
         add(scrollPane,BorderLayout.CENTER);
         add(metronome,BorderLayout.PAGE_END);
+
+        // if command-line argument (open Jam)
+        if (args.length > 0) {
+            open(args[0]);
+            refreshBigTimeLine();
+            bigTimeLine.setFull();
+        }
     }
 }
 

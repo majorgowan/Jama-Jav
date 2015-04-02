@@ -52,7 +52,10 @@ class TimeLine extends PlainTimeLine {
 
     public void setRunningTime(double t) {
         super.setRunningTime(t);
-        tickInterval = (int)(5*((int)(runningTime/50)+1));
+        if (runningTime < 10)
+            tickInterval = 1;
+        else
+            tickInterval = (int)(5*((int)(runningTime/50)+1));
     }
 
     TimeLine() {
