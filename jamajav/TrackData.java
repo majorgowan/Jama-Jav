@@ -197,8 +197,8 @@ class TrackData {
 
                 audioData = byteArrayOutputStream.toByteArray();
 
-                System.out.println("Read in " + byteCount + " bytes");
-                System.out.println("audioData has " + audioData.length + " bytes");
+                // System.out.println("Read in " + byteCount + " bytes");
+                // System.out.println("audioData has " + audioData.length + " bytes");
 
                 info.setRunningTime(getRunningTime());
                 info.resetDate();

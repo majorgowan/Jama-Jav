@@ -92,6 +92,7 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                 // set bigTimeLine to full timespan
                 refreshBigTimeLine();
                 bigTimeLine.setFull();
+                bigTimeKeeper.reset(0.0);
                 // Scroll the TrackPanel to the top to show first Track:
                 // (doesn't go quite to the top for some reason but noone will notice)
                 mainPanel.scrollRectToVisible(new Rectangle(0,0,0,0));
