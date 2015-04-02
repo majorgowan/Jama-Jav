@@ -53,6 +53,7 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
         // System.out.println("I THINK WE GOT SOMETHING THERE!");
         for (int i = 0; i < tracks.size(); i++) {
             if (obs == tracks.get(i).getTrackData().getStopPlay()) {
+                System.out.println("Observable: track " + i + " stopped playing");
                 // loop over all tracks - if any are stopped, then
                 // (re)enable the Record and Play buttons
                 for (int j = 0; j < tracks.size(); j++) {
@@ -64,6 +65,7 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                     bigTimeLine.stop();
                 }
             } else if (obs == tracks.get(i).getTrackData().getStopCapture()) {
+                System.out.println("Observable: track " + i + " stopped recording");
                 // if firing track is stopped recording, stop the clock
                 if (tracks.get(i).getTrackData().getStopCapture().getValue()) {
                     clock.stop(); // stop clock (probably redundant)
@@ -471,11 +473,19 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
     private boolean allStopped() {
         boolean result = true;
         for (int j = 0; j < tracks.size(); j++) {
+
+            /* System.out.println("track " + j + " playing " + 
+                    tracks.get(j).getTrackData().getStopPlay().getValue()
+                    + " ... recording " + 
+                    tracks.get(j).getTrackData().getStopCapture().getValue()); */
+
             if (!tracks.get(j).getTrackData().getStopPlay().getValue()) 
                 result = false;
             if (!tracks.get(j).getTrackData().getStopCapture().getValue()) 
                 result = false;
         }
+
+        // System.out.println("allStopped()? " + result + "\n");
 
         return result;
     }

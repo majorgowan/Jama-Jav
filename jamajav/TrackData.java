@@ -55,6 +55,7 @@ class TrackData {
 
     public void stopPlaying() {
         stopPlay.stop();
+        // System.out.println("It wasn't me!");
     }
 
     public Stopper getStopPlay() {
@@ -93,12 +94,12 @@ class TrackData {
 
     private double bytesToSeconds(int nbytes) {
         return (double)(nbytes) / 
-            (double)(audioFormat.getFrameSize() * audioFormat.getFrameRate());
+            ((double)audioFormat.getFrameSize() * (double)audioFormat.getFrameRate());
     }
 
     private int secondsToBytes(double seconds) {
         return (int)(seconds *
-                audioFormat.getFrameSize() * audioFormat.getFrameRate());
+                (double)audioFormat.getFrameSize() * (double)audioFormat.getFrameRate());
     }
 
     public double getRunningTime() {
@@ -176,6 +177,7 @@ class TrackData {
             stopCapture.start();
 
             try{
+                int byteCount = 0;
                 // Loop until stopCapture is set by another thread that
                 while(!stopCapture.getValue()) {
                     // Read data from the internal buffer of the data line.
@@ -189,11 +191,15 @@ class TrackData {
                     if(cnt > 0){
                         // Save data in output stream object.
                         byteArrayOutputStream.write(tempBuffer, 0, cnt);
+                        byteCount += 1000;
                     }
                 }
                 byteArrayOutputStream.close();
 
                 audioData = byteArrayOutputStream.toByteArray();
+
+                System.out.println("Read in " + byteCount + " bytes");
+                System.out.println("audioData has " + audioData.length + " bytes");
 
                 info.setRunningTime(getRunningTime());
                 info.resetDate();
@@ -282,6 +288,7 @@ class TrackData {
         public void run(){
 
             try{
+                int byteCount = 0;
                 int cnt;
                 // Keep looping until the input
                 // read method returns -1 for
@@ -298,6 +305,7 @@ class TrackData {
                         sourceDataLine.write(tempBuffer, 0, cnt);
                         if (monitor != null)
                             monitor.setData(tempBuffer);
+                        byteCount += 1000;
                     }
                     // check if paused and wait
                     do {
@@ -310,6 +318,12 @@ class TrackData {
                 sourceDataLine.drain();
                 sourceDataLine.close();
                 timeLine.stop();
+
+                /* System.out.println("That's it, I've had it!");
+                System.out.println("Played " + byteCount + " out of " + audioData.length + " bytes");
+                System.out.println("That's " + bytesToSeconds(byteCount) + " seconds");
+                System.out.println("Value of stopPlay: " + stopPlay.getValue()); */
+
                 stopPlay.stop();
 
             } catch (Exception e) {

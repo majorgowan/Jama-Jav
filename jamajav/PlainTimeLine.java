@@ -18,6 +18,7 @@ class PlainTimeLine extends JPanel implements ActionListener {
 
     public void setRunningTime(double t) {
         runningTime = t;
+        // System.out.println("TimeLine running time set at " + runningTime + " seconds");
     }
 
     public void start() {
@@ -26,6 +27,7 @@ class PlainTimeLine extends JPanel implements ActionListener {
 
     public void stop() {
         timer.stop();
+        // System.out.println("TimeLine stopped at " + runnerPosition + " seconds");
     }
 
     public void toggle() {
