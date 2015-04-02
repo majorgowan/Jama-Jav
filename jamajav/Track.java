@@ -29,7 +29,8 @@ class Track extends JPanel implements ActionListener {
 
     private Prefs prefs;
     private Metronome metronome;
-    private Clock clock; 
+
+    private TimeKeeper timeKeeper;
 
     private LeftTrackButtonPanel trackButtonPanel;
     private VolumeSlider slider;
@@ -220,23 +221,19 @@ class Track extends JPanel implements ActionListener {
     }
 
     public void startRecording() {
-        clock.restart();
         metronome.start();
-        trackData.record(visualizer, timeLine);
+        trackData.record(visualizer);
         trackData.setNotEmpty(true);
     }
 
     public void stopRecording() {
         // System.out.println("Stopping recording . . .");
         metronome.stop();
-        clock.stop();
         trackData.stopCapturing();
     }
 
     public void startPlaying(double start, double end) {
         if (trackData.isNotEmpty()) {
-            clock.setTime(start);
-            clock.start();
             disableRecordPlay();
             playback(start, end);
         }
@@ -253,7 +250,6 @@ class Track extends JPanel implements ActionListener {
     }
 
     public void stopPlaying() {
-        clock.stop();
         trackData.stopPlaying();
     }
 
@@ -351,7 +347,7 @@ class Track extends JPanel implements ActionListener {
     }
 
     public void playback(double start, double end) {
-        trackData.playback(start, end, slider.getValue(), timeLine);
+        trackData.playback(start, end, slider.getValue());
     }
 
     public void putTrackData(TrackData td) {
@@ -463,28 +459,31 @@ class Track extends JPanel implements ActionListener {
     }
 
     // Basic Track constructor
-    Track(JFrame frm, TrackPanel tpnl, Metronome m, Clock c, Prefs p) {
+    Track(JFrame frm, TrackPanel tpnl, Metronome m, TimeKeeper bigTimeKeeper, Prefs p) {
 
         jfrm = frm;
         trackPanel = tpnl;
 
         metronome = m;
-        clock = c;
         prefs = p;
 
         setBackground(JamaJav.goldColour);
 
+        // time keeping and display
+        timeKeeper = new TimeKeeper(0.0, bigTimeKeeper);
+        timeLine = new TimeLine();
+        timeKeeper.setTimeLine(timeLine);
+
         // trackData has the audio stuff and info
         trackData = new TrackData();
         trackData.addStopperObserver(trackPanel);
+        trackData.setTimeKeeper(timeKeeper);
 
         Info info = new Info();
         info.setContributor(prefs.getUserName());
         info.setLocation(prefs.getUserCity());
         info.setAvatar(prefs.getAvatar());
         trackData.putInfo(info);
-
-        timeLine = new TimeLine(trackPanel.getBigTimeLine(), trackPanel.getClock());
 
         // title Panel
         titlePanel = new JPanel();

@@ -11,29 +11,27 @@ class PlainTimeLine extends JPanel {
     protected int tickInterval;
     protected double runnerPosition;
 
-    public void setTime(double time) {
+    public void update(double time) {
+        if (runnerPosition < time) {
+            runnerPosition = time;
+            setRunningTime(Math.max(runningTime, runnerPosition));
+            repaint();
+        }
+    }
+
+    public void reset(double time) {
         runnerPosition = time;
+        setRunningTime(Math.max(runningTime, runnerPosition));
         repaint();
-    }
-
-    public void addTime(double time) {
-        runnerPosition += time;
-        repaint();
-    }
-
-    public double getTime() {
-        return runnerPosition;
     }
 
     public void setRunningTime(double t) {
         runningTime = t;
-        // System.out.println("TimeLine running time set at " + runningTime + " seconds");
     }
 
     PlainTimeLine() {
-        runningTime = 0.0;
         tickInterval = 5;
-        runnerPosition = 0.0;
+        reset(0.0);
     }
 }
 

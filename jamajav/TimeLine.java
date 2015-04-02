@@ -12,9 +12,6 @@ class TimeLine extends PlainTimeLine {
 
     private static Font tickFont = new Font("SansSerif",Font.PLAIN,9);
 
-    private BigTimeLine bigTimeLine = null;
-    private PlainClock clock = null;
-
     public Dimension getPreferredSize() {
         return (new Dimension(DEFAULT_WIDTH, DEFAULT_HEIGHT));
     }
@@ -53,31 +50,9 @@ class TimeLine extends PlainTimeLine {
                 (int)(2*rad), (int)(2*rad));
     }
 
-    public void setTime(double time) {
-        super.setTime(time);
-        if (bigTimeLine != null) {
-            bigTimeLine.setTime(time);
-            clock.setTime(time);
-        }
-    }
-
-    public void addTime(double time) {
-        super.addTime(time);
-        if (bigTimeLine != null) {
-            bigTimeLine.setTime(runnerPosition);
-            clock.setTime(runnerPosition);
-        }
-    }
-
     TimeLine() {
         super();
         //setBackground(Color.WHITE);
-    }
-
-    TimeLine(BigTimeLine btl, PlainClock pc) {
-        super();
-        bigTimeLine = btl;
-        clock = pc;
     }
 }
 

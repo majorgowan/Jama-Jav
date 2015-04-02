@@ -12,7 +12,7 @@ import javax.sound.sampled.*;
 import java.util.Observer;
 import java.util.Observable;
 
-class TrackEditor extends JPanel implements ActionListener, Observer {
+class TrackEditor extends JPanel implements ActionListener {
 
     private TrackPanel trackPanel;
     // the track to be edited
@@ -21,6 +21,8 @@ class TrackEditor extends JPanel implements ActionListener, Observer {
     private TrackData trackData, oldTrackData;
     private byte[] bufferData;
 
+    private TimeKeeper timeKeeper;
+
     private TimeLine timeLine;
     private Visualizer visualizer;
 
@@ -28,21 +30,14 @@ class TrackEditor extends JPanel implements ActionListener, Observer {
 
     private PlainClock clock;
 
-    public void update(Observable obs, Object arg) {
-        // if update is called, it means track is finished playing
-        if (obs == trackData.getStopPlay()) {
-            clock.stop();
-        }
-    }
-
     public void actionPerformed(ActionEvent ae) {
 
         String cmdStr = ae.getActionCommand();
 
         switch (cmdStr) {
             case "preview" :
-                clock.restart();
-                trackData.playback(7, timeLine);
+                clock.reset(0.0);
+                trackData.playback(7);
                 break;
 
             case "stop" :
@@ -489,20 +484,24 @@ class TrackEditor extends JPanel implements ActionListener, Observer {
 
         oldTrackData = track.getTrackData();
         trackData = new TrackData(oldTrackData);
-        trackData.addStopperObserver(this);
 
         // override default copy constructor appending "copy of" to info
         // of copy (will only do that if "save as new track" is
         // clicked
         trackData.putInfo(oldTrackData.getInfo());
 
+        // Visualizer
         visualizer = new Visualizer();
         visualizer.setData(trackData.getBytes()); 
 
+        // time keeping and display
+        timeKeeper = new TimeKeeper(0.0);
         timeLine = new TimeLine();
         timeLine.setRunningTime(trackData.getInfo().getRunningTime());
-
+        timeKeeper.setTimeLine(timeLine);
         clock = new PlainClock();
+        timeKeeper.setClock(clock);
+        trackData.setTimeKeeper(timeKeeper);
 
         // Outer Edit panel
         JPanel outerEditPanel = new JPanel();

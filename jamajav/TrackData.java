@@ -29,14 +29,8 @@ class TrackData {
     private Info info;
 
     private Monitor monitor;
-
-    // eventually don't put this stuff here.  Have the
-    // components "listen" for change in "stopPlay" 
-    // and "isCapturing" and then
-    // request the byteArray bzw. runningTime from
-    // the TrackData object
     private Visualizer visualizer;
-    private TimeLine timeLine;
+    private TimeKeeper timeKeeper;
 
     public void setNotEmpty(boolean ne) {
         notEmpty = ne;
@@ -114,6 +108,10 @@ class TrackData {
         info = in;
     }
 
+    public void setTimeKeeper(TimeKeeper tk) {
+        timeKeeper = tk;
+    }
+
     public void setMonitor(Monitor mon) {
         monitor = mon;
     }
@@ -137,9 +135,9 @@ class TrackData {
                 bigEndian);
     }
 
-    public void record(Visualizer vis, TimeLine tl) {
+    public void record(Visualizer vis) {
         visualizer = vis;
-        timeLine = tl;
+        timeKeeper.reset(0.0);
         try{
             // System.out.println("Recording . . . ");
             // Get everything set up for recording
@@ -169,7 +167,7 @@ class TrackData {
         // An arbitrary-size temporary holding buffer
         // byte tempBuffer[] = new byte[10000];
 
-        byte tempBuffer[] = new byte[1000];
+        byte tempBuffer[] = new byte[2000];
         public void run(){
 
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -191,8 +189,8 @@ class TrackData {
                     if(cnt > 0){
                         // Save data in output stream object.
                         byteArrayOutputStream.write(tempBuffer, 0, cnt);
-                        byteCount += 1000;
-                        timeLine.setTime(bytesToSeconds(byteCount));
+                        byteCount += tempBuffer.length;
+                        timeKeeper.addTime(bytesToSeconds(tempBuffer.length));
                     }
                 }
                 byteArrayOutputStream.close();
@@ -205,8 +203,6 @@ class TrackData {
                 info.setRunningTime(getRunningTime());
                 info.resetDate();
 
-                timeLine.setRunningTime(getRunningTime());
-                timeLine.repaint();
                 visualizer.setData(audioData);
 
                 //System.out.println("Closing targetDataLine . . . ");
@@ -222,9 +218,9 @@ class TrackData {
         }
     }
 
-    public void playback(double startTime, double endTime, int volume, TimeLine tl) {
-        timeLine = tl;
-        tl.setTime(startTime);
+    public void playback(double startTime, double endTime, int volume) {
+        timeKeeper.reset(startTime);
+
         // System.out.println("Playing back . . . ");
         stopPlay.start();
         isPaused = false;
@@ -277,13 +273,13 @@ class TrackData {
         }
     }
 
-    public void playback(int volume, TimeLine tl) {
-        playback(0.0, getRunningTime(), volume, tl);
+    public void playback(int volume) {
+        playback(0.0, getRunningTime(), volume);
     }
 
     class PlayThread extends Thread {
 
-        byte tempBuffer[] = new byte[1000];
+        byte tempBuffer[] = new byte[2000];
 
         public void run(){
 
@@ -305,8 +301,8 @@ class TrackData {
                         sourceDataLine.write(tempBuffer, 0, cnt);
                         if (monitor != null)
                             monitor.setData(tempBuffer);
-                        byteCount += 1000;
-                        timeLine.addTime(bytesToSeconds(tempBuffer.length));
+                        byteCount += tempBuffer.length;
+                        timeKeeper.addTime(bytesToSeconds(tempBuffer.length));
                     }
                     // check if paused and wait
                     do {
@@ -318,11 +314,6 @@ class TrackData {
                 // empty.
                 sourceDataLine.drain();
                 sourceDataLine.close();
-
-                /* System.out.println("That's it, I've had it!");
-                System.out.println("Played " + byteCount + " out of " + audioData.length + " bytes");
-                System.out.println("That's " + bytesToSeconds(byteCount) + " seconds");
-                System.out.println("Value of stopPlay: " + stopPlay.getValue()); */
 
                 stopPlay.stop();
 

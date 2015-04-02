@@ -37,6 +37,8 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
     private JFrame parent;
     private ToolBar toolBar;
 
+    private TimeKeeper bigTimeKeeper;
+
     private JPanel mainPanel;
     private BigTimeLine bigTimeLine;
 
@@ -53,23 +55,16 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
         // System.out.println("I THINK WE GOT SOMETHING THERE!");
         for (int i = 0; i < tracks.size(); i++) {
             if (obs == tracks.get(i).getTrackData().getStopPlay()) {
-                System.out.println("Observable: track " + i + " stopped playing");
+                // System.out.println("Observable: track " + i + " stopped playing");
                 // loop over all tracks - if any are stopped, then
                 // (re)enable the Record and Play buttons
                 for (int j = 0; j < tracks.size(); j++) {
                     if (tracks.get(j).getTrackData().getStopPlay().getValue())
                         tracks.get(j).enableRecordPlay();
                 }
-                if (allStopped()) {
-                    clock.stop();
-                }
             } else if (obs == tracks.get(i).getTrackData().getStopCapture()) {
-                System.out.println("Observable: track " + i + " stopped recording");
-                // if firing track is stopped recording, stop the clock
+                // System.out.println("Observable: track " + i + " stopped recording");
                 if (tracks.get(i).getTrackData().getStopCapture().getValue()) {
-                    clock.stop(); // stop clock (probably redundant)
-                    // System.out.println("Stopped clock, resetting toolTip");
-                    // System.out.println("Running time: " + tracks.get(i).getInfo().getRunningTime());
                     tracks.get(i).resetToolTip(); // reset ToolTip to set running time
                     tracks.get(i).enableRecordPlay();
                 }
@@ -123,7 +118,7 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                 // start all tracks playing from the beginning
                 for (int i = 0; i < tracks.size(); i++) 
                     tracks.get(i).startPlaying();
-                bigTimeLine.setTime(0.0);
+                bigTimeLine.reset(0.0);
                 break;
 
             case ("playall") :
@@ -135,7 +130,7 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                 for (int i = 0; i < tracks.size(); i++) 
                     tracks.get(i).startPlaying(
                             bigTimeLine.getMinTime(), bigTimeLine.getMaxTime());
-                bigTimeLine.setTime(bigTimeLine.getMinTime());
+                bigTimeLine.reset(bigTimeLine.getMinTime());
                 break;
 
             case ("playselectedfromtop") :
@@ -152,8 +147,8 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                     for (int i = 0; i < tracks.size(); i++) 
                         if (tracks.get(i).isSelected() && tracks.get(i).isNotEmpty()) 
                             tracks.get(i).startPlaying();
-                    bigTimeLine.setTime(0.0);
-                    clock.restart();
+                    bigTimeLine.reset(0.0);
+                    clock.reset(0.0);
                 }
                 break;
 
@@ -171,7 +166,7 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                         if (tracks.get(i).isSelected() && tracks.get(i).isNotEmpty()) 
                             tracks.get(i).startPlaying(
                                     bigTimeLine.getMinTime(), bigTimeLine.getMaxTime());
-                    bigTimeLine.setTime(bigTimeLine.getMinTime());
+                    bigTimeLine.reset(bigTimeLine.getMinTime());
                 }
                 break;
 
@@ -198,7 +193,7 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                         tracks.get(i).startPlaying();
 
                 toggleMetronome(true);
-                bigTimeLine.setTime(0.0);
+                bigTimeLine.reset(0.0);
 
                 // start new track recording
                 tracks.get(tracks.size()-1).startRecording();
@@ -404,7 +399,7 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
 
     public void addNewTrack() {
         ntracks++;
-        tracks.add(new Track(parent, this, metronome, clock, prefs));
+        tracks.add(new Track(parent, this, metronome, bigTimeKeeper, prefs));
         tracks.get(ntracks-1).setAvatar
             (avatars.get(findAvatarIndex(prefs.getAvatar())).getImage());
         tracks.get(ntracks-1).expand();
@@ -488,10 +483,6 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
         for (int j = 0; j < tracks.size(); j++) 
             if (!tracks.get(j).getTrackData().getStopPlay().getValue()) 
                 tracks.get(j).pausePlaying();
-
-        if (!allStopped()) {
-            clock.toggle();
-        }
     }
 
     // choose a file
@@ -779,7 +770,7 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
         metronome.setParam(metroset[0], metroset[1]);
         metronome.setOffset(0.0);
         // reset clock
-        clock.reset();
+        clock.reset(0.0);
 
         repaint();
     }
@@ -868,15 +859,12 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
         return bigTimeLine;
     }
 
-    public PlainClock getClock() {
-        return (PlainClock)clock;
-    }
-
     TrackPanel(JFrame jfrm, Metronome m, Clock c, Prefs p) {
 
         parent = jfrm;
         metronome = m;
         clock = c;
+        bigTimeLine = new BigTimeLine();
         prefs = p;
 
         tracks = new ArrayList<Track>(0);
@@ -891,7 +879,10 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
         // GUI Stuff ...
         setLayout(new BorderLayout());
 
-        bigTimeLine = new BigTimeLine();
+        // Time keeping
+        bigTimeKeeper = new TimeKeeper();
+        bigTimeKeeper.setClock(clock);
+        bigTimeKeeper.setTimeLine(bigTimeLine);
 
         mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel,BoxLayout.PAGE_AXIS));

@@ -3,20 +3,17 @@ package jamajav;
 // Swing packages:
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
 
 // for formatting numbers:
 import java.text.DecimalFormat;
 
-class PlainClock extends JPanel implements ActionListener {
+class PlainClock extends JPanel {
 
     final private int DEFAULT_WIDTH = 80;
     final private int DEFAULT_HEIGHT = 100;
 
     protected double theTime = 0.0;
-    protected int precision = 100;  // in milliseconds
 
-    protected Timer timer;
     protected JLabel timeLabel;
 
     protected final DecimalFormat df = new DecimalFormat("##0.0");
@@ -25,61 +22,28 @@ class PlainClock extends JPanel implements ActionListener {
         return (new Dimension(DEFAULT_WIDTH, DEFAULT_HEIGHT));
     }
 
-    public void actionPerformed(ActionEvent ae) {
-
-        String comStr = ae.getActionCommand();
-
-        if (ae.getSource() == timer) {
-            theTime += 0.001*precision;
-
+    public void update(double t) {
+        if (theTime < t) {
+            theTime = t;
             timeLabel.setText(df.format(theTime));
+            //System.out.println("Clock should be showing " + theTime);
             repaint();
         }
     }
 
-    public double getTime() {
-        return theTime;
-    }
-
-    public void setTime(double t) {
+    public void reset(double t) {
         theTime = t;
-    }
-
-    public void start() {
-        timer.start();
-    }
-
-    public void restart() {
-        timer.stop();
-        theTime = 0.0;
-        timer.start();
-    }
-
-    public void reset() {
-        timer.stop();
-        theTime = 0.0;
         timeLabel.setText(df.format(theTime));
         repaint();
     }
 
-    public void stop() {
-        timer.stop();
-    }
-
-    public void toggle() {
-        if (timer.isRunning())
-            timer.stop();
-        else
-            timer.start();
-    }
-
     PlainClock() {
+        theTime = 0.0;
         timeLabel = new JLabel(df.format(theTime));
 
         JPanel timerPanel = new JPanel(new FlowLayout());
         timeLabel.setFont(new Font("SansSerif",Font.BOLD,30));
-        // a Timer object which triggers a listener every precision milliseconds
-        timer = new Timer(precision, this);
+
         timerPanel.add(timeLabel);
 
         setLayout(new BorderLayout());

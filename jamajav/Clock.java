@@ -3,7 +3,6 @@ package jamajav;
 // Swing packages:
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
 
 // for formatting numbers:
 import java.text.DecimalFormat;
@@ -15,28 +14,6 @@ class Clock extends PlainClock {
 
     public Dimension getPreferredSize() {
         return (new Dimension(DEFAULT_WIDTH, DEFAULT_HEIGHT));
-    }
-
-
-    public void actionPerformed(ActionEvent ae) {
-
-        String comStr = ae.getActionCommand();
-
-        if (ae.getSource() == timer) {
-            theTime += 0.001*precision;
-
-            timeLabel.setText(df.format(theTime));
-            repaint();
-
-        } else if (comStr.equals("start")) {
-            if (timer.isRunning())
-                timer.stop();
-            else
-                timer.start();
-        } else if (comStr.equals("reset")) {
-            reset();
-            repaint();
-        }
     }
 
     Clock() {
