@@ -369,6 +369,7 @@ class Track extends JPanel implements ActionListener {
 
     public void setTrackData(TrackData td) {
         trackData = td;
+        trackData.setTimeKeeper(timeKeeper);
         trackData.addStopperObserver(trackPanel);
     }
 

@@ -50,6 +50,11 @@ class TimeLine extends PlainTimeLine {
                 (int)(2*rad), (int)(2*rad));
     }
 
+    public void setRunningTime(double t) {
+        super.setRunningTime(t);
+        tickInterval = (int)(5*((int)(runningTime/50)+1));
+    }
+
     TimeLine() {
         super();
         //setBackground(Color.WHITE);

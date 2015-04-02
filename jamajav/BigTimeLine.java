@@ -119,6 +119,11 @@ class BigTimeLine extends PlainTimeLine {
         }
     }
 
+    public void setRunningTime(double t) {
+        super.setRunningTime(t);
+        tickInterval = (int)(5*((int)(runningTime/100)+1));
+    }
+
     BigTimeLine() {
         super();
 
