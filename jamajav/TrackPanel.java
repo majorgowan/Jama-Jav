@@ -107,6 +107,18 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                 save();
                 break;
 
+            case ("web") :
+                String basePath = "http://user.uni-frankfurt.de/~fruman/JJ/"; 
+                final JDialog webDialog = new JDialog(parent, "Open Jam from Web", true);
+                webDialog.setLocationRelativeTo(parent);
+                webDialog.getContentPane().setLayout(new BorderLayout());
+                webDialog.getContentPane().add(new WebLoadPanel(basePath, this), 
+                        BorderLayout.CENTER);
+                webDialog.revalidate();
+                webDialog.pack();
+                webDialog.setVisible(true);
+                break;
+
             case ("addnewtrack") :
                 addNewTrack();
                 break;
