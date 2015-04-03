@@ -7,6 +7,8 @@ import java.awt.event.*;
 
 // For input/output
 import java.io.*;
+import javax.imageio.*;
+import java.awt.image.*;
 
 // For resizable arrays
 import java.util.ArrayList;
@@ -22,6 +24,7 @@ class WebLoadPanel extends JPanel implements ActionListener {
     TrackPanel trackPanel;
     JList fileList;
     String basePath;
+    ArrayList<Info[]> infoArrayList;
 
     public void actionPerformed(ActionEvent ae) {
         String comStr = ae.getActionCommand();
@@ -49,6 +52,62 @@ class WebLoadPanel extends JPanel implements ActionListener {
         return new Dimension(DEFAULT_WIDTH,DEFAULT_HEIGHT);
     }
 
+    private void parseJJFile(String jjFile) {
+        InputStream in = null;
+        try {
+            URL u = new URL(jjFile);
+            in = u.openStream();
+            in = new BufferedInputStream(in);
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(in));
+            String[] words;
+
+            // throw away Metronome line
+            br.readLine();
+
+            words = br.readLine().split(" ");
+            int ntracks = Integer.parseInt(words[1]);
+            Info[] infoArray = new Info[ntracks];
+
+            for (int i = 0; i < ntracks; i++) {
+                br.readLine();    // BEGIN_INFO
+                Info inf = new Info();
+                inf.setTitle(br.readLine());
+                inf.setContributor(br.readLine());
+                inf.setAvatar(br.readLine());
+                inf.setDate(br.readLine());
+                inf.setLocation(br.readLine());
+            
+                words = br.readLine().split(" ");
+                inf.setRunningTime(Double.parseDouble(words[0]));
+
+                words = br.readLine().split(" ");
+                int numNotes = Integer.parseInt(words[0]);
+                for (int j = 0; j < numNotes; j++) 
+                    inf.addNote(br.readLine());
+
+                br.readLine();   // END_INFO
+                br.readLine();   // byte_length
+
+                infoArray[i] = inf;
+            }
+            infoArrayList.add(infoArray);
+
+        } catch (MalformedURLException ex) {
+            System.err.println(jjFile + " is not a parseable URL");
+        } catch (IOException ex) {
+            System.err.println(ex);
+        } finally {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    // ignore
+                }   
+            }   
+        }   
+    }
+
     WebLoadPanel(String bp, TrackPanel tp) {
 
         trackPanel = tp;
@@ -56,6 +115,7 @@ class WebLoadPanel extends JPanel implements ActionListener {
 
         InputStream in = null;
         ArrayList<String> filenames = new ArrayList<String>(0);
+        infoArrayList = new ArrayList<Info[]>(0);
 
         String theWebSite = basePath + "filelist.txt";
 
@@ -70,6 +130,9 @@ class WebLoadPanel extends JPanel implements ActionListener {
             while ((filename = br.readLine()) != null) {
                 System.out.println(filename);
                 filenames.add(new String(filename));
+
+                // get list of contributors and their avatars
+                parseJJFile(basePath + filename);
             }
         } catch (MalformedURLException ex) {
             System.err.println(theWebSite + " is not a parseable URL");

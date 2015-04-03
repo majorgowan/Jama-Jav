@@ -15,6 +15,8 @@ import java.util.ArrayList;
 
 // For input/output:
 import java.io.*;
+import javax.imageio.*;
+import java.awt.image.*;
 
 // For finding avatar files:
 import java.net.URL;
@@ -832,6 +834,10 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
             System.out.println(e);
             e.printStackTrace();
         }
+    }
+
+    public BufferedImage getAvatarImage(String name) {
+        return avatars.get(findAvatarIndex(name)).getImage();
     }
 
     private int findAvatarIndex(String name) {
