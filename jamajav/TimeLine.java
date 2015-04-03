@@ -7,8 +7,8 @@ import java.awt.event.*;
 
 class TimeLine extends PlainTimeLine {
 
-    final private int DEFAULT_WIDTH = 250;
-    final private int DEFAULT_HEIGHT = 19;
+    private int DEFAULT_WIDTH = 250;
+    private int DEFAULT_HEIGHT = 19;
 
     private static Font tickFont = new Font("SansSerif",Font.PLAIN,9);
 

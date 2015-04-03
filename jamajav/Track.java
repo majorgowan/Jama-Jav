@@ -416,6 +416,7 @@ class Track extends JPanel implements ActionListener, ChangeListener {
         outerMonitorPanel.add(monitor);
 
         JPanel outerSliderPanel = new JPanel(new FlowLayout());
+        slider.makeFat();
         outerSliderPanel.add(slider);
 
         JPanel rightPanel = new JPanel(new FlowLayout());
@@ -442,20 +443,31 @@ class Track extends JPanel implements ActionListener, ChangeListener {
 
     public void displaySlim() {
         this.removeAll();
-        DEFAULT_HEIGHT = 60;
+        DEFAULT_HEIGHT = 66;
 
         avatarLabel.setIcon(
-                new ImageIcon(avatarImage.getScaledInstance(35,35,Image.SCALE_SMOOTH)));
+                new ImageIcon(avatarImage.getScaledInstance(40,40,Image.SCALE_SMOOTH)));
+
+        JPanel outerAvatarPanel = new JPanel(new FlowLayout());
+        outerAvatarPanel.add(avatarLabel);
 
         JPanel outerTimePanel = new JPanel(new FlowLayout());
         outerTimePanel.add(timeLine);
 
-        SlimNavTrackButtonPanel slimTrackButtonPanel = new SlimNavTrackButtonPanel(this);
+        JPanel centrePanel = new JPanel();
+        centrePanel.setLayout(new BoxLayout(centrePanel,BoxLayout.PAGE_AXIS));
+        centrePanel.add(outerTimePanel);
+        slider.makeSlim();
+        centrePanel.add(slider);
 
         JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        leftPanel.add(avatarLabel);
-        leftPanel.add(outerTimePanel);
+        leftPanel.add(outerAvatarPanel);
+        //leftPanel.add(outerTimePanel);
+        //leftPanel.add(outerSliderPanel);
+        leftPanel.add(centrePanel);
         leftPanel.add(slimTitlePanel);
+
+        SlimNavTrackButtonPanel slimTrackButtonPanel = new SlimNavTrackButtonPanel(this);
 
         JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         rightPanel.add(slimTrackButtonPanel);

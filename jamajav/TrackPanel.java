@@ -911,6 +911,7 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
             open(args[0]);
             refreshBigTimeLine();
             bigTimeLine.setFull();
+            mainPanel.scrollRectToVisible(new Rectangle(0,0,0,0));
         }
     }
 }
