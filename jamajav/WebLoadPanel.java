@@ -21,6 +21,7 @@ class WebLoadPanel extends JPanel implements ActionListener {
 
     TrackPanel trackPanel;
     JList fileList;
+    String basePath;
 
     public void actionPerformed(ActionEvent ae) {
         String comStr = ae.getActionCommand();
@@ -30,6 +31,8 @@ class WebLoadPanel extends JPanel implements ActionListener {
             case ("Ok") :
                 java.util.List<String> selection = fileList.getSelectedValuesList();
                 System.out.println("You chose " + selection.get(0));
+                // call openFromWeb in TrackPanel
+                trackPanel.openFromWeb(basePath, selection.get(0));
                 SwingUtilities.windowForComponent(this).setVisible(false);
                 SwingUtilities.windowForComponent(this).dispose();
                 break;
@@ -46,14 +49,15 @@ class WebLoadPanel extends JPanel implements ActionListener {
         return new Dimension(DEFAULT_WIDTH,DEFAULT_HEIGHT);
     }
 
-    WebLoadPanel(String pathBase, TrackPanel tp) {
+    WebLoadPanel(String bp, TrackPanel tp) {
 
         trackPanel = tp;
+        basePath = bp;
 
         InputStream in = null;
         ArrayList<String> filenames = new ArrayList<String>(0);
 
-        String theWebSite = pathBase + "filelist.txt";
+        String theWebSite = basePath + "filelist.txt";
 
         try {
             URL u = new URL(theWebSite);

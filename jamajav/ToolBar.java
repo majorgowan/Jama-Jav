@@ -63,6 +63,9 @@ class ToolBar extends JToolBar {
         JButton saveButton = makeButton(
                 "General", "Save24", "save", "Save Jam", "Save"); 
 
+        JButton openFromWebButton = makeButton(
+                "General", "OpenWeb24", "web", "Open from Web", "Web");
+
         JButton newTrackButton = makeButton(
                 "General", "AddTrack24", "addnewtrack", "Add Track", "Add Track");
 
@@ -119,6 +122,9 @@ class ToolBar extends JToolBar {
         utilityToolBar.add(mergeButton);
         utilityToolBar.addSeparator();
         utilityToolBar.add(saveButton);
+        utilityToolBar.addSeparator();
+        utilityToolBar.addSeparator();
+        utilityToolBar.add(openFromWebButton);
         utilityToolBar.add(Box.createHorizontalGlue());
         utilityToolBar.add(newTrackButton);
         utilityToolBar.addSeparator();

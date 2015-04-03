@@ -46,7 +46,7 @@ class Info {
     }
 
     public void addNote(String c) {
-        notes.add(new String(c));
+        notes.add(c);
     }
 
     public int getNotesSize() {
