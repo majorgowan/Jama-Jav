@@ -122,6 +122,11 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                 webDialog.revalidate();
                 webDialog.pack();
                 webDialog.setVisible(true);
+
+                refreshBigTimeLine();
+                bigTimeLine.setFull();
+                bigTimeKeeper.reset(0.0);
+                mainPanel.scrollRectToVisible(new Rectangle(0,0,0,0));
                 break;
 
             case ("addnewtrack") :
@@ -670,10 +675,23 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
             // read number of bytes
             words = getWords(br);
             int nbytes = Integer.parseInt(words[1]);
+            System.out.println("READING " + nbytes + " BYTES!!!");
             byte[] bytes = new byte[nbytes];
 
-            // read bytes from bin file
-            int bytesread = binfis.read(bytes);
+            // read bytes from bin stream (from Harold book)
+            int byteOffset = 0;
+            while (byteOffset < nbytes) {
+                int bytesRead = binfis.read(bytes, byteOffset, nbytes - byteOffset);
+                if (bytesRead == -1) 
+                    break;
+                byteOffset += bytesRead;
+            }
+            if (byteOffset != nbytes) {
+                throw new IOException("Only read " + byteOffset
+                        + " bytes; Expected " + nbytes + " bytes");
+            }
+
+            // int bytesread = binfis.read(bytes);
             // System.out.println("Track " + i + ":"
             //         + " read " + bytesread
             //         + " bytes");
@@ -776,6 +794,7 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
             inbin = ubin.openStream();
 
             injj = new BufferedInputStream(injj);
+            inbin = new BufferedInputStream(inbin);
 
             BufferedReader br = new BufferedReader(new InputStreamReader(injj));
 

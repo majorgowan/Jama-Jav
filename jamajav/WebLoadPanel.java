@@ -2,6 +2,7 @@ package jamajav;
 
 // Swing packages
 import javax.swing.*;
+import javax.swing.event.*;
 import java.awt.*;
 import java.awt.event.*;
 
@@ -16,16 +17,20 @@ import java.util.ArrayList;
 // for getting stuff from web
 import java.net.*;
 
-class WebLoadPanel extends JPanel implements ActionListener {
+class WebLoadPanel extends JPanel implements ActionListener, ListSelectionListener {
 
-    final private int DEFAULT_WIDTH = 300;
+    final private int DEFAULT_WIDTH = 500;
     final private int DEFAULT_HEIGHT = 250;
 
-    TrackPanel trackPanel;
-    JList fileList;
-    String basePath;
-    ArrayList<Info[]> infoArrayList;
+    private TrackPanel trackPanel;
+    private JList fileList;
+    private String basePath;
+    private ArrayList<Info[]> infoArrayList;
 
+    private JPanel infoHeadPanel;
+    private JPanel infoAvatarPanel;
+
+    // for ActionListener interface
     public void actionPerformed(ActionEvent ae) {
         String comStr = ae.getActionCommand();
 
@@ -41,15 +46,59 @@ class WebLoadPanel extends JPanel implements ActionListener {
                 break;
 
             case ("Cancel") :
-                System.out.println("You bailed!");
+                // System.out.println("You bailed!");
                 SwingUtilities.windowForComponent(this).setVisible(false);
                 SwingUtilities.windowForComponent(this).dispose();
                 break;
         }
     }
 
+    // for ListSelectionListener interface
+    public void valueChanged(ListSelectionEvent lse) {
+        int i = fileList.getSelectedIndex();
+        // System.out.println("You just selected the " + i + "th jam!!");
+        Info[] infoArray = infoArrayList.get(i);
+
+        double maxRunningTime = 0.0;
+        for (int j = 0; j < infoArray.length; j++)
+            maxRunningTime = Math.max(maxRunningTime,infoArray[j].getRunningTime());
+
+        // update info panel each time the selection changes
+        infoHeadPanel.removeAll();
+        infoAvatarPanel.removeAll();
+        infoAvatarPanel.revalidate();
+
+        String infoHead = "<html>Tracks: " + infoArray.length + "<br>"
+            + "Running time: " + maxRunningTime + " seconds";
+        infoHeadPanel.add(new JLabel(infoHead));
+
+        // GridLayout: rows, columns, hgap, vgap
+        infoAvatarPanel.setLayout(new GridLayout(3,4,4,4));
+        for (int j = 0; j < infoArray.length; j++) {
+        
+            JLabel avatarLabel = new JLabel();
+            avatarLabel.setIcon(
+                new ImageIcon(trackPanel.getAvatarImage(infoArray[j].getAvatar())
+                    .getScaledInstance(40,40,Image.SCALE_SMOOTH)));
+            infoAvatarPanel.add(avatarLabel);
+            avatarLabel.setToolTipText(makeToolTip(infoArray[j]));
+        }
+        revalidate();
+    }
+
     public Dimension getPreferredSize() {
         return new Dimension(DEFAULT_WIDTH,DEFAULT_HEIGHT);
+    }
+
+    public String makeToolTip(Info info) {
+        String toolTip = "<html><h3>" + info.getTitle() + "<br>";
+        toolTip += "by: " + info.getContributor() + "<br>";
+        toolTip += "length: " + info.getRunningTime() + "s" + "</h3>";
+        toolTip += info.getAllNotes();
+        toolTip += "</list><br><br>" + info.getDate();
+        toolTip += ", " + info.getLocation();
+
+        return toolTip;
     }
 
     private void parseJJFile(String jjFile) {
@@ -128,7 +177,7 @@ class WebLoadPanel extends JPanel implements ActionListener {
             BufferedReader br = new BufferedReader(new InputStreamReader(in));
             String filename;
             while ((filename = br.readLine()) != null) {
-                System.out.println(filename);
+                // System.out.println(filename);
                 filenames.add(new String(filename));
 
                 // get list of contributors and their avatars
@@ -149,20 +198,34 @@ class WebLoadPanel extends JPanel implements ActionListener {
         }   
 
         fileList = new JList(filenames.toArray());
+        fileList.addListSelectionListener(this);
         fileList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         fileList.setLayoutOrientation(JList.VERTICAL);
         fileList.setVisibleRowCount(-1);
         JScrollPane listScroller = new JScrollPane(fileList);
-        listScroller.setPreferredSize(new Dimension(230, 200));
+        listScroller.setPreferredSize(new Dimension(280, 200));
         JPanel outerListPanel = new JPanel(new FlowLayout());
         outerListPanel.add(listScroller);
+
+        JPanel previewPanel = new JPanel();
+        previewPanel.setLayout(new BoxLayout(previewPanel,BoxLayout.PAGE_AXIS));
+        infoHeadPanel = new JPanel();
+        infoAvatarPanel = new JPanel();
+        JPanel outerInfoHeadPanel = new JPanel();
+        outerInfoHeadPanel.add(infoHeadPanel);
+        JPanel outerInfoAvatarPanel = new JPanel();
+        outerInfoAvatarPanel.add(infoAvatarPanel);
+
+        previewPanel.add(outerInfoHeadPanel);
+        previewPanel.add(outerInfoAvatarPanel);
 
         JPanel mainPanel = new JPanel(new BorderLayout());
         JLabel promptLabel = new JLabel("Choose a Jam from the list!");
         JPanel promptPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         promptPanel.add(promptLabel);
         mainPanel.add(promptPanel,BorderLayout.PAGE_START);
-        mainPanel.add(outerListPanel);
+        mainPanel.add(outerListPanel,BorderLayout.WEST);
+        mainPanel.add(previewPanel,BorderLayout.EAST);
 
         JPanel buttonPanel = new JPanel(new FlowLayout());
 
@@ -178,6 +241,8 @@ class WebLoadPanel extends JPanel implements ActionListener {
         setLayout(new BorderLayout());
         add(mainPanel,BorderLayout.CENTER);
         add(buttonPanel,BorderLayout.PAGE_END);
+
+        fileList.setSelectedIndex(0);
     }
 
 }
