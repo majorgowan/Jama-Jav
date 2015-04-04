@@ -104,7 +104,7 @@ class WebLoadPanel extends JPanel implements ActionListener, ListSelectionListen
     private void parseJJFile(String jjFile) {
         InputStream in = null;
         try {
-            URL u = new URL(jjFile);
+            URL u = new URL(jjFile + ".jj");
             in = u.openStream();
             in = new BufferedInputStream(in);
 
@@ -178,6 +178,7 @@ class WebLoadPanel extends JPanel implements ActionListener, ListSelectionListen
             String filename;
             while ((filename = br.readLine()) != null) {
                 // System.out.println(filename);
+                filename = filename.split("\\.")[0];
                 filenames.add(new String(filename));
 
                 // get list of contributors and their avatars
