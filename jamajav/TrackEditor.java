@@ -94,6 +94,10 @@ class TrackEditor extends JPanel implements ActionListener {
         }
     }
 
+    private double trunc(double x) {
+        return (double)((int)(100*x))/100.0;
+    }
+
     private void setSelect() {
         JPanel selectPanel = new JPanel(new FlowLayout());
         JTextField startField = new JTextField("0",4);
@@ -116,8 +120,8 @@ class TrackEditor extends JPanel implements ActionListener {
                 null, options, options[2]);
 
         if (result != 2) {
-            double start = Double.parseDouble(startField.getText());
-            double end = Double.parseDouble(endField.getText());
+            double start = trunc(Double.parseDouble(startField.getText()));
+            double end = trunc(Double.parseDouble(endField.getText()));
             select(start, end);
             pasteButton.setEnabled(true);
             if (result == 0) {
@@ -160,7 +164,7 @@ class TrackEditor extends JPanel implements ActionListener {
                 "Paste", JOptionPane.OK_CANCEL_OPTION);
 
         if (result == JOptionPane.OK_OPTION) {
-            double seconds = Double.parseDouble(secondsField.getText());
+            double seconds = trunc(Double.parseDouble(secondsField.getText()));
             paste(seconds);
             // redraw visualizer and timeLine
             visualizer.setData(trackData.getBytes()); 
@@ -225,8 +229,8 @@ class TrackEditor extends JPanel implements ActionListener {
                 "Crop interval", JOptionPane.OK_CANCEL_OPTION);
 
         if (result == JOptionPane.OK_OPTION) {
-            double start = Double.parseDouble(startField.getText());
-            double end = Double.parseDouble(endField.getText());
+            double start = trunc(Double.parseDouble(startField.getText()));
+            double end = trunc(Double.parseDouble(endField.getText()));
             // System.out.println("Cropping from " + start + " seconds to " + end + " seconds!"); 
             // crop it!
             crop(start, end);
@@ -283,7 +287,7 @@ class TrackEditor extends JPanel implements ActionListener {
         int result = JOptionPane.showConfirmDialog(null, shiftPanel, "Shift track", JOptionPane.OK_CANCEL_OPTION);
 
         if (result == JOptionPane.OK_OPTION) {
-            double seconds = Double.parseDouble(secondsField.getText());
+            double seconds = trunc(Double.parseDouble(secondsField.getText()));
             // System.out.println("Shifting by " + seconds + " seconds!"); 
             // shift it!
             shift(seconds);
@@ -358,8 +362,8 @@ class TrackEditor extends JPanel implements ActionListener {
                 "Fade in/out", JOptionPane.OK_CANCEL_OPTION);
 
         if (result == JOptionPane.OK_OPTION) {
-            double start = Double.parseDouble(startField.getText());
-            double end = Double.parseDouble(endField.getText());
+            double start = trunc(Double.parseDouble(startField.getText()));
+            double end = trunc(Double.parseDouble(endField.getText()));
             // System.out.println("Fading from " + start + " seconds to " + end + " seconds!"); 
             // get state of radiobuttons:
             boolean inout = true;
@@ -423,8 +427,8 @@ class TrackEditor extends JPanel implements ActionListener {
                 "Mute interval", JOptionPane.OK_CANCEL_OPTION);
 
         if (result == JOptionPane.OK_OPTION) {
-            double start = Double.parseDouble(startField.getText());
-            double end = Double.parseDouble(endField.getText());
+            double start = trunc(Double.parseDouble(startField.getText()));
+            double end = trunc(Double.parseDouble(endField.getText()));
             // System.out.println("Muting from " + start + " seconds to " + end + " seconds!"); 
             // mute it!
             mute(start, end);
