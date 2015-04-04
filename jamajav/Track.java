@@ -72,6 +72,7 @@ class Track extends JPanel implements ActionListener, ChangeListener {
             case ("recordstop") :
                 trackPanel.toggleMetronome(true);
                 if (!trackData.isCapturing()) {
+                    timeLine.setRunningTime(0.0);
                     startRecording();
                 } else {
                     stopRecording();
@@ -353,7 +354,7 @@ class Track extends JPanel implements ActionListener, ChangeListener {
     public void putBytes(byte[] bytes) {
         trackData.putBytes(bytes);
         visualizer.setData(bytes);
-        timeLine.setRunningTime(trackData.getInfo().getRunningTime());
+        timeLine.setRunningTime(trackData.getRunningTime());
     }
 
     public void playback(double start, double end) {

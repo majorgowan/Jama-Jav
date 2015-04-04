@@ -86,6 +86,8 @@ class TrackData {
     public void putBytes(byte[] bytes) {
         audioData = bytes;
         notEmpty = true;
+        if (visualizer != null)
+            visualizer.setData(audioData);
     }
 
     private double bytesToSeconds(int nbytes) {

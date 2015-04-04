@@ -125,7 +125,7 @@ class TrackEditor extends JPanel implements ActionListener {
                 // redraw visualizer and timeLine
                 visualizer.setData(trackData.getBytes()); 
                 visualizer.repaint();
-                timeLine.setRunningTime(trackData.getInfo().getRunningTime());
+                timeLine.setRunningTime(trackData.getRunningTime());
                 timeLine.repaint();
             }
         }
@@ -165,7 +165,7 @@ class TrackEditor extends JPanel implements ActionListener {
             // redraw visualizer and timeLine
             visualizer.setData(trackData.getBytes()); 
             visualizer.repaint();
-            timeLine.setRunningTime(trackData.getInfo().getRunningTime());
+            timeLine.setRunningTime(trackData.getRunningTime());
             timeLine.repaint();
         }
     }
@@ -201,10 +201,9 @@ class TrackEditor extends JPanel implements ActionListener {
         trackData.putBytes(newBytes);
 
         // new running time:
-        trackData.getInfo().setRunningTime((int)
-                ((double)newBytes.length 
-                 / (double)(trackData.getAudioFormat().getFrameRate()
-                     *trackData.getAudioFormat().getFrameSize())));
+        trackData.getInfo().setRunningTime(
+                trackData.getRunningTime());
+        timeLine.setRunningTime(trackData.getRunningTime());
     }
 
     private void setCrop() {
@@ -234,7 +233,7 @@ class TrackEditor extends JPanel implements ActionListener {
             // redraw visualizer and timeLine
             visualizer.setData(trackData.getBytes()); 
             visualizer.repaint();
-            timeLine.setRunningTime(trackData.getInfo().getRunningTime());
+            timeLine.setRunningTime(trackData.getRunningTime());
             timeLine.repaint();
         }
     }
@@ -267,10 +266,9 @@ class TrackEditor extends JPanel implements ActionListener {
         trackData.putBytes(newBytes);
 
         // new running time:
-        trackData.getInfo().setRunningTime((int)
-                ((double)newBytes.length 
-                 / (double)(trackData.getAudioFormat().getFrameRate()
-                     *trackData.getAudioFormat().getFrameSize())));
+        trackData.getInfo().setRunningTime(
+                trackData.getRunningTime());
+        timeLine.setRunningTime(trackData.getRunningTime());
     }
 
     private void setShift() {
@@ -323,10 +321,9 @@ class TrackEditor extends JPanel implements ActionListener {
         trackData.putBytes(newBytes);
 
         // new running time:
-        trackData.getInfo().setRunningTime((int)
-                ((double)newBytes.length 
-                 / (double)(trackData.getAudioFormat().getFrameRate()
-                     *trackData.getAudioFormat().getFrameSize())));
+        trackData.getInfo().setRunningTime(
+                trackData.getRunningTime());
+        timeLine.setRunningTime(trackData.getRunningTime());
     }
 
     private void setFade() {
@@ -461,6 +458,7 @@ class TrackEditor extends JPanel implements ActionListener {
         // that triggered the TrackEditor
         oldTrackData.putBytes(trackData.getBytes());
         oldTrackData.putInfo(trackData.getInfo());
+        track.getTimeLine().setRunningTime(trackData.getRunningTime());
     }
 
     private void saveAsNew() {
@@ -497,7 +495,7 @@ class TrackEditor extends JPanel implements ActionListener {
         // time keeping and display
         timeKeeper = new TimeKeeper(0.0);
         timeLine = new TimeLine();
-        timeLine.setRunningTime(trackData.getInfo().getRunningTime());
+        timeLine.setRunningTime(trackData.getRunningTime());
         timeKeeper.setTimeLine(timeLine);
         clock = new PlainClock();
         timeKeeper.setClock(clock);
