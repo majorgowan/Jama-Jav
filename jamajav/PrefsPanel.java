@@ -13,7 +13,7 @@ import java.util.ArrayList;
 
 class PrefsPanel extends JPanel implements ActionListener {
 
-    private Prefs prefs;
+    private Prefs prefs, oldPrefs;
     int[] metroset = new int[2];
     private String userName, userCity;
     private String avatar;
@@ -54,8 +54,8 @@ class PrefsPanel extends JPanel implements ActionListener {
                 userName = userNameField.getText();
                 userCity = userCityField.getText();
 
-                prefs.setPrefs(metroset, userName, userCity, avatar);
-                prefs.writePrefsFile();
+                oldPrefs.setPrefs(metroset, userName, userCity, avatar);
+                oldPrefs.writePrefsFile();
                 // drop through to close window (no break!)
 
             case ("Cancel") :
@@ -77,7 +77,8 @@ class PrefsPanel extends JPanel implements ActionListener {
 
     PrefsPanel(Prefs p, ArrayList<Avatar> avs, JDialog pD) {
 
-        prefs = p;
+        oldPrefs = p;
+        prefs = new Prefs(oldPrefs);
         prefsDialog = pD;
         avatars = avs;
 

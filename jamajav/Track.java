@@ -46,10 +46,11 @@ class Track extends JPanel implements ActionListener, ChangeListener {
     private JPanel outerPanel;
 
     private JPanel titlePanel;
-    private JLabel titleLabel;
+    private TitleLabelPanel titleLabelPanel;
+    private int titlePointer;
 
     private JPanel slimTitlePanel;
-    private JLabel slimTitleLabel;
+    private TitleLabelPanel slimTitleLabelPanel;
 
     public Dimension getPreferredSize() {
         return (new Dimension(DEFAULT_WIDTH, DEFAULT_HEIGHT));
@@ -123,6 +124,11 @@ class Track extends JPanel implements ActionListener, ChangeListener {
             case ("expand") :
                 expand();
                 break;
+
+            case ("titletimer") :
+                titleLabelPanel.update();
+                slimTitleLabelPanel.update();
+                break;
         }
     }
 
@@ -194,6 +200,7 @@ class Track extends JPanel implements ActionListener, ChangeListener {
 
                 }
             timeLine.setBackground(clickedColour);
+            titleLabelPanel.setBackground(clickedColour);
         } else {
             for (Component c : components) 
                 if ((c != monitor) && (c != visualizer)) {
@@ -227,6 +234,7 @@ class Track extends JPanel implements ActionListener, ChangeListener {
 
                 }
             timeLine.setBackground(unclickedColour);
+            titleLabelPanel.setBackground(unclickedColour);
         }
         repaint();
     }
@@ -322,9 +330,9 @@ class Track extends JPanel implements ActionListener, ChangeListener {
 
         this.setToolTipText(toolTip);
 
-        // probably bad form to put this here, but ...
-        titleLabel.setText(info.getTitle());
-        slimTitleLabel.setText(info.getTitle());
+        // probably wrong place for this but ...
+        titleLabelPanel.setText(info.getTitle());
+        slimTitleLabelPanel.setText(info.getTitle());
     }
 
     public void resetToolTip() {
@@ -509,7 +517,7 @@ class Track extends JPanel implements ActionListener, ChangeListener {
         info.setAvatar(prefs.getAvatar());
         trackData.putInfo(info);
 
-        // title Panel
+        // fat title Panel
         titlePanel = new JPanel();
         titlePanel.setLayout(new BoxLayout(titlePanel,BoxLayout.LINE_AXIS));
         TrackButton editInfoButton = new TrackButton();
@@ -519,19 +527,26 @@ class Track extends JPanel implements ActionListener, ChangeListener {
                 "/Icons/Toolbar/General/EditInfo24.gif");
         editInfoButton.setIcon(new ImageIcon(imageURL));
         editInfoButton.setToolTipText("Edit Track Info");
-        titleLabel = new JLabel(info.getTitle());
+
+        titleLabelPanel = new TitleLabelPanel(info.getTitle());
         titlePanel.add(Box.createRigidArea(new Dimension(20,0)));
         titlePanel.add(editInfoButton);
         titlePanel.add(Box.createRigidArea(new Dimension(20,0)));
-        titlePanel.add(titleLabel);
+        titlePanel.add(titleLabelPanel);
         titlePanel.add(Box.createRigidArea(new Dimension(20,0)));
         titlePanel.add(Box.createHorizontalGlue());
 
         // slim title Panel
         slimTitlePanel = new JPanel();
         slimTitlePanel.setLayout(new BoxLayout(slimTitlePanel,BoxLayout.LINE_AXIS));
-        slimTitleLabel = new JLabel(info.getTitle());
-        slimTitlePanel.add(slimTitleLabel);
+        slimTitleLabelPanel = new TitleLabelPanel(info.getTitle());
+        slimTitlePanel.add(slimTitleLabelPanel);
+
+        // for crawling title if > 25 characters
+        Timer titleTimer = new Timer(400, this);
+        titleTimer.setActionCommand("titletimer");
+        titleTimer.start();
+        titlePointer = 0;
 
         visualizer = new Visualizer();
         setToolTip(info);

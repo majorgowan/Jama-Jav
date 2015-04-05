@@ -3,7 +3,6 @@ package jamajav;
 // Swing packages:
 import javax.swing.*;
 import javax.swing.filechooser.*;
-import javax.swing.border.EtchedBorder;
 import java.awt.*;
 import java.awt.event.*;
 

@@ -131,6 +131,14 @@ class Prefs {
         filename = fn;
         readPrefsFile();
     }
+
+    // copy constructor
+    Prefs(Prefs p) {
+        metroset = p.getMetroSet();
+        userName = p.getUserName();
+        userCity = p.getUserCity();
+        avatar = p.getAvatar();
+    }
 }
 
 
