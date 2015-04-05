@@ -99,17 +99,38 @@ class TrackEditor extends JPanel implements ActionListener {
     }
 
     private void setSelect() {
+        final double startDefault = 0.0;
+        final double endDefault = trackData.getInfo().getRunningTime();
+
         JPanel selectPanel = new JPanel(new FlowLayout());
-        JTextField startField = new JTextField("0",4);
-        JTextField endField = new JTextField("" + trackData.getInfo().getRunningTime(),4);
+        final JTextField startField = new JTextField("" + startDefault,4);
+        final JTextField endField = new JTextField("" + endDefault,4);
 
         selectPanel.add(new JLabel("From (seconds): "));
         selectPanel.add(startField);
+        startField.addFocusListener(new FocusAdapter() {
+            public void focusLost(FocusEvent e) {
+                try {
+                    double s = Double.parseDouble(startField.getText());
+                } catch (NumberFormatException nfe) {
+                    startField.setText("" + startDefault);
+                }
+            }
+        });
 
         selectPanel.add(new JLabel("    ")); // crude spacer
 
         selectPanel.add(new JLabel("To (seconds): "));
         selectPanel.add(endField);
+        endField.addFocusListener(new FocusAdapter() {
+            public void focusLost(FocusEvent e) {
+                try {
+                    double s = Double.parseDouble(endField.getText());
+                } catch (NumberFormatException nfe) {
+                    endField.setText("" + endDefault);
+                }
+            }
+        });
 
         startField.requestFocusInWindow();
 
@@ -153,10 +174,20 @@ class TrackEditor extends JPanel implements ActionListener {
 
     private void setPaste() {
         JPanel pastePanel = new JPanel(new FlowLayout());
-        JTextField secondsField = new JTextField("0",4);
+
+        final JTextField secondsField = new JTextField("0.0",4);
 
         pastePanel.add(new JLabel("Paste at (seconds): "));
         pastePanel.add(secondsField);
+        secondsField.addFocusListener(new FocusAdapter() {
+            public void focusLost(FocusEvent e) {
+                try {
+                    double s = Double.parseDouble(secondsField.getText());
+                } catch (NumberFormatException nfe) {
+                    secondsField.setText("0.0");
+                }
+            }
+        });
 
         secondsField.requestFocusInWindow();
 
@@ -211,17 +242,38 @@ class TrackEditor extends JPanel implements ActionListener {
     }
 
     private void setCrop() {
+        final double startDefault = 0.0;
+        final double endDefault = 0.0;
+
         JPanel cropPanel = new JPanel(new FlowLayout());
-        JTextField startField = new JTextField("0",4);
-        JTextField endField = new JTextField("" + trackData.getInfo().getRunningTime(),4);
+        final JTextField startField = new JTextField("" + startDefault,4);
+        final JTextField endField = new JTextField("" + endDefault,4);
 
         cropPanel.add(new JLabel("From (seconds): "));
         cropPanel.add(startField);
+        startField.addFocusListener(new FocusAdapter() {
+            public void focusLost(FocusEvent e) {
+                try {
+                    double s = Double.parseDouble(startField.getText());
+                } catch (NumberFormatException nfe) {
+                    startField.setText("" + startDefault);
+                }
+            }
+        });
 
         cropPanel.add(new JLabel("    ")); // crude spacer
 
         cropPanel.add(new JLabel("To (seconds): "));
         cropPanel.add(endField);
+        endField.addFocusListener(new FocusAdapter() {
+            public void focusLost(FocusEvent e) {
+                try {
+                    double s = Double.parseDouble(endField.getText());
+                } catch (NumberFormatException nfe) {
+                    endField.setText("" + endDefault);
+                }
+            }
+        });
 
         startField.requestFocusInWindow();
 
@@ -277,10 +329,19 @@ class TrackEditor extends JPanel implements ActionListener {
 
     private void setShift() {
         JPanel shiftPanel = new JPanel(new FlowLayout());
-        JTextField secondsField = new JTextField("0",4);
+        final JTextField secondsField = new JTextField("0.0",4);
 
         shiftPanel.add(new JLabel("Shift by (seconds): "));
         shiftPanel.add(secondsField);
+        secondsField.addFocusListener(new FocusAdapter() {
+            public void focusLost(FocusEvent e) {
+                try {
+                    double s = Double.parseDouble(secondsField.getText());
+                } catch (NumberFormatException nfe) {
+                    secondsField.setText("0.0");
+                }
+            }
+        });
 
         secondsField.requestFocusInWindow();
 
@@ -331,10 +392,12 @@ class TrackEditor extends JPanel implements ActionListener {
     }
 
     private void setFade() {
+        final double startDefault = 0.0;
+        final double endDefault = Math.min(5, trackData.getInfo().getRunningTime());
+
         JPanel fadePanel = new JPanel(new FlowLayout());
-        JTextField startField = new JTextField("0",3);
-        JTextField endField = new JTextField("" 
-                + Math.min(5,trackData.getInfo().getRunningTime()),3);
+        final JTextField startField = new JTextField("" + startDefault,3);
+        final JTextField endField = new JTextField("" + endDefault,3);
 
         JRadioButton fadeInButton = new JRadioButton("Fade in");
         JRadioButton fadeOutButton = new JRadioButton("Fade out");
@@ -349,11 +412,31 @@ class TrackEditor extends JPanel implements ActionListener {
 
         fadePanel.add(new JLabel("From (seconds): "));
         fadePanel.add(startField);
+        startField.addFocusListener(new FocusAdapter() {
+            public void focusLost(FocusEvent e) {
+                try {
+                    double s = Double.parseDouble(startField.getText());
+                } catch (NumberFormatException nfe) {
+                    startField.setText("" + startDefault);
+                }
+            }
+        });
+
 
         fadePanel.add(new JLabel("    ")); // crude spacer
 
         fadePanel.add(new JLabel("To (seconds): "));
         fadePanel.add(endField);
+        endField.addFocusListener(new FocusAdapter() {
+            public void focusLost(FocusEvent e) {
+                try {
+                    double s = Double.parseDouble(endField.getText());
+                } catch (NumberFormatException nfe) {
+                    endField.setText("" + endDefault);
+                }
+            }
+        });
+
 
         fadePanel.add(buttonPanel);
         startField.requestFocusInWindow();
@@ -410,16 +493,34 @@ class TrackEditor extends JPanel implements ActionListener {
 
     private void setMute() {
         JPanel mutePanel = new JPanel(new FlowLayout());
-        JTextField startField = new JTextField("0",3);
-        JTextField endField = new JTextField("" + trackData.getInfo().getRunningTime(),3);
+        final JTextField startField = new JTextField("0.0",4);
+        final JTextField endField = new JTextField("0.0",4);
 
         mutePanel.add(new JLabel("From (seconds): "));
         mutePanel.add(startField);
+        startField.addFocusListener(new FocusAdapter() {
+            public void focusLost(FocusEvent e) {
+                try {
+                    double s = Double.parseDouble(startField.getText());
+                } catch (NumberFormatException nfe) {
+                    startField.setText("0.0");
+                }
+            }
+        });
 
         mutePanel.add(new JLabel("    ")); // crude spacer
 
         mutePanel.add(new JLabel("To (seconds): "));
         mutePanel.add(endField);
+        endField.addFocusListener(new FocusAdapter() {
+            public void focusLost(FocusEvent e) {
+                try {
+                    double s = Double.parseDouble(endField.getText());
+                } catch (NumberFormatException nfe) {
+                    endField.setText("0.0");
+                }
+            }
+        });
 
         startField.requestFocusInWindow();
 

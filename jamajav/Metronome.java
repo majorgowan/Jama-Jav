@@ -130,18 +130,30 @@ class Metronome extends JPanel implements ActionListener {
                     break;
 
                 case ("bpm") :
-                    int b = Integer.parseInt(bpmField.getText());
-                    setParam(b, bpMeas);
+                    try {
+                        int b = Integer.parseInt(bpmField.getText());
+                        setParam(b, bpMeas);
+                    } catch (NumberFormatException nfe) {
+                        bpmField.setText("" + bpMin);
+                    }
                     break;
 
                 case ("bpMeas") :
-
-                    int bb = Integer.parseInt(bpMeasField.getText());
-                    setParam(bpMin, bb);
+                    try {
+                        int bb = Integer.parseInt(bpMeasField.getText());
+                        setParam(bpMin, bb);
+                    } catch (NumberFormatException nfe) {
+                        bpMeasField.setText("" + bpMeas);
+                    }
                     break;
 
                 case ("offset") :
-                    setOffset(Double.parseDouble(offsetField.getText()));
+                    try {
+                        double ofs = Double.parseDouble(offsetField.getText());
+                        setOffset(ofs);
+                    } catch (NumberFormatException nfe) {
+                        offsetField.setText("" + offset);
+                    }
                     break;
 
             }
@@ -240,8 +252,12 @@ class Metronome extends JPanel implements ActionListener {
         bpmField.addActionListener(this);
         bpmField.addFocusListener(new FocusAdapter() {
             public void focusLost(FocusEvent e) {
-                int b = Integer.parseInt(bpmField.getText());
-                setParam(b, bpMeas);
+                try {
+                    int b = Integer.parseInt(bpmField.getText());
+                    setParam(b, bpMeas);
+                } catch (NumberFormatException nfe) {
+                    bpmField.setText("" + bpMin);
+                }
             }
         });
 
@@ -249,8 +265,12 @@ class Metronome extends JPanel implements ActionListener {
         bpMeasField.addActionListener(this);
         bpMeasField.addFocusListener(new FocusAdapter() {
             public void focusLost(FocusEvent e) {
-                int b = Integer.parseInt(bpMeasField.getText());
-                setParam(bpMin, b);
+                try {
+                    int b = Integer.parseInt(bpMeasField.getText());
+                    setParam(bpMin, b);
+                } catch (NumberFormatException nfe) {
+                    bpMeasField.setText("" + bpMeas);
+                }
             }
         });
 
@@ -258,7 +278,12 @@ class Metronome extends JPanel implements ActionListener {
         offsetField.addActionListener(this);
         offsetField.addFocusListener(new FocusAdapter() {
             public void focusLost(FocusEvent e) {
-                setOffset(Double.parseDouble(offsetField.getText()));
+                try {
+                    double ofs = Double.parseDouble(offsetField.getText());
+                    setOffset(ofs);
+                } catch (NumberFormatException nfe) {
+                    offsetField.setText("" + offset);
+                }
             }
         });
 

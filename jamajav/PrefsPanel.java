@@ -49,8 +49,10 @@ class PrefsPanel extends JPanel implements ActionListener {
                 break;
 
             case ("Ok") :
-                metroset[0] = Integer.parseInt(bpMinField.getText());
-                metroset[1] = Integer.parseInt(bpMeasField.getText());
+                //should be redundant with focus listener effecting changes
+                //and checking number format exceptions!
+                //metroset[0] = Integer.parseInt(bpMinField.getText());
+                //metroset[1] = Integer.parseInt(bpMeasField.getText());
                 userName = userNameField.getText();
                 userCity = userCityField.getText();
 
@@ -91,6 +93,28 @@ class PrefsPanel extends JPanel implements ActionListener {
 
         bpMinField = new JTextField("" + metroset[0],4);
         bpMeasField = new JTextField("" + metroset[1],2);
+
+        bpMinField.addFocusListener(new FocusAdapter() {
+            public void focusLost(FocusEvent e) {
+                try {
+                    int b = Integer.parseInt(bpMinField.getText());
+                    metroset[0] = b;
+                } catch (NumberFormatException nfe) {
+                    bpMinField.setText("" + metroset[0]);
+                }
+            }
+        });
+        bpMeasField.addFocusListener(new FocusAdapter() {
+            public void focusLost(FocusEvent e) {
+                try {
+                    int b = Integer.parseInt(bpMeasField.getText());
+                    metroset[1] = b;
+                } catch (NumberFormatException nfe) {
+                    bpMeasField.setText("" + metroset[1]);
+                }
+            }
+        });
+        
         userNameField = new JTextField(userName,15);
         userCityField = new JTextField(userCity,15);
         changeAvatarButton = new JButton("Change");
