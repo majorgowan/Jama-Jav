@@ -132,8 +132,13 @@ class Metronome extends JPanel implements ActionListener {
                 case ("bpm") :
                     try {
                         int b = Integer.parseInt(bpmField.getText());
+                        if (b < 0) {
+                            throw new TimeOutOfRangeException("low");
+                        }
                         setParam(b, bpMeas);
                     } catch (NumberFormatException nfe) {
+                        bpmField.setText("" + bpMin);
+                    } catch (TimeOutOfRangeException toore) {
                         bpmField.setText("" + bpMin);
                     }
                     break;
@@ -141,8 +146,13 @@ class Metronome extends JPanel implements ActionListener {
                 case ("bpMeas") :
                     try {
                         int bb = Integer.parseInt(bpMeasField.getText());
+                        if (bb < 0) {
+                            throw new TimeOutOfRangeException("low");
+                        }
                         setParam(bpMin, bb);
                     } catch (NumberFormatException nfe) {
+                        bpMeasField.setText("" + bpMeas);
+                    } catch (TimeOutOfRangeException toore) {
                         bpMeasField.setText("" + bpMeas);
                     }
                     break;
@@ -150,8 +160,13 @@ class Metronome extends JPanel implements ActionListener {
                 case ("offset") :
                     try {
                         double ofs = Double.parseDouble(offsetField.getText());
+                        if (ofs < 0.0) {
+                            throw new TimeOutOfRangeException("low");
+                        }
                         setOffset(ofs);
                     } catch (NumberFormatException nfe) {
+                        offsetField.setText("" + offset);
+                    } catch (TimeOutOfRangeException toore) {
                         offsetField.setText("" + offset);
                     }
                     break;
@@ -254,8 +269,13 @@ class Metronome extends JPanel implements ActionListener {
             public void focusLost(FocusEvent e) {
                 try {
                     int b = Integer.parseInt(bpmField.getText());
+                    if (b < 0) {
+                        throw new TimeOutOfRangeException("low");
+                    }
                     setParam(b, bpMeas);
                 } catch (NumberFormatException nfe) {
+                    bpmField.setText("" + bpMin);
+                } catch (TimeOutOfRangeException toore) {
                     bpmField.setText("" + bpMin);
                 }
             }
@@ -267,8 +287,13 @@ class Metronome extends JPanel implements ActionListener {
             public void focusLost(FocusEvent e) {
                 try {
                     int b = Integer.parseInt(bpMeasField.getText());
+                    if (b < 0) {
+                        throw new TimeOutOfRangeException("low");
+                    }
                     setParam(bpMin, b);
                 } catch (NumberFormatException nfe) {
+                    bpMeasField.setText("" + bpMeas);
+                } catch (TimeOutOfRangeException toore) {
                     bpMeasField.setText("" + bpMeas);
                 }
             }
@@ -280,8 +305,13 @@ class Metronome extends JPanel implements ActionListener {
             public void focusLost(FocusEvent e) {
                 try {
                     double ofs = Double.parseDouble(offsetField.getText());
+                    if (ofs < 0.0) {
+                        throw new TimeOutOfRangeException("low");
+                    }
                     setOffset(ofs);
                 } catch (NumberFormatException nfe) {
+                    offsetField.setText("" + offset);
+                } catch (TimeOutOfRangeException toore) {
                     offsetField.setText("" + offset);
                 }
             }

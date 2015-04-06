@@ -87,7 +87,7 @@ class PrefsPanel extends JPanel implements ActionListener {
         metroset = prefs.getMetroSet();
         userName = prefs.getUserName();
         userCity = prefs.getUserCity();
-        
+
         avatar = prefs.getAvatar();
         int avatarIndex = 0;
 
@@ -98,8 +98,13 @@ class PrefsPanel extends JPanel implements ActionListener {
             public void focusLost(FocusEvent e) {
                 try {
                     int b = Integer.parseInt(bpMinField.getText());
+                    if (b < 0) {
+                        throw new TimeOutOfRangeException("low");
+                    }
                     metroset[0] = b;
                 } catch (NumberFormatException nfe) {
+                    bpMinField.setText("" + metroset[0]);
+                } catch (TimeOutOfRangeException toore) {
                     bpMinField.setText("" + metroset[0]);
                 }
             }
@@ -108,13 +113,18 @@ class PrefsPanel extends JPanel implements ActionListener {
             public void focusLost(FocusEvent e) {
                 try {
                     int b = Integer.parseInt(bpMeasField.getText());
+                    if (b < 0) {
+                        throw new TimeOutOfRangeException("low");
+                    }
                     metroset[1] = b;
                 } catch (NumberFormatException nfe) {
+                    bpMeasField.setText("" + metroset[1]);
+                } catch (TimeOutOfRangeException toore) {
                     bpMeasField.setText("" + metroset[1]);
                 }
             }
         });
-        
+
         userNameField = new JTextField(userName,15);
         userCityField = new JTextField(userCity,15);
         changeAvatarButton = new JButton("Change");

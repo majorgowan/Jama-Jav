@@ -100,7 +100,7 @@ class TrackEditor extends JPanel implements ActionListener {
 
     private void setSelect() {
         final double startDefault = 0.0;
-        final double endDefault = trackData.getInfo().getRunningTime();
+        final double endDefault = trackData.getRunningTime();
 
         JPanel selectPanel = new JPanel(new FlowLayout());
         final JTextField startField = new JTextField("" + startDefault,4);
@@ -112,8 +112,19 @@ class TrackEditor extends JPanel implements ActionListener {
             public void focusLost(FocusEvent e) {
                 try {
                     double s = Double.parseDouble(startField.getText());
+                    if (s < 0) {
+                        throw new TimeOutOfRangeException("low");
+                    } else if (s > trackData.getRunningTime()) {
+                        throw new TimeOutOfRangeException("high");
+                    }
                 } catch (NumberFormatException nfe) {
                     startField.setText("" + startDefault);
+                } catch (TimeOutOfRangeException toore) {
+                    if (toore.getHighLow().equals("high")) {
+                        startField.setText("" + trackData.getRunningTime());
+                    } else {
+                        startField.setText("0.0");
+                    }
                 }
             }
         });
@@ -126,8 +137,19 @@ class TrackEditor extends JPanel implements ActionListener {
             public void focusLost(FocusEvent e) {
                 try {
                     double s = Double.parseDouble(endField.getText());
+                    if (s < 0) {
+                        throw new TimeOutOfRangeException("low");
+                    } else if (s > trackData.getRunningTime()) {
+                        throw new TimeOutOfRangeException("high");
+                    }
                 } catch (NumberFormatException nfe) {
                     endField.setText("" + endDefault);
+                } catch (TimeOutOfRangeException toore) {
+                    if (toore.getHighLow().equals("high")) {
+                        endField.setText("" + trackData.getRunningTime());
+                    } else {
+                        endField.setText("0.0");
+                    }
                 }
             }
         });
@@ -158,10 +180,10 @@ class TrackEditor extends JPanel implements ActionListener {
 
     private void select(double start, double end) {
         // convert seconds to bytes
-        int startByte = (int)(start 
+        int startByte = (int)(Math.min(start, end) 
                 * trackData.getAudioFormat().getFrameSize() 
                 * trackData.getAudioFormat().getFrameRate());
-        int endByte = (int)(end 
+        int endByte = (int)(Math.max(start, end) 
                 * trackData.getAudioFormat().getFrameSize() 
                 * trackData.getAudioFormat().getFrameRate()) + 1;
 
@@ -183,7 +205,12 @@ class TrackEditor extends JPanel implements ActionListener {
             public void focusLost(FocusEvent e) {
                 try {
                     double s = Double.parseDouble(secondsField.getText());
+                    if (s < 0) {
+                        throw new TimeOutOfRangeException("low");
+                    }
                 } catch (NumberFormatException nfe) {
+                    secondsField.setText("0.0");
+                } catch (TimeOutOfRangeException toore) {
                     secondsField.setText("0.0");
                 }
             }
@@ -255,8 +282,19 @@ class TrackEditor extends JPanel implements ActionListener {
             public void focusLost(FocusEvent e) {
                 try {
                     double s = Double.parseDouble(startField.getText());
+                    if (s < 0) {
+                        throw new TimeOutOfRangeException("low");
+                    } else if (s > trackData.getRunningTime()) {
+                        throw new TimeOutOfRangeException("high");
+                    }
                 } catch (NumberFormatException nfe) {
                     startField.setText("" + startDefault);
+                } catch (TimeOutOfRangeException toore) {
+                    if (toore.getHighLow().equals("high")) {
+                        startField.setText("" + trackData.getRunningTime());
+                    } else {
+                        startField.setText("0.0");
+                    }
                 }
             }
         });
@@ -269,8 +307,19 @@ class TrackEditor extends JPanel implements ActionListener {
             public void focusLost(FocusEvent e) {
                 try {
                     double s = Double.parseDouble(endField.getText());
+                    if (s < 0) {
+                        throw new TimeOutOfRangeException("low");
+                    } else if (s > trackData.getRunningTime()) {
+                        throw new TimeOutOfRangeException("high");
+                    }
                 } catch (NumberFormatException nfe) {
                     endField.setText("" + endDefault);
+                } catch (TimeOutOfRangeException toore) {
+                    if (toore.getHighLow().equals("high")) {
+                        endField.setText("" + trackData.getRunningTime());
+                    } else {
+                        endField.setText("0.0");
+                    }
                 }
             }
         });
@@ -296,10 +345,10 @@ class TrackEditor extends JPanel implements ActionListener {
 
     private void crop(double start, double end) {
         // convert seconds to bytes
-        int startByte = (int)(start 
+        int startByte = (int)(Math.min(start,end) 
                 * trackData.getAudioFormat().getFrameSize() 
                 * trackData.getAudioFormat().getFrameRate());
-        int endByte = (int)(end 
+        int endByte = (int)(Math.max(start,end)
                 * trackData.getAudioFormat().getFrameSize() 
                 * trackData.getAudioFormat().getFrameRate()) + 1;
 
@@ -337,8 +386,15 @@ class TrackEditor extends JPanel implements ActionListener {
             public void focusLost(FocusEvent e) {
                 try {
                     double s = Double.parseDouble(secondsField.getText());
+                    if (s < - trackData.getRunningTime()) {
+                        throw new TimeOutOfRangeException("high");
+                    }
                 } catch (NumberFormatException nfe) {
                     secondsField.setText("0.0");
+                } catch (TimeOutOfRangeException toore) {
+                    if (toore.getHighLow().equals("high")) {
+                        secondsField.setText("" + (-trackData.getRunningTime()));
+                    }
                 }
             }
         });
@@ -355,7 +411,7 @@ class TrackEditor extends JPanel implements ActionListener {
             // redraw visualizer and timeLine
             visualizer.setData(trackData.getBytes()); 
             visualizer.repaint();
-            timeLine.setRunningTime(trackData.getInfo().getRunningTime());
+            timeLine.setRunningTime(trackData.getRunningTime());
             timeLine.repaint();
         }
     }
@@ -393,7 +449,7 @@ class TrackEditor extends JPanel implements ActionListener {
 
     private void setFade() {
         final double startDefault = 0.0;
-        final double endDefault = Math.min(5, trackData.getInfo().getRunningTime());
+        final double endDefault = Math.min(5, trackData.getRunningTime());
 
         JPanel fadePanel = new JPanel(new FlowLayout());
         final JTextField startField = new JTextField("" + startDefault,3);
@@ -416,8 +472,19 @@ class TrackEditor extends JPanel implements ActionListener {
             public void focusLost(FocusEvent e) {
                 try {
                     double s = Double.parseDouble(startField.getText());
+                    if (s < 0) {
+                        throw new TimeOutOfRangeException("low");
+                    } else if (s > trackData.getRunningTime()) {
+                        throw new TimeOutOfRangeException("high");
+                    }
                 } catch (NumberFormatException nfe) {
                     startField.setText("" + startDefault);
+                } catch (TimeOutOfRangeException toore) {
+                    if (toore.getHighLow().equals("high")) {
+                        startField.setText("" + trackData.getRunningTime());
+                    } else {
+                        startField.setText("0.0");
+                    }
                 }
             }
         });
@@ -431,8 +498,19 @@ class TrackEditor extends JPanel implements ActionListener {
             public void focusLost(FocusEvent e) {
                 try {
                     double s = Double.parseDouble(endField.getText());
+                    if (s < 0) {
+                        throw new TimeOutOfRangeException("low");
+                    } else if (s > trackData.getRunningTime()) {
+                        throw new TimeOutOfRangeException("high");
+                    }
                 } catch (NumberFormatException nfe) {
                     endField.setText("" + endDefault);
+                } catch (TimeOutOfRangeException toore) {
+                    if (toore.getHighLow().equals("high")) {
+                        endField.setText("" + trackData.getRunningTime());
+                    } else {
+                        endField.setText("0.0");
+                    }
                 }
             }
         });
@@ -502,8 +580,19 @@ class TrackEditor extends JPanel implements ActionListener {
             public void focusLost(FocusEvent e) {
                 try {
                     double s = Double.parseDouble(startField.getText());
+                    if (s < 0) {
+                        throw new TimeOutOfRangeException("low");
+                    } else if (s > trackData.getRunningTime()) {
+                        throw new TimeOutOfRangeException("high");
+                    }
                 } catch (NumberFormatException nfe) {
                     startField.setText("0.0");
+                } catch (TimeOutOfRangeException toore) {
+                    if (toore.getHighLow().equals("high")) {
+                        startField.setText("" + trackData.getRunningTime());
+                    } else {
+                        startField.setText("0.0");
+                    }
                 }
             }
         });
@@ -516,8 +605,19 @@ class TrackEditor extends JPanel implements ActionListener {
             public void focusLost(FocusEvent e) {
                 try {
                     double s = Double.parseDouble(endField.getText());
+                    if (s < 0) {
+                        throw new TimeOutOfRangeException("low");
+                    } else if (s > trackData.getRunningTime()) {
+                        throw new TimeOutOfRangeException("high");
+                    }
                 } catch (NumberFormatException nfe) {
                     endField.setText("0.0");
+                } catch (TimeOutOfRangeException toore) {
+                    if (toore.getHighLow().equals("high")) {
+                        endField.setText("" + trackData.getRunningTime());
+                    } else {
+                        endField.setText("0.0");
+                    }
                 }
             }
         });
@@ -541,10 +641,10 @@ class TrackEditor extends JPanel implements ActionListener {
 
     private void mute(double start, double end) {
         // convert seconds to bytes
-        int startByte = (int)(start 
+        int startByte = (int)(Math.min(start,end) 
                 * trackData.getAudioFormat().getFrameSize() 
                 * trackData.getAudioFormat().getFrameRate());
-        int endByte = (int)(end 
+        int endByte = (int)(Math.max(start,end) 
                 * trackData.getAudioFormat().getFrameSize() 
                 * trackData.getAudioFormat().getFrameRate()) + 1;
 
