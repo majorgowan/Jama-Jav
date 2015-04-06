@@ -27,5 +27,7 @@ public class VolumeSlider extends JSlider {
 
     VolumeSlider(int orientation, int min, int max, int value) {
         super(orientation, min, max, value);
+        setToolTipText("<html>"
+                + "Ajust track volume (for playback)");
     }
 }

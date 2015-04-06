@@ -5,8 +5,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-// For sound samples
-import javax.sound.sampled.*;
+// For icon images
+import java.awt.image.*;
+import java.net.URL;
 
 // For observing:
 import java.util.Observer;
@@ -23,7 +24,7 @@ class TrackEditor extends JPanel implements ActionListener {
 
     private TimeKeeper timeKeeper;
 
-    private TimeLine timeLine;
+    private EditorTimeLine timeLine;
     private Visualizer visualizer;
 
     private JButton pasteButton;
@@ -35,13 +36,18 @@ class TrackEditor extends JPanel implements ActionListener {
         String cmdStr = ae.getActionCommand();
 
         switch (cmdStr) {
-            case "preview" :
+            case "playall" :
                 clock.reset(0.0);
                 trackData.playback();
                 break;
 
-            case "stop" :
-                trackData.stopPlaying();
+            case "playinterval" :
+                clock.reset(0.0);
+                trackData.playback(timeLine.getMinTime(),timeLine.getMaxTime());
+                break;
+
+            case "pause" :
+                trackData.togglePause();
                 break;
 
             case "select" :
@@ -99,8 +105,8 @@ class TrackEditor extends JPanel implements ActionListener {
     }
 
     private void setSelect() {
-        final double startDefault = 0.0;
-        final double endDefault = trackData.getRunningTime();
+        final double startDefault = trunc(timeLine.getMinTime());
+        final double endDefault = trunc(timeLine.getMaxTime());
 
         JPanel selectPanel = new JPanel(new FlowLayout());
         final JTextField startField = new JTextField("" + startDefault,4);
@@ -173,6 +179,7 @@ class TrackEditor extends JPanel implements ActionListener {
                 visualizer.setData(trackData.getBytes()); 
                 visualizer.repaint();
                 timeLine.setRunningTime(trackData.getRunningTime());
+                timeLine.rehash();
                 timeLine.repaint();
             }
         }
@@ -228,6 +235,7 @@ class TrackEditor extends JPanel implements ActionListener {
             visualizer.setData(trackData.getBytes()); 
             visualizer.repaint();
             timeLine.setRunningTime(trackData.getRunningTime());
+            timeLine.rehash();
             timeLine.repaint();
         }
     }
@@ -266,11 +274,13 @@ class TrackEditor extends JPanel implements ActionListener {
         trackData.getInfo().setRunningTime(
                 trackData.getRunningTime());
         timeLine.setRunningTime(trackData.getRunningTime());
+        timeLine.rehash();
+        timeLine.repaint();
     }
 
     private void setCrop() {
-        final double startDefault = 0.0;
-        final double endDefault = 0.0;
+        final double startDefault = trunc(timeLine.getMinTime());
+        final double endDefault = trunc(timeLine.getMaxTime());
 
         JPanel cropPanel = new JPanel(new FlowLayout());
         final JTextField startField = new JTextField("" + startDefault,4);
@@ -339,6 +349,7 @@ class TrackEditor extends JPanel implements ActionListener {
             visualizer.setData(trackData.getBytes()); 
             visualizer.repaint();
             timeLine.setRunningTime(trackData.getRunningTime());
+            timeLine.rehash();
             timeLine.repaint();
         }
     }
@@ -374,6 +385,8 @@ class TrackEditor extends JPanel implements ActionListener {
         trackData.getInfo().setRunningTime(
                 trackData.getRunningTime());
         timeLine.setRunningTime(trackData.getRunningTime());
+        timeLine.rehash();
+        timeLine.repaint();
     }
 
     private void setShift() {
@@ -412,6 +425,7 @@ class TrackEditor extends JPanel implements ActionListener {
             visualizer.setData(trackData.getBytes()); 
             visualizer.repaint();
             timeLine.setRunningTime(trackData.getRunningTime());
+            timeLine.rehash();
             timeLine.repaint();
         }
     }
@@ -445,15 +459,17 @@ class TrackEditor extends JPanel implements ActionListener {
         trackData.getInfo().setRunningTime(
                 trackData.getRunningTime());
         timeLine.setRunningTime(trackData.getRunningTime());
+        timeLine.rehash();
+        timeLine.repaint();
     }
 
     private void setFade() {
-        final double startDefault = 0.0;
-        final double endDefault = Math.min(5, trackData.getRunningTime());
+        final double startDefault = trunc(timeLine.getMinTime());
+        final double endDefault = trunc(timeLine.getMaxTime());
 
         JPanel fadePanel = new JPanel(new FlowLayout());
-        final JTextField startField = new JTextField("" + startDefault,3);
-        final JTextField endField = new JTextField("" + endDefault,3);
+        final JTextField startField = new JTextField("" + startDefault,4);
+        final JTextField endField = new JTextField("" + endDefault,4);
 
         JRadioButton fadeInButton = new JRadioButton("Fade in");
         JRadioButton fadeOutButton = new JRadioButton("Fade out");
@@ -570,9 +586,12 @@ class TrackEditor extends JPanel implements ActionListener {
     }
 
     private void setMute() {
+        final double startDefault = trunc(timeLine.getMinTime());
+        final double endDefault = trunc(timeLine.getMaxTime());
+
         JPanel mutePanel = new JPanel(new FlowLayout());
-        final JTextField startField = new JTextField("0.0",4);
-        final JTextField endField = new JTextField("0.0",4);
+        final JTextField startField = new JTextField("" + startDefault,4);
+        final JTextField endField = new JTextField("" + endDefault,4);
 
         mutePanel.add(new JLabel("From (seconds): "));
         mutePanel.add(startField);
@@ -586,7 +605,7 @@ class TrackEditor extends JPanel implements ActionListener {
                         throw new TimeOutOfRangeException("high");
                     }
                 } catch (NumberFormatException nfe) {
-                    startField.setText("0.0");
+                    startField.setText("" + startDefault);
                 } catch (TimeOutOfRangeException toore) {
                     if (toore.getHighLow().equals("high")) {
                         startField.setText("" + trackData.getRunningTime());
@@ -611,7 +630,7 @@ class TrackEditor extends JPanel implements ActionListener {
                         throw new TimeOutOfRangeException("high");
                     }
                 } catch (NumberFormatException nfe) {
-                    endField.setText("0.0");
+                    endField.setText("" + endDefault);
                 } catch (TimeOutOfRangeException toore) {
                     if (toore.getHighLow().equals("high")) {
                         endField.setText("" + trackData.getRunningTime());
@@ -699,8 +718,9 @@ class TrackEditor extends JPanel implements ActionListener {
 
         // time keeping and display
         timeKeeper = new TimeKeeper(0.0);
-        timeLine = new TimeLine();
+        timeLine = new EditorTimeLine();
         timeLine.setRunningTime(trackData.getRunningTime());
+        timeLine.rehash();
         timeKeeper.setTimeLine(timeLine);
         clock = new PlainClock();
         timeKeeper.setClock(clock);
@@ -713,15 +733,24 @@ class TrackEditor extends JPanel implements ActionListener {
         // Edit panel
         JPanel editPanel = new JPanel(new FlowLayout());
         JButton fadeButton = new JButton("Fade");
+        fadeButton.setToolTipText("Create fade-in or fade-out effect");
         fadeButton.addActionListener(this);
         fadeButton.setActionCommand("fade");
         JButton muteButton = new JButton("Mute interval");
+        muteButton.setToolTipText("Replace interval with silence");
         muteButton.addActionListener(this);
         muteButton.setActionCommand("mute");
         JButton shiftButton = new JButton("Shift");
+        shiftButton.setToolTipText("<html>"
+                + "Shift entire sample forward or backward<br>"
+                + "in time (negative value truncates beginning<br>"
+                + "of sample.");
         shiftButton.addActionListener(this);
         shiftButton.setActionCommand("shift");
         JButton cropButton = new JButton("Crop");
+        cropButton.setToolTipText("<html>"
+                + "Remove interval from sample and shift<br>"
+                + "following portion to close gap");
         cropButton.addActionListener(this);
         cropButton.setActionCommand("crop");
         editPanel.add(fadeButton);
@@ -732,11 +761,15 @@ class TrackEditor extends JPanel implements ActionListener {
         // Select panel
         JPanel selectPanel = new JPanel(new FlowLayout());
         JButton selectButton = new JButton("Select");
+        selectButton.setToolTipText("<html>"
+                + "Select interval for cut/paste<br>"
+                + "or copy/paste");
         selectButton.addActionListener(this);
         selectButton.setActionCommand("select");
         // pasteButton is a class variable so it can be
         // disabled and enabled when the buffer is not empty
         pasteButton = new JButton("Paste");
+        pasteButton.setToolTipText("Paste selection");
         pasteButton.setEnabled(false);
         pasteButton.addActionListener(this);
         pasteButton.setActionCommand("paste");
@@ -757,15 +790,34 @@ class TrackEditor extends JPanel implements ActionListener {
         outerTimePanel.add(timeLine);
 
         JPanel playPanel = new JPanel(new FlowLayout());
-        JButton previewButton = new JButton("Preview");
-        previewButton.setActionCommand("preview");
-        previewButton.addActionListener(this);
-        JButton stopButton = new JButton("Stop");
-        stopButton.setActionCommand("stop");
-        stopButton.addActionListener(this);
 
-        playPanel.add(previewButton);
-        playPanel.add(stopButton);
+        JButton previewAllButton = new JButton();
+        URL imageURL = Track.class.getResource(
+                "/Icons/Toolbar/Media/PlayFromTop24.gif");
+        previewAllButton.setIcon(new ImageIcon(imageURL));
+        previewAllButton.setToolTipText("Preview sample from the top");
+        previewAllButton.setActionCommand("playall");
+        previewAllButton.addActionListener(this);
+
+        JButton previewIntervalButton = new JButton();
+        imageURL = Track.class.getResource(
+                "/Icons/Toolbar/Media/Play24.gif");
+        previewIntervalButton.setIcon(new ImageIcon(imageURL));
+        previewIntervalButton.setToolTipText("Preview interval");
+        previewIntervalButton.setActionCommand("playinterval");
+        previewIntervalButton.addActionListener(this);
+
+        JButton pauseButton = new JButton();
+        imageURL = Track.class.getResource(
+                "/Icons/Toolbar/Media/Pause24.gif");
+        pauseButton.setIcon(new ImageIcon(imageURL));
+        pauseButton.setToolTipText("Pause playback");
+        pauseButton.setActionCommand("pause");
+        pauseButton.addActionListener(this);
+
+        playPanel.add(previewAllButton);
+        playPanel.add(previewIntervalButton);
+        playPanel.add(pauseButton);
 
         mainPanel.add(outerTimePanel);
         mainPanel.add(outerVisualPanel);

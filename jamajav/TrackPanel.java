@@ -438,13 +438,16 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
     }
 
     public void removeTrack(int i) {
-        tracks.get(i).stopRecording();
-        tracks.get(i).stopPlaying();
-        mainPanel.remove(tracks.get(i));
-        tracks.remove(i);
-        ntracks--;
-        refreshMainPanel();
-        refreshBigTimeLine();
+        // check if user is track author, otherwise do not remove
+        if (prefs.getUserName().equals(tracks.get(i).getInfo().getContributor())) {
+            tracks.get(i).stopRecording();
+            tracks.get(i).stopPlaying();
+            mainPanel.remove(tracks.get(i));
+            tracks.remove(i);
+            ntracks--;
+            refreshMainPanel();
+            refreshBigTimeLine();
+        }
     }
 
     public void swapTracks(int i, int j) {
@@ -798,7 +801,7 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
             BufferedReader br = new BufferedReader(new InputStreamReader(injj));
 
             loadTracks(br, inbin, 0);
-            
+
         } catch (MalformedURLException ex) {
             System.err.println(basePath + filename + ".jj/.bin" + " is not a parseable URL");
         } catch (IOException ex) {
