@@ -15,7 +15,7 @@ public class VolumeSlider extends JSlider {
 
     public void makeSlim() {
         DEFAULT_WIDTH = 250;
-        DEFAULT_HEIGHT = 15;
+        DEFAULT_HEIGHT = 16;
         setOrientation(SwingConstants.HORIZONTAL);
     }
 

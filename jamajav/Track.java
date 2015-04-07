@@ -452,7 +452,7 @@ class Track extends JPanel implements ActionListener, ChangeListener {
 
     public void displaySlim() {
         this.removeAll();
-        DEFAULT_HEIGHT = 66;
+        DEFAULT_HEIGHT = 67;
 
         avatarLabel.setIcon(
                 new ImageIcon(avatarImage.getScaledInstance(40,40,Image.SCALE_SMOOTH)));
