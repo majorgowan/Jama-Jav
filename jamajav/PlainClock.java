@@ -10,7 +10,7 @@ import java.text.DecimalFormat;
 class PlainClock extends JPanel {
 
     final private int DEFAULT_WIDTH = 80;
-    final private int DEFAULT_HEIGHT = 100;
+    final private int DEFAULT_HEIGHT = 50;
 
     protected double theTime = 0.0;
 

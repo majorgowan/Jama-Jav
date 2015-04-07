@@ -37,6 +37,7 @@ class Karaoke {
 
     Karaoke() {
         // nothing to do yet
+        lines = new ArrayList<KaraokeLine>(0);
     }
 
     // copy constructor

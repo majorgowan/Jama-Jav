@@ -48,6 +48,7 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
     private JPanel mainPanel;
     private BigTimeLine bigTimeLine;
 
+    private Karaoke karaoke = null;
     private KaraokePanel karaokePanel;
     private Metronome metronome;
     private Clock clock;
@@ -129,6 +130,13 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                 bigTimeLine.setFull();
                 bigTimeKeeper.reset(0.0);
                 mainPanel.scrollRectToVisible(new Rectangle(0,0,0,0));
+                break;
+
+            case ("karaoke") :
+                if (this.isAncestorOf(karaokePanel))
+                    toggleKaraokePanel(false);
+                else
+                    toggleKaraokePanel(true);
                 break;
 
             case ("addnewtrack") :
@@ -343,6 +351,23 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                 prefsDialog.revalidate();
                 prefsDialog.pack();
                 prefsDialog.setVisible(true);
+                break;
+
+            case ("editkaraoke") :
+                // stop playing because normally would play while making karaoke file
+                if (!allStopped()) {
+                    allStop();
+                    waitASecond(1000);
+                }
+                // open dialog with a KaraokeEditor
+                final JDialog karaokeDialog = new JDialog(parent, "Edit Karaoke File", true);
+                karaokeDialog.setLocationRelativeTo(parent);
+                karaokeDialog.getContentPane().setLayout(new BorderLayout());
+                karaokeDialog.getContentPane().add(
+                        new KaraokeEditor(karaoke, this), BorderLayout.CENTER);
+                karaokeDialog.revalidate();
+                karaokeDialog.pack();
+                karaokeDialog.setVisible(true);
                 break;
 
             case ("instructions") :
@@ -883,6 +908,30 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
         return 0;
     }
 
+    public TrackData combineAll() {
+        // find longest selected track:
+        int maxDataLength = 0;
+        for (int i = 0; i < tracks.size(); i++)
+            maxDataLength
+                = Math.max(tracks.get(i).getTrackData().getBytes().length, maxDataLength);
+
+        // byte array for combined track
+        byte[] newBytes = new byte[0];
+
+        for (int i = 0; i < tracks.size(); i++)
+            newBytes 
+                = EightSixteen.addEights(
+                        newBytes, 
+                        1.0,
+                        tracks.get(i).getTrackData().getBytes(), 
+                        (double)(tracks.get(i).getVolume())/10.0);
+
+        TrackData newTrackData = new TrackData();
+        newTrackData.putBytes(newBytes);
+
+        return newTrackData;
+    }
+
     public TrackData combineSelected() {
 
         // find longest selected track:
@@ -946,7 +995,8 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
 
         parent = jfrm;
         metronome = m;
-        karaokePanel = new KaraokePanel();
+        karaoke = new Karaoke();
+        karaokePanel = new KaraokePanel(karaoke);
         clock = c;
         bigTimeLine = new BigTimeLine();
         prefs = p;

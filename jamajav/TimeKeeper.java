@@ -9,6 +9,8 @@ class TimeKeeper {
     private PlainClock clock = null;
     private PlainTimeLine timeLine = null;
 
+    private KaraokePanel karaokePanel = null;
+
     public double getTime() {
         return time;
     }
@@ -16,13 +18,16 @@ class TimeKeeper {
     public void update(double t) {
         time = t;
         if (mother != null)
-            mother.update(t);
+            mother.update(time);
 
         if (clock != null)
             clock.update(time);
 
         if (timeLine != null)
             timeLine.update(time);
+
+        if (karaokePanel != null)
+            karaokePanel.update(time);
     }
 
     public void reset(double t) {
@@ -35,6 +40,9 @@ class TimeKeeper {
 
         if (timeLine != null)
             timeLine.reset(time);
+
+        if (karaokePanel != null)
+            karaokePanel.reset(time);
     }
 
     public void addTime(double t) {
@@ -47,6 +55,10 @@ class TimeKeeper {
 
     public void setTimeLine(PlainTimeLine tl) {
         timeLine = tl;
+    }
+
+    public void setKaraokePanel(KaraokePanel kopnl) {
+        karaokePanel = kopnl;
     }
 
     TimeKeeper() {
