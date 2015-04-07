@@ -25,6 +25,8 @@ class KaraokeEditor extends JPanel implements ActionListener {
     private PlainClock clock;
     private JTextField playTimeField;
 
+    private String lastTime = "0.0";
+
     private TrackPanel trackPanel;
     private Karaoke karaoke;
 
@@ -40,59 +42,6 @@ class KaraokeEditor extends JPanel implements ActionListener {
 
     public Dimension getPreferredSize() {
         return (new Dimension(DEFAULT_WIDTH, DEFAULT_HEIGHT));
-    }
-
-    // copied from TrackButtonPanel (hence strange nomenclature!)
-    private TrackButton makeButton(String buttonType, String imageName, 
-            String toolTipText) {
-
-        String imgLocation = "/Icons/Toolbar/" + buttonType + "/" + imageName + ".gif";
-        URL imageURL = ToolBar.class.getResource(imgLocation);
-
-        TrackButton button = new TrackButton();
-        button.setToolTipText(toolTipText);
-        button.addActionListener(this);
-
-        button.setIcon(new ImageIcon(imageURL));
-
-        return button;
-    }
-
-    private void addLine() {
-        lineLine.add(new JPanel());
-        timeField.add(new JTextField(5));
-        lineField.add(new JTextField(30));
-        removeButton.add(makeButton("General","Remove24","Remove Note"));
-
-        int newLineNum = lineLine.size()-1;
-        lineLine.get(newLineNum).setLayout(
-                new BoxLayout(lineLine.get(newLineNum),BoxLayout.LINE_AXIS));
-        lineLine.get(newLineNum).add(timeField.get(newLineNum));
-        lineLine.get(newLineNum).add(Box.createRigidArea(new Dimension(5,0)));
-        lineLine.get(newLineNum).add(lineField.get(newLineNum));
-        lineLine.get(newLineNum).add(Box.createRigidArea(new Dimension(15,0)));
-        lineLine.get(newLineNum).add(removeButton.get(newLineNum));
-
-        lineLine.get(newLineNum).setBorder(BorderFactory.createEmptyBorder(5,0,5,0));
-        linesPanel.add(lineLine.get(newLineNum));
-
-        linesPanel.revalidate();
-        timeField.get(newLineNum).requestFocusInWindow();
-    }
-
-    private void swapLines (int i, int j) {
-        // swap lineFields
-        String temp = lineField.get(i).getText();
-        lineField.get(i).setText(lineField.get(j).getText());
-        lineField.get(j).setText(temp);
-    }
-
-    private void waitASecond(int milliseconds) {
-        try {
-            Thread.sleep(1000);                 //1000 milliseconds is one second.
-        } catch(InterruptedException ex) {
-            Thread.currentThread().interrupt();
-        }
     }
 
     public void actionPerformed(ActionEvent ae) {
@@ -143,7 +92,80 @@ class KaraokeEditor extends JPanel implements ActionListener {
         } else if (cmdStr.equals("pause")) {
             trackData.togglePause();
         }
+    }
 
+    // copied from TrackButtonPanel (hence strange nomenclature!)
+    private TrackButton makeButton(String buttonType, String imageName, 
+            String toolTipText) {
+
+        String imgLocation = "/Icons/Toolbar/" + buttonType + "/" + imageName + ".gif";
+        URL imageURL = ToolBar.class.getResource(imgLocation);
+
+        TrackButton button = new TrackButton();
+        button.setToolTipText(toolTipText);
+        button.addActionListener(this);
+
+        button.setIcon(new ImageIcon(imageURL));
+
+        return button;
+    }
+
+    private void addLine() {
+        lineLine.add(new JPanel());
+        timeField.add(new JTextField(5));
+        lineField.add(new JTextField(30));
+        removeButton.add(makeButton("General","Remove24","Remove Note"));
+
+        int newLineNum = lineLine.size()-1;
+        lineLine.get(newLineNum).setLayout(
+                new BoxLayout(lineLine.get(newLineNum),BoxLayout.LINE_AXIS));
+        lineLine.get(newLineNum).add(timeField.get(newLineNum));
+        lineLine.get(newLineNum).add(Box.createRigidArea(new Dimension(5,0)));
+        lineLine.get(newLineNum).add(lineField.get(newLineNum));
+        lineLine.get(newLineNum).add(Box.createRigidArea(new Dimension(15,0)));
+        lineLine.get(newLineNum).add(removeButton.get(newLineNum));
+
+        lineLine.get(newLineNum).setBorder(BorderFactory.createEmptyBorder(5,0,5,0));
+        linesPanel.add(lineLine.get(newLineNum));
+
+        if (newLineNum == 0)
+            lastTime = "0.0";
+        else
+            lastTime = timeField.get(newLineNum-1).getText();
+        timeField.get(newLineNum).setText(lastTime);
+
+        refreshLinesPanel();
+        linesPanel.revalidate();
+
+        timeField.get(newLineNum).requestFocusInWindow();
+        timeField.get(newLineNum).selectAll();
+    }
+
+    private void swapLines (int i, int j) {
+        // swap lineFields
+        String temp = lineField.get(i).getText();
+        lineField.get(i).setText(lineField.get(j).getText());
+        lineField.get(j).setText(temp);
+    }
+
+    private void waitASecond(int milliseconds) {
+        try {
+            Thread.sleep(1000);                 //1000 milliseconds is one second.
+        } catch(InterruptedException ex) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    private void refreshLinesPanel() {
+        linesPanel.removeAll();
+        if (lineLine.size() > 0) {
+            JPanel instructionPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+            instructionPanel.add(new JLabel("Enter times and lyrics for Karaoke!"));
+            linesPanel.add(instructionPanel);
+        }
+        for (int i = 0; i < lineLine.size(); i++) {
+            linesPanel.add(lineLine.get(i));
+        }
     }
 
     KaraokeEditor(Karaoke ko, TrackPanel tpl) {
@@ -171,6 +193,11 @@ class KaraokeEditor extends JPanel implements ActionListener {
 
         if (karaoke.getSize() > 0) {
             System.out.println("Non-trivial karaoke found!");
+
+            JPanel instructionPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+            instructionPanel.add(new JLabel("Enter times and lyrics for Karaoke!"));
+            linesPanel.add(instructionPanel);
+
             for (int i = 0; i < karaoke.getSize(); i++) {
                 addLine();
                 KaraokeLine kol = karaoke.getLine(i);
@@ -201,9 +228,9 @@ class KaraokeEditor extends JPanel implements ActionListener {
 
         // playback panel:
         JPanel playTrackPanel = new JPanel();
-        playTrackPanel.setLayout(new BoxLayout(playTrackPanel,BoxLayout.LINE_AXIS));
+        //playTrackPanel.setLayout(new BoxLayout(playTrackPanel,BoxLayout.LINE_AXIS));
 
-        JLabel playTimeLabel = new JLabel("Play from: ");
+        JLabel playTimeLabel = new JLabel("Start play from: ");
         playTimeField = new JTextField("0.0", 4);
         JPanel outerPlayTimeFieldPanel = new JPanel();
         outerPlayTimeFieldPanel.add(playTimeLabel);
@@ -213,7 +240,7 @@ class KaraokeEditor extends JPanel implements ActionListener {
         URL imageURL = Track.class.getResource(
                 "/Icons/Toolbar/Media/PlayFromTop24.gif");
         playButton.setIcon(new ImageIcon(imageURL));
-        playButton.setToolTipText("Play Jam");
+        playButton.setToolTipText("(Re)start Jam");
         playButton.setActionCommand("playall");
         playButton.addActionListener(this);
 
@@ -221,16 +248,16 @@ class KaraokeEditor extends JPanel implements ActionListener {
         imageURL = Track.class.getResource(
                 "/Icons/Toolbar/Media/Pause24.gif");
         pauseButton.setIcon(new ImageIcon(imageURL));
-        pauseButton.setToolTipText("Pause Playback");
+        pauseButton.setToolTipText("Pause/Resume Playback");
         pauseButton.setActionCommand("pause");
         pauseButton.addActionListener(this);
 
         JPanel outerClockPanel = new JPanel();
         outerClockPanel.add(clock);
 
-        playTrackPanel.add(Box.createHorizontalGlue());
+        //playTrackPanel.add(Box.createHorizontalGlue());
         playTrackPanel.add(outerPlayTimeFieldPanel);
-        playTrackPanel.add(Box.createRigidArea(new Dimension(20,0)));
+        //playTrackPanel.add(Box.createRigidArea(new Dimension(20,0)));
         playTrackPanel.add(playButton);
         playTrackPanel.add(pauseButton);
         //playTrackPanel.add(Box.createRigidArea(new Dimension(20,0)));

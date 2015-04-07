@@ -66,7 +66,7 @@ class WebLoadPanel extends JPanel implements ActionListener, ListSelectionListen
         // update info panel each time the selection changes
         infoHeadPanel.removeAll();
         infoAvatarPanel.removeAll();
-        infoAvatarPanel.revalidate();
+        infoAvatarPanel.repaint();
 
         String infoHead = "<html>Tracks: " + infoArray.length + "<br>"
             + "Running time: " + maxRunningTime + " seconds";
@@ -74,6 +74,7 @@ class WebLoadPanel extends JPanel implements ActionListener, ListSelectionListen
 
         // GridLayout: rows, columns, hgap, vgap
         infoAvatarPanel.setLayout(new GridLayout(3,4,4,4));
+        //System.out.println("Jam has " + infoArray.length + " tracks.");
         for (int j = 0; j < infoArray.length; j++) {
         
             JLabel avatarLabel = new JLabel();

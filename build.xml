@@ -15,7 +15,7 @@
         <echo>
             Compiling!!! 
         </echo>
-        <javac target="1.7" source="1.7" srcdir="."/>
+        <javac includeantruntime="false" target="1.7" source="1.7" srcdir="."/>
     </target>
 
     <target name="avatarUN" if="isUnix">

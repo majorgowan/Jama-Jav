@@ -59,6 +59,7 @@ class TimeKeeper {
 
     public void setKaraokePanel(KaraokePanel kopnl) {
         karaokePanel = kopnl;
+        karaokePanel.reset(time);
     }
 
     TimeKeeper() {

@@ -12,38 +12,70 @@ class KaraokePanel extends JPanel {
 
     private double theTime;
 
+    private int nextLine;
+
     private JLabel line1, line2;
     private Karaoke karaoke;
-        
+
     public void update(double t) {
         if (theTime < t) {
             theTime = t;
+            if (nextLine > -1) {
+                if (theTime > karaoke.getLine(nextLine).getTime()) {
+                    if (nextLine < karaoke.getSize()-1) {
+                        putLine(karaoke.getLine(++nextLine));
+                    } else {
+                        nextLine = -1;
+                        putLastLine();
+                    }
+                }
+            }
         }
     }
 
     public void reset(double t) {
         theTime = t;
+        line1.setText(" ");
+        line2.setText(" ");
+        nextLine = karaoke.find(theTime);
+        if (nextLine >= 0)
+            putLine(karaoke.getLine(nextLine));
+
+        revalidate();
     }
 
-    public void putLine(KaraokeLine line) {
-        if (!line2.getText().equals(" "))
-            line1.setText(line2.getText());
-
-        line2.setText("" + line.getTime() + ":"
+    private void putLine(KaraokeLine line) {
+        // System.out.println("PUTTING NEXT KARAOKE LINE!!!");
+        line1.setText(line2.getText());
+        line2.setText("" + line.getTime() + ":    "
                 + line.getText());
+    }
+
+    private void putLastLine() {
+        // System.out.println("PUTTING LAST KARAOKE LINE!!!");
+        line1.setText(line2.getText());
+        line2.setText(" ");
+    }
+
+    public void reInit(Karaoke ko) {
+        karaoke = ko;
+
+        theTime = 0;
+        nextLine = 0;
+
+        line1.setText(" ");
+        line2.setText(" ");
     }
 
     KaraokePanel(Karaoke ko) {
 
-        karaoke = ko;
+        line1 = new JLabel();
+        line2 = new JLabel();
 
-        theTime = 0;
+        reInit(ko);
 
-        line1 = new JLabel(" ");
-        line2 = new JLabel(" ");
-
-        line1.setForeground(JamaJav.goldColour);
-        line2.setForeground(JamaJav.darkGoldColour);
+        line1.setForeground(JamaJav.darkGoldColour);
+        line2.setForeground(JamaJav.goldColour);
 
         Font font = new Font("SansSerif",Font.BOLD,20);
         line1.setFont(font);

@@ -354,20 +354,23 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                 break;
 
             case ("editkaraoke") :
-                // stop playing because normally would play while making karaoke file
-                if (!allStopped()) {
-                    allStop();
-                    waitASecond(1000);
+                // only means anything if there are some tracks
+                if (tracks.size() > 0) {
+                    // stop playing because normally would play while making karaoke file
+                    if (!allStopped()) {
+                        allStop();
+                        waitASecond(1000);
+                    }
+                    // open dialog with a KaraokeEditor
+                    final JDialog karaokeDialog = new JDialog(parent, "Edit Karaoke File", true);
+                    karaokeDialog.setLocationRelativeTo(parent);
+                    karaokeDialog.getContentPane().setLayout(new BorderLayout());
+                    karaokeDialog.getContentPane().add(
+                            new KaraokeEditor(karaoke, this), BorderLayout.CENTER);
+                    karaokeDialog.revalidate();
+                    karaokeDialog.pack();
+                    karaokeDialog.setVisible(true);
                 }
-                // open dialog with a KaraokeEditor
-                final JDialog karaokeDialog = new JDialog(parent, "Edit Karaoke File", true);
-                karaokeDialog.setLocationRelativeTo(parent);
-                karaokeDialog.getContentPane().setLayout(new BorderLayout());
-                karaokeDialog.getContentPane().add(
-                        new KaraokeEditor(karaoke, this), BorderLayout.CENTER);
-                karaokeDialog.revalidate();
-                karaokeDialog.pack();
-                karaokeDialog.setVisible(true);
                 break;
 
             case ("instructions") :
@@ -415,7 +418,7 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
 
     public void toggleKaraokePanel(boolean onoff) {
         if (onoff) {
-            if (!this.isAncestorOf(karaokePanel))
+            if (!this.isAncestorOf(karaokePanel)) 
                 bottomPanel.add(karaokePanel,BorderLayout.PAGE_START);
         } else
             if (this.isAncestorOf(karaokePanel))
@@ -432,7 +435,6 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
             bigTimeLine.setRunningTime(running);
         } else 
             bigTimeLine.setRunningTime(0.0);
-
 
         bigTimeLine.rehash();
         bigTimeLine.repaint();
@@ -859,6 +861,8 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
     }
 
     private void newDoc() {
+        karaoke = new Karaoke();
+        karaokePanel.reInit(karaoke);
         for (int i = tracks.size()-1; i >= 0; i--) {
             tracks.get(i).stopRecording();
             tracks.get(i).stopPlaying();
@@ -1017,6 +1021,7 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
         bigTimeKeeper = new TimeKeeper();
         bigTimeKeeper.setClock(clock);
         bigTimeKeeper.setTimeLine(bigTimeLine);
+        bigTimeKeeper.setKaraokePanel(karaokePanel);
 
         mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel,BoxLayout.PAGE_AXIS));
