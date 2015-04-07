@@ -41,11 +41,14 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
     private JFrame parent;
     private ToolBar toolBar;
 
+    private JPanel bottomPanel;
+
     private TimeKeeper bigTimeKeeper;
 
     private JPanel mainPanel;
     private BigTimeLine bigTimeLine;
 
+    private KaraokePanel karaokePanel;
     private Metronome metronome;
     private Clock clock;
     private Prefs prefs;
@@ -378,11 +381,21 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
     public void toggleMetronome(boolean onoff) {
         if (onoff) {
             if (!this.isAncestorOf(metronome))
-                add(metronome,BorderLayout.PAGE_END);
+                bottomPanel.add(metronome,BorderLayout.PAGE_END);
         } else
             if (this.isAncestorOf(metronome))
-                remove(metronome);
-        revalidate();
+                bottomPanel.remove(metronome);
+        bottomPanel.revalidate();
+    }
+
+    public void toggleKaraokePanel(boolean onoff) {
+        if (onoff) {
+            if (!this.isAncestorOf(karaokePanel))
+                bottomPanel.add(karaokePanel,BorderLayout.PAGE_START);
+        } else
+            if (this.isAncestorOf(karaokePanel))
+                bottomPanel.remove(karaokePanel);
+        bottomPanel.revalidate();
     }
 
     public void refreshBigTimeLine() {
@@ -933,6 +946,7 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
 
         parent = jfrm;
         metronome = m;
+        karaokePanel = new KaraokePanel();
         clock = c;
         bigTimeLine = new BigTimeLine();
         prefs = p;
@@ -964,9 +978,12 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
 
         MainScrollPane scrollPane = new MainScrollPane(outerMainPanel);
 
+        bottomPanel = new JPanel(new BorderLayout());
+        bottomPanel.add(metronome,BorderLayout.PAGE_END);
+
         add(bigTimeLine,BorderLayout.PAGE_START);
         add(scrollPane,BorderLayout.CENTER);
-        add(metronome,BorderLayout.PAGE_END);
+        add(bottomPanel,BorderLayout.PAGE_END);
 
         // if command-line argument (open Jam)
         if (args.length > 0) {

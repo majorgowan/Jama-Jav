@@ -66,6 +66,9 @@ class ToolBar extends JToolBar {
         JButton openFromWebButton = makeButton(
                 "General", "OpenWeb24", "web", "Open from Web", "Web");
 
+        JButton karaokeButton = makeButton(
+                "General", "Karaoke24", "karaoke", "Toggle Karaoke Panel", "Karaoke");
+
         JButton newTrackButton = makeButton(
                 "General", "AddTrack24", "addnewtrack", "Add Track", "Add Track");
 
@@ -126,6 +129,9 @@ class ToolBar extends JToolBar {
         utilityToolBar.addSeparator();
         utilityToolBar.add(openFromWebButton);
         utilityToolBar.add(Box.createHorizontalGlue());
+        utilityToolBar.add(karaokeButton);
+        utilityToolBar.addSeparator();
+        utilityToolBar.addSeparator();
         utilityToolBar.add(newTrackButton);
         utilityToolBar.addSeparator();
         utilityToolBar.add(concatenateSelectedButton);

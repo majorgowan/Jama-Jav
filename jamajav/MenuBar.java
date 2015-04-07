@@ -78,6 +78,11 @@ class MenuBar extends JMenuBar {
         JMenuItem editCombineItem = makeItem(editMenu, 
                 "Combine selected tracks", "combineselected", 'B');
         editMenu.addSeparator();
+        JMenuItem toggleKaraokeItem = makeItem(editMenu,
+                "Toggle Karaoke Panel", "karaoke", 'K');
+        JMenuItem editKaraokeItem = makeItem(editMenu,
+                "Edit Karaoke file", "editkaraoke", 'O');
+        editMenu.addSeparator();
         JMenuItem editExportItem = makeItem(editMenu, 
                 "Combine and export selected tracks to WAV file", "exportselected", 'E');
 
