@@ -42,6 +42,7 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
     private ToolBar toolBar;
 
     private JPanel bottomPanel;
+    private JPanel topPanel;
 
     private TimeKeeper bigTimeKeeper;
 
@@ -419,11 +420,11 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
     public void toggleKaraokePanel(boolean onoff) {
         if (onoff) {
             if (!this.isAncestorOf(karaokePanel)) 
-                bottomPanel.add(karaokePanel,BorderLayout.PAGE_START);
+                topPanel.add(karaokePanel,BorderLayout.PAGE_START);
         } else
             if (this.isAncestorOf(karaokePanel))
-                bottomPanel.remove(karaokePanel);
-        bottomPanel.revalidate();
+                topPanel.remove(karaokePanel);
+        topPanel.revalidate();
     }
 
     public void refreshBigTimeLine() {
@@ -1036,7 +1037,11 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
         bottomPanel = new JPanel(new BorderLayout());
         bottomPanel.add(metronome,BorderLayout.PAGE_END);
 
-        add(bigTimeLine,BorderLayout.PAGE_START);
+        topPanel = new JPanel(new BorderLayout());
+        topPanel.add(bigTimeLine,BorderLayout.PAGE_END);
+        // KaraokePanel goes at PAGE_START when activated
+
+        add(topPanel,BorderLayout.PAGE_START);
         add(scrollPane,BorderLayout.CENTER);
         add(bottomPanel,BorderLayout.PAGE_END);
 

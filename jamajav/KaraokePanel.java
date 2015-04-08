@@ -74,6 +74,8 @@ class KaraokePanel extends JPanel {
 
         reInit(ko);
 
+        setBackground(JamaJav.clickedColour);
+
         line1.setForeground(JamaJav.darkGoldColour);
         line2.setForeground(JamaJav.goldColour);
 

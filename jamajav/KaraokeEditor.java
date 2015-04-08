@@ -116,7 +116,36 @@ class KaraokeEditor extends JPanel implements ActionListener {
         lineField.add(new JTextField(30));
         removeButton.add(makeButton("General","Remove24","Remove Note"));
 
-        int newLineNum = lineLine.size()-1;
+        final int newLineNum = lineLine.size()-1;
+
+        if (newLineNum == 0)
+            lastTime = "0.0";
+        else
+            lastTime = timeField.get(newLineNum-1).getText();
+        final String timeDefault = lastTime;
+
+        timeField.get(newLineNum).addFocusListener(new FocusAdapter() {
+            public void focusLost(FocusEvent e) {
+                try {
+                    double s = Double.parseDouble(
+                        timeField.get(newLineNum).getText());
+                    if (s < 0) {
+                        throw new TimeOutOfRangeException("low");
+                    } else if (s > trackData.getRunningTime()) {
+                        throw new TimeOutOfRangeException("high");
+                    }
+                } catch (NumberFormatException nfe) {
+                    timeField.get(newLineNum).setText("" + timeDefault);
+                } catch (TimeOutOfRangeException toore) {
+                    if (toore.getHighLow().equals("high")) {
+                        timeField.get(newLineNum).setText("" + timeDefault);
+                    } else {
+                        timeField.get(newLineNum).setText("0.0");
+                    }
+                }
+            }
+        });
+
         lineLine.get(newLineNum).setLayout(
                 new BoxLayout(lineLine.get(newLineNum),BoxLayout.LINE_AXIS));
         lineLine.get(newLineNum).add(timeField.get(newLineNum));
@@ -127,12 +156,6 @@ class KaraokeEditor extends JPanel implements ActionListener {
 
         lineLine.get(newLineNum).setBorder(BorderFactory.createEmptyBorder(5,0,5,0));
         linesPanel.add(lineLine.get(newLineNum));
-
-        if (newLineNum == 0)
-            lastTime = "0.0";
-        else
-            lastTime = timeField.get(newLineNum-1).getText();
-        timeField.get(newLineNum).setText(lastTime);
 
         refreshLinesPanel();
         linesPanel.revalidate();
@@ -232,6 +255,21 @@ class KaraokeEditor extends JPanel implements ActionListener {
 
         JLabel playTimeLabel = new JLabel("Start play from: ");
         playTimeField = new JTextField("0.0", 4);
+        playTimeField.addFocusListener(new FocusAdapter() {
+            public void focusLost(FocusEvent e) {
+                try {
+                    double s = Double.parseDouble(playTimeField.getText());
+                    if (s < 0) {
+                        throw new TimeOutOfRangeException("low");
+                    } else if (s > trackData.getRunningTime()) {
+                        throw new TimeOutOfRangeException("high");
+                    }
+                } catch (Exception ex) {
+                    playTimeField.setText("0.0");
+                }
+            }
+        });
+
         JPanel outerPlayTimeFieldPanel = new JPanel();
         outerPlayTimeFieldPanel.add(playTimeLabel);
         outerPlayTimeFieldPanel.add(playTimeField);

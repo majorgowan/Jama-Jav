@@ -8,7 +8,13 @@ class Karaoke {
     private ArrayList<KaraokeLine> lines;
 
     public void addLine(double t, String txt) {
-        lines.add(new KaraokeLine(t, txt));
+        // add the line at the slot appropriate
+        // to its time
+        int place = find(t);
+        if (place == -1)
+            lines.add(new KaraokeLine(t,txt));
+        else
+            lines.add(place, new KaraokeLine(t, txt));
     }
 
     public void removeLine(int i) {
@@ -25,7 +31,7 @@ class Karaoke {
 
     public int find(double time) {
         for (int i = 0; i < lines.size(); i++)
-            if (lines.get(i).getTime() >= time)
+            if (lines.get(i).getTime() > time)
                 return i;
 
         return -1;
