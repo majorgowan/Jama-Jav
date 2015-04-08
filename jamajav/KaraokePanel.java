@@ -74,8 +74,6 @@ class KaraokePanel extends JPanel {
 
         reInit(ko);
 
-        setBackground(JamaJav.clickedColour);
-
         line1.setForeground(JamaJav.darkGoldColour);
         line2.setForeground(JamaJav.goldColour);
 
@@ -84,8 +82,10 @@ class KaraokePanel extends JPanel {
         line2.setFont(font);
 
         JPanel line1Panel = new JPanel(new FlowLayout());
+        line1Panel.setBackground(JamaJav.clickedColour);
         line1Panel.add(line1);
         JPanel line2Panel = new JPanel(new FlowLayout());
+        line2Panel.setBackground(JamaJav.clickedColour);
         line2Panel.add(line2);
 
         setLayout(new BoxLayout(this,BoxLayout.PAGE_AXIS));

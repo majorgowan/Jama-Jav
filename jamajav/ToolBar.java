@@ -67,7 +67,7 @@ class ToolBar extends JToolBar {
                 "General", "OpenWeb24", "web", "Open from Web", "Web");
 
         JButton karaokeButton = makeButton(
-                "General", "Karaoke24", "karaoke", "Toggle Karaoke Panel", "Karaoke");
+                "General", "Karaoke24", "karaoke", "Show/Hide Karaoke Panel", "Karaoke");
 
         JButton newTrackButton = makeButton(
                 "General", "AddTrack24", "addnewtrack", "Add Track", "Add Track");

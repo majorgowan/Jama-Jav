@@ -71,6 +71,7 @@ class KaraokeEditor extends JPanel implements ActionListener {
                 String theLine = lineField.get(i).getText();
                 karaoke.addLine(theTime, theLine);
             }
+            trackPanel.refreshKaraokePanel();
 
             SwingUtilities.windowForComponent(this).setVisible(false);
             SwingUtilities.windowForComponent(this).dispose();
@@ -162,6 +163,9 @@ class KaraokeEditor extends JPanel implements ActionListener {
 
         timeField.get(newLineNum).requestFocusInWindow();
         timeField.get(newLineNum).selectAll();
+        linesPanel.scrollRectToVisible(
+                new Rectangle(
+                    0,(int)linesPanel.getPreferredSize().getHeight(),10,10));
     }
 
     private void swapLines (int i, int j) {

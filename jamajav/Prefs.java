@@ -10,6 +10,9 @@ class Prefs {
     private String userName;
     private String userCity;
     private String avatar;
+    private boolean showMetronome;
+    private boolean showKaraoke;
+    private boolean autoSelectNewTrack;
 
     private void setDefaults() {
 
@@ -26,6 +29,9 @@ class Prefs {
         // default avatar
         avatar = "tenor";
 
+        showMetronome = false;
+        showKaraoke = false;
+        autoSelectNewTrack = false;
     }
 
     public int[] getMetroSet() {
@@ -44,11 +50,37 @@ class Prefs {
         return avatar;
     }
 
+    public boolean getShowMetronome() {
+        return showMetronome;
+    }
+
+    public boolean getShowKaraoke() {
+        return showKaraoke;
+    }
+
+    public boolean getAutoSelectNewTrack() {
+        return autoSelectNewTrack;
+    }
+
     public void setPrefs(int[] ms, String un, String uc, String av) {
         metroset = ms;
         userName = un;
         userCity = uc;
         avatar = av;
+        showMetronome = true;
+        showKaraoke = true;
+        autoSelectNewTrack = true;
+    }
+
+    public void setPrefs(int[] ms, String un, String uc, String av,
+            boolean sM, boolean sK, boolean aSNT) {
+        metroset = ms;
+        userName = un;
+        userCity = uc;
+        avatar = av;
+        showMetronome = sM;
+        showKaraoke = sK;
+        autoSelectNewTrack = aSNT;
     }
 
     public void setAvatar(String av) {
@@ -81,7 +113,17 @@ class Prefs {
             String av = br.readLine();
             br.readLine();  // discard blank line
 
-            setPrefs(ms, un, uc, av);
+            // get boolean values
+            String line = br.readLine(); // discard information line
+            if (line == null)
+                setPrefs(ms, un, uc, av);
+            else {
+                boolean sMet = Boolean.parseBoolean(br.readLine());
+                boolean sKar = Boolean.parseBoolean(br.readLine());
+                boolean selectNewTrack = Boolean.parseBoolean(br.readLine());
+                br.readLine();
+                setPrefs(ms, un, uc, av, sMet, sKar, selectNewTrack);
+            }
 
         } catch (IOException ie) {
             System.out.println(ie);
@@ -114,6 +156,11 @@ class Prefs {
 
             fw.write("Avatar:\n");
             fw.write(avatar + "\n\n");
+
+            fw.write("ShowMetronome, ShowKaraoke, AutoSelectNewTrack:\n");
+            fw.write(showMetronome + "\n");
+            fw.write(showKaraoke + "\n");
+            fw.write(autoSelectNewTrack + "\n\n");
         } catch (IOException ie) {
             System.out.println(ie);
             ie.printStackTrace();

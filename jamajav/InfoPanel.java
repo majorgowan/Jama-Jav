@@ -77,6 +77,9 @@ class InfoPanel extends JPanel implements ActionListener {
 
         notesPanel.revalidate();
         noteField.get(newNoteNum).requestFocusInWindow();
+        notesPanel.scrollRectToVisible(
+                new Rectangle(
+                    0,(int)notesPanel.getPreferredSize().getHeight(),10,10));
     }
 
     private void swapNotes (int i, int j) {

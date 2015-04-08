@@ -23,6 +23,9 @@ class PrefsPanel extends JPanel implements ActionListener {
     private JTextField countInField;
     private JTextField userNameField;
     private JTextField userCityField;
+    private JCheckBox metronomeCheckBox;
+    private JCheckBox karaokeCheckBox;
+    private JCheckBox autoSelectNewTrackCheckBox;
     private JLabel avatarLabel;
     private JButton changeAvatarButton;
 
@@ -56,7 +59,10 @@ class PrefsPanel extends JPanel implements ActionListener {
                 userName = userNameField.getText();
                 userCity = userCityField.getText();
 
-                oldPrefs.setPrefs(metroset, userName, userCity, avatar);
+                oldPrefs.setPrefs(metroset, userName, userCity, avatar,
+                        metronomeCheckBox.isSelected(),
+                        karaokeCheckBox.isSelected(),
+                        autoSelectNewTrackCheckBox.isSelected());
                 oldPrefs.writePrefsFile();
                 // drop through to close window (no break!)
 
@@ -130,6 +136,12 @@ class PrefsPanel extends JPanel implements ActionListener {
         changeAvatarButton = new JButton("Change");
         changeAvatarButton.setActionCommand("changeAvatar");
         changeAvatarButton.addActionListener(this);
+        metronomeCheckBox = new JCheckBox("Show metronome on startup",
+                oldPrefs.getShowMetronome());
+        karaokeCheckBox = new JCheckBox("Show karaoke panel on startup",
+                oldPrefs.getShowKaraoke());
+        autoSelectNewTrackCheckBox = new JCheckBox("Autoselect new tracks",
+                oldPrefs.getAutoSelectNewTrack());
 
         JPanel avatarPanel = new JPanel(new BorderLayout());
         avatarLabel = new JLabel(
@@ -147,6 +159,9 @@ class PrefsPanel extends JPanel implements ActionListener {
         JPanel line6 = new JPanel(new FlowLayout(FlowLayout.CENTER));
         JPanel line7 = new JPanel(new FlowLayout(FlowLayout.CENTER));
         JPanel line8 = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JPanel line9 = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JPanel line10 = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JPanel line11 = new JPanel(new FlowLayout(FlowLayout.LEFT));
         line1.add(new JLabel("User Name:",JLabel.RIGHT));
         line1.add(userNameField);
         line2.add(new JLabel("User City:",JLabel.RIGHT));
@@ -159,6 +174,11 @@ class PrefsPanel extends JPanel implements ActionListener {
         line6.add(bpMinField);
         line7.add(new JLabel("Beats per measure:",JLabel.RIGHT));
         line7.add(bpMeasField);
+        line8.add(new JLabel("Miscellaneous:"));
+        line9.add(metronomeCheckBox);
+        line10.add(karaokeCheckBox);
+        line11.add(autoSelectNewTrackCheckBox);
+
         mainPanel.add(line1);
         mainPanel.add(line2);
         mainPanel.add(line3);
@@ -167,6 +187,9 @@ class PrefsPanel extends JPanel implements ActionListener {
         mainPanel.add(line6);
         mainPanel.add(line7);
         mainPanel.add(line8);
+        mainPanel.add(line9);
+        mainPanel.add(line10);
+        mainPanel.add(line11);
 
         // for the future perhaps
         JScrollPane scrollPane = new JScrollPane(mainPanel);

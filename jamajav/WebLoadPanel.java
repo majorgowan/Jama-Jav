@@ -19,16 +19,19 @@ import java.net.*;
 
 class WebLoadPanel extends JPanel implements ActionListener, ListSelectionListener {
 
-    final private int DEFAULT_WIDTH = 500;
+    final private int DEFAULT_WIDTH = 540;
     final private int DEFAULT_HEIGHT = 250;
 
     private TrackPanel trackPanel;
     private JList fileList;
     private String basePath;
     private ArrayList<Info[]> infoArrayList;
+    private ArrayList<Integer> karaokeList;
 
     private JPanel infoHeadPanel;
     private JPanel infoAvatarPanel;
+
+    private JPanel karaokePanel;
 
     // for ActionListener interface
     public void actionPerformed(ActionEvent ae) {
@@ -83,6 +86,9 @@ class WebLoadPanel extends JPanel implements ActionListener, ListSelectionListen
                     .getScaledInstance(40,40,Image.SCALE_SMOOTH)));
             infoAvatarPanel.add(avatarLabel);
             avatarLabel.setToolTipText(makeToolTip(infoArray[j]));
+
+            if (karaokeList.get(i) > 0)
+                infoAvatarPanel.add(karaokePanel);
         }
         revalidate();
     }
@@ -116,6 +122,22 @@ class WebLoadPanel extends JPanel implements ActionListener, ListSelectionListen
             br.readLine();
 
             words = br.readLine().split(" ");
+
+            int karaokeLines = 0;
+            // if Karaoke (newer than April 8, 2015)
+            if (words[0].equals("KARAOKE")) {
+                words = br.readLine().split(" ");
+                karaokeLines = Integer.parseInt(words[2]);
+                for (int i = 0; i < karaokeLines; i++) {
+                    br.readLine();
+                    br.readLine();
+                }
+                br.readLine(); // KARAOKE END
+
+                // continue reading
+                words = br.readLine().split(" ");
+            }
+
             int ntracks = Integer.parseInt(words[1]);
             Info[] infoArray = new Info[ntracks];
 
@@ -142,6 +164,7 @@ class WebLoadPanel extends JPanel implements ActionListener, ListSelectionListen
                 infoArray[i] = inf;
             }
             infoArrayList.add(infoArray);
+            karaokeList.add(new Integer(karaokeLines));
 
         } catch (MalformedURLException ex) {
             System.err.println(jjFile + " is not a parseable URL");
@@ -166,6 +189,7 @@ class WebLoadPanel extends JPanel implements ActionListener, ListSelectionListen
         InputStream in = null;
         ArrayList<String> filenames = new ArrayList<String>(0);
         infoArrayList = new ArrayList<Info[]>(0);
+        karaokeList = new ArrayList<Integer>(0);
 
         String theWebSite = basePath + "filelist.txt";
 
@@ -243,6 +267,16 @@ class WebLoadPanel extends JPanel implements ActionListener, ListSelectionListen
         setLayout(new BorderLayout());
         add(mainPanel,BorderLayout.CENTER);
         add(buttonPanel,BorderLayout.PAGE_END);
+
+        // karaoke label
+        JLabel karaokeLabel = new JLabel();
+        URL karaokeImageURL = Track.class.getResource(
+                "/Icons/Toolbar/General/Karaoke24.gif");
+        karaokeLabel.setIcon(new ImageIcon(karaokeImageURL));
+        karaokePanel = new JPanel();
+        karaokePanel.add(karaokeLabel);
+        karaokePanel.setToolTipText("<html>"
+                + "Jam includes<br> karaoke text!");
 
         fileList.setSelectedIndex(0);
     }
