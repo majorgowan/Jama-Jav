@@ -39,15 +39,11 @@ class TrackData {
     }
 
     public void togglePause() {
-        System.out.print("YOU PRESSED PAUSE!!");
-        if (isPaused) {
+        //System.out.print("YOU PRESSED PAUSE!!");
+        if (isPaused) 
             isPaused = false;
-            System.out.print(": UNPAUSE!");
-            System.out.println(" stopPlay is " + stopPlay.getValue());
-        } else {                
+        else
             isPaused = true;
-            System.out.println(": PAUSE!");
-        }
     }
 
     public boolean getPaused() {
@@ -319,9 +315,13 @@ class TrackData {
                     }
                     // check if paused and wait
                     do {
+                        // need something here (at least in Linux)
+                        // apparently ... maybe a blocking problem
+                        // with the empty loop
+                        System.out.print("");
                     } while (isPaused && !stopPlay.getValue());
                 }
-                System.out.println("NO PAUSO, EL STOPPO!!");
+                //System.out.println("NO PAUSO, EL STOPPO!!");
 
                 // Block and wait for internal
                 // buffer of the data line to
