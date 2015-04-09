@@ -57,11 +57,14 @@ class InfoPanel extends JPanel implements ActionListener {
 
     private void addNote() {
         noteLine.add(new JPanel());
+        int newNoteNum = noteLine.size()-1;
+
         noteField.add(new JTextField(30));
+        noteField.get(newNoteNum).addActionListener(this);
+
         removeButton.add(makeButton("General","Remove24","Remove Note"));
         upButton.add(makeButton("Navigation","Up24","Move Note Up"));
         downButton.add(makeButton("Navigation","Down24","Move Note Down"));
-        int newNoteNum = noteLine.size()-1;
         noteLine.get(newNoteNum).setLayout(
                 new BoxLayout(noteLine.get(newNoteNum),BoxLayout.LINE_AXIS));
         noteLine.get(newNoteNum).add(noteField.get(newNoteNum));
@@ -112,10 +115,12 @@ class InfoPanel extends JPanel implements ActionListener {
             } else if (ae.getSource() == downButton.get(i)) {
                 if (i < noteLine.size()-1)
                     swapNotes(i,i+1);
+            } else if (ae.getSource() == noteField.get(i)) {
+                addNote();
             }
         }
 
-        if (ae.getSource() == okButton) {
+        if ((ae.getSource() == okButton) || (ae.getSource() == titleField)) {
             info.setTitle(titleField.getText());
             info.clearNotes();
             for (int i = 0; i < noteLine.size(); i++)
@@ -144,6 +149,7 @@ class InfoPanel extends JPanel implements ActionListener {
         titlePanel.add(new JLabel("Title: "));
         titleField = new JTextField(info.getTitle(),20);
         titlePanel.add(titleField);
+        titleField.addActionListener(this);
 
         notesPanel = new JPanel();
         notesPanel.setLayout(new BoxLayout(notesPanel,BoxLayout.PAGE_AXIS));

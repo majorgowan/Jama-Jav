@@ -58,13 +58,15 @@ class ToolBar extends JToolBar {
                 "General", "NewJam24", "newjam", "New Jam", "New"); 
         JButton openButton = makeButton(
                 "General", "Open24", "open", "Open Jam", "Open"); 
+        JButton openFromWebButton = makeButton(
+                "General", "OpenWeb24", "web", "Open from Web", "Web");
         JButton mergeButton = makeButton(
                 "General", "Merge24", "merge", "Import tracks", "Merge"); 
         JButton saveButton = makeButton(
                 "General", "Save24", "save", "Save Jam", "Save"); 
 
-        JButton openFromWebButton = makeButton(
-                "General", "OpenWeb24", "web", "Open from Web", "Web");
+        JButton chatButton = makeButton(
+                "General", "Chat24", "chat", "Toggle between Tracks and Chat", "Ch");
 
         JButton karaokeButton = makeButton(
                 "General", "Karaoke24", "karaoke", "Show/Hide Karaoke Panel", "Karaoke");
@@ -122,13 +124,13 @@ class ToolBar extends JToolBar {
         utilityToolBar.add(newJamButton);
         utilityToolBar.addSeparator();
         utilityToolBar.add(openButton);
+        utilityToolBar.add(openFromWebButton);
         utilityToolBar.add(mergeButton);
         utilityToolBar.addSeparator();
         utilityToolBar.add(saveButton);
         utilityToolBar.addSeparator();
-        utilityToolBar.addSeparator();
-        utilityToolBar.add(openFromWebButton);
         utilityToolBar.add(Box.createHorizontalGlue());
+        utilityToolBar.add(chatButton);
         utilityToolBar.add(karaokeButton);
         utilityToolBar.addSeparator();
         utilityToolBar.addSeparator();

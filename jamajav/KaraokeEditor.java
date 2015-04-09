@@ -60,6 +60,8 @@ class KaraokeEditor extends JPanel implements ActionListener {
                 lineLine.remove(i);
                 linesPanel.revalidate();
                 linesPanel.repaint();
+            } else if (ae.getSource() == lineField.get(i)) {
+                addLine();
             }
         }
 
@@ -117,11 +119,13 @@ class KaraokeEditor extends JPanel implements ActionListener {
 
     private void addLine() {
         lineLine.add(new JPanel());
+        final int newLineNum = lineLine.size()-1;
+
         timeField.add(new JTextField(5));
         lineField.add(new JTextField(30));
+        lineField.get(newLineNum).addActionListener(this);
         removeButton.add(makeButton("General","Remove24","Remove Note"));
 
-        final int newLineNum = lineLine.size()-1;
 
         if (newLineNum == 0)
             lastTime = "0.0";

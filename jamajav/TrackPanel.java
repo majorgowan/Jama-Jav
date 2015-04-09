@@ -46,11 +46,17 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
 
     private TimeKeeper bigTimeKeeper;
 
+    private JPanel outerMainPanel;
     private JPanel mainPanel;
+    private MainScrollPane scrollPane;
     private BigTimeLine bigTimeLine;
 
-    private Karaoke karaoke = null;
+    private Chat chat;
+    private ChatPanel chatPanel;
+
+    private Karaoke karaoke;
     private KaraokePanel karaokePanel;
+
     private Metronome metronome;
     private Clock clock;
     private Prefs prefs;
@@ -107,15 +113,6 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                 mainPanel.scrollRectToVisible(new Rectangle(0,0,0,0));
                 break;
 
-            case ("merge") :
-                merge();
-                refreshBigTimeLine();
-                break;
-
-            case ("save") :
-                save();
-                break;
-
             case ("web") :
                 String basePath = "http://user.uni-frankfurt.de/~fruman/JJ/"; 
                 final JDialog webDialog = new JDialog(parent, "Open Jam from Web", true);
@@ -131,6 +128,22 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                 bigTimeLine.setFull();
                 bigTimeKeeper.reset(0.0);
                 mainPanel.scrollRectToVisible(new Rectangle(0,0,0,0));
+                break;
+
+            case ("merge") :
+                merge();
+                refreshBigTimeLine();
+                break;
+
+            case ("save") :
+                save();
+                break;
+
+            case ("chat") :
+                if (this.isAncestorOf(chatPanel))
+                    toggleChatPanel(false);
+                else
+                    toggleChatPanel(true);
                 break;
 
             case ("karaoke") :
@@ -415,6 +428,20 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
             if (this.isAncestorOf(metronome))
                 bottomPanel.remove(metronome);
         bottomPanel.revalidate();
+    }
+
+    public void toggleChatPanel(boolean onoff) {
+        if (onoff) {
+            outerMainPanel.remove(mainPanel);
+            outerMainPanel.setLayout(new BorderLayout());
+            outerMainPanel.add(chatPanel, BorderLayout.CENTER);
+            chatPanel.requestFocus();
+        } else {
+            outerMainPanel.remove(chatPanel);
+            outerMainPanel.setLayout(new FlowLayout());
+            outerMainPanel.add(mainPanel);
+        }
+        outerMainPanel.revalidate();
     }
 
     public void toggleKaraokePanel(boolean onoff) {
@@ -1039,11 +1066,15 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
 
         parent = jfrm;
         metronome = m;
+
         karaoke = new Karaoke();
         karaokePanel = new KaraokePanel(karaoke);
         clock = c;
         bigTimeLine = new BigTimeLine();
         prefs = p;
+
+        chat = new Chat();
+        chatPanel = new ChatPanel(this, prefs, chat); 
 
         tracks = new ArrayList<Track>(0);
 
@@ -1066,12 +1097,12 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
         mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel,BoxLayout.PAGE_AXIS));
 
-        JPanel outerMainPanel = new JPanel(new FlowLayout());
+        outerMainPanel = new JPanel(new FlowLayout());
         outerMainPanel.setBackground(goldColour);
         mainPanel.setBackground(goldColour);
         outerMainPanel.add(mainPanel);
 
-        MainScrollPane scrollPane = new MainScrollPane(outerMainPanel);
+        scrollPane = new MainScrollPane(outerMainPanel);
 
         bottomPanel = new JPanel(new BorderLayout());
         if (prefs.getShowMetronome())
