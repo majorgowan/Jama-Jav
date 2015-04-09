@@ -779,6 +779,7 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
             tracks.get(i).setSelected(false);
             tracks.get(i).collapse();
         }
+        refreshKaraokePanel();
 
     }
 
@@ -821,7 +822,6 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
             }
         }
 
-        refreshKaraokePanel();
     }
 
     private void merge() {

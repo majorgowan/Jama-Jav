@@ -64,6 +64,10 @@ class KaraokeEditor extends JPanel implements ActionListener {
         }
 
         if (ae.getSource() == okButton) {
+            if (!trackData.getStopPlay().getValue()) {
+                trackData.stopPlaying();
+                waitASecond(500);
+            }
             System.out.println("Ok then!  Adding " + lineLine.size() + " lines!");
             karaoke.clear();
             for (int i = 0; i < lineLine.size(); i++) {
