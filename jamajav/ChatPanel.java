@@ -49,6 +49,10 @@ class ChatPanel extends JPanel implements ActionListener {
         mainPanel.add(Box.createRigidArea(new Dimension(0,5)));
         mainPanel.revalidate();
         entryField.setText("");
+
+        scrollRectToVisible(
+                new Rectangle(
+                    0,(int)getPreferredSize().getHeight(),10,10));
     }
 
     public void requestFocus() {
@@ -86,5 +90,10 @@ class ChatPanel extends JPanel implements ActionListener {
         setLayout(new BorderLayout());
         add(outerMainPanel,BorderLayout.CENTER);
         add(entryPanel,BorderLayout.PAGE_END);
+
+        // scroll to the bottom to expose entryPanel
+        scrollRectToVisible(
+                new Rectangle(
+                    0,(int)getPreferredSize().getHeight(),10,10));
     }
 }
