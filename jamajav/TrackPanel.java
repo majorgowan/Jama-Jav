@@ -740,8 +740,9 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
         // "KARAOKE BEGIN"
         words = getWords(br);
         if (words[0].equals("KARAOKE")) {
-            if (oldTracks == 0)
+            if (oldTracks == 0) 
                 karaoke.clear();
+
             // get number of lines
             words = getWords(br);
             int karaokeLines = Integer.parseInt(words[2]);
@@ -758,14 +759,16 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
             // now read next line
             // to continue through old file format
             words = getWords(br);
-        } else 
-            karaoke.clear();
+        } else {
+            if (oldTracks == 0)
+                karaoke.clear();
+        }
 
         // read Chat lines
         // for backwards compatibility, check if next line is
         // "CHAT BEGIN"
         if (words[0].equals("CHAT")) {
-            if (oldTracks == 0)
+            if (oldTracks == 0) 
                 chat.clear();
             // get number of lines
             words = getWords(br);
@@ -791,8 +794,10 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
             // now read number of tracks line
             // to continue through old file format
             words = getWords(br);
-        } else
-            chat.clear();
+        } else {
+            if (oldTracks == 0)
+                chat.clear();
+        }
 
         chatPanel.refreshChat();
 
@@ -920,7 +925,7 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                 br = new BufferedReader(new FileReader(filename + ".jj"));
                 binfis = new FileInputStream(filename + ".bin");
 
-                System.out.println("Existing Tracks there are " + tracks.size());
+                // System.out.println("Existing Tracks there are " + tracks.size());
                 loadTracks(br, binfis, tracks.size());
 
             } catch (IOException e) {

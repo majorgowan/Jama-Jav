@@ -138,6 +138,23 @@ class WebLoadPanel extends JPanel implements ActionListener, ListSelectionListen
                 words = br.readLine().split(" ");
             }
 
+            // throw away chat (if exists)
+            if (words[0].equals("CHAT")) {
+                words = br.readLine().split(" ");
+                int chatLines = Integer.parseInt(words[2]);
+                for (int i = 0; i < chatLines; i++) {
+                    br.readLine();
+                    br.readLine();
+                    br.readLine();
+                    br.readLine();
+                    br.readLine();
+                }
+                br.readLine(); // CHAT END
+
+                // continue reading
+                words = br.readLine().split(" ");
+            }
+
             int ntracks = Integer.parseInt(words[1]);
             Info[] infoArray = new Info[ntracks];
 
