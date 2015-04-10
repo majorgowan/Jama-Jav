@@ -23,7 +23,7 @@ class AvatarPanel extends JPanel implements  MouseListener {
             for (int i = 0; i < avatars.size(); i++) {
                 if (me.getSource() == avatarPanels.get(i)) {
                     prefs.setAvatar(avatars.get(i).getName());
-                    System.out.println(avatars.get(i).getName());
+                    // System.out.println(avatars.get(i).getName());
                     SwingUtilities.windowForComponent(this).setVisible(false);
                     SwingUtilities.windowForComponent(this).dispose();
                 }

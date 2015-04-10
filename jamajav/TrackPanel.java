@@ -442,6 +442,7 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
             outerMainPanel.add(mainPanel);
         }
         outerMainPanel.revalidate();
+        outerMainPanel.repaint();
     }
 
     public void toggleKaraokePanel(boolean onoff) {
@@ -637,6 +638,19 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                 }
                 asciifw.write("KARAOKE END\n");
 
+                // write Chat lines to ASCII file
+                asciifw.write("CHAT BEGIN\n");
+                asciifw.write("Chat lines: " + chat.getSize() + "\n");
+                for (int i = 0; i < chat.getSize(); i++) {
+                    ChatEntry centry = chat.get(i);
+                    asciifw.write("" + centry.getDate() + "\n");
+                    asciifw.write("" + centry.getLocation() + "\n");
+                    asciifw.write("" + centry.getContributor() + "\n");
+                    asciifw.write("" + centry.getAvatar() + "\n");
+                    asciifw.write("" + centry.getText() + "\n");
+                }
+                asciifw.write("CHAT END\n");
+
                 // write number of tracks to ASCII file
                 asciifw.write("Tracks: " + tracks.size() + "\n");
 
@@ -726,7 +740,8 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
         // "KARAOKE BEGIN"
         words = getWords(br);
         if (words[0].equals("KARAOKE")) {
-            karaoke.clear();
+            if (oldTracks == 0)
+                karaoke.clear();
             // get number of lines
             words = getWords(br);
             int karaokeLines = Integer.parseInt(words[2]);
@@ -734,15 +749,52 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
             for (int j = 0; j < karaokeLines; j++) {
                 double kTime = Double.parseDouble(getLine(br));
                 String kText = getLine(br);
-                karaoke.addLine(kTime, kText);
+                if (oldTracks == 0)
+                    karaoke.addLine(kTime, kText);
             }
             // read line "KARAOKE END"
+            getLine(br);
+
+            // now read next line
+            // to continue through old file format
+            words = getWords(br);
+        } else 
+            karaoke.clear();
+
+        // read Chat lines
+        // for backwards compatibility, check if next line is
+        // "CHAT BEGIN"
+        if (words[0].equals("CHAT")) {
+            if (oldTracks == 0)
+                chat.clear();
+            // get number of lines
+            words = getWords(br);
+            int chatLines = Integer.parseInt(words[2]);
+            // loop over chat lines
+            for (int j = 0; j < chatLines; j++) {
+                String chatDate = br.readLine(); 
+                String chatLocation = br.readLine(); 
+                String chatContributor = br.readLine(); 
+                String chatAvatar = br.readLine(); 
+                String chatText = br.readLine();
+                if (oldTracks == 0)
+                    chat.add(new ChatEntry(
+                                chatText, 
+                                chatAvatar, 
+                                chatContributor, 
+                                chatLocation, 
+                                chatDate));
+            }
+            // read line "CHAT END"
             getLine(br);
 
             // now read number of tracks line
             // to continue through old file format
             words = getWords(br);
-        }            
+        } else
+            chat.clear();
+
+        chatPanel.refreshChat();
 
         // create appropriate number of tracks,
         int newTracks = Integer.parseInt(words[1]);
@@ -808,6 +860,8 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
         }
         refreshKaraokePanel();
 
+        // revert view to tracks panel!
+        toggleChatPanel(false);
     }
 
     private void open() {

@@ -59,6 +59,14 @@ class ChatPanel extends JPanel implements ActionListener {
         entryField.requestFocusInWindow();
     }
 
+    public void refreshChat() {
+        mainPanel.removeAll();
+        for (int i = 0; i < chat.getSize(); i++) {
+            mainPanel.add(new ChatBubble(trackPanel, chat.get(i)));
+            mainPanel.add(Box.createRigidArea(new Dimension(0,5)));
+        }
+    }
+
     ChatPanel(TrackPanel tpnl, Prefs p, Chat ch) {
         chat = ch;
         trackPanel = tpnl;
@@ -67,10 +75,7 @@ class ChatPanel extends JPanel implements ActionListener {
         mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.PAGE_AXIS));
 
-        for (int i = 0; i < chat.getSize(); i++) {
-            mainPanel.add(new ChatBubble(trackPanel, chat.get(i)));
-            mainPanel.add(Box.createRigidArea(new Dimension(0,5)));
-        }
+        refreshChat();
 
         JPanel outerMainPanel = new JPanel();
         outerMainPanel.add(mainPanel);
@@ -90,6 +95,10 @@ class ChatPanel extends JPanel implements ActionListener {
         setLayout(new BorderLayout());
         add(outerMainPanel,BorderLayout.CENTER);
         add(entryPanel,BorderLayout.PAGE_END);
+
+        mainPanel.setBackground(JamaJav.clickedColour);
+        outerMainPanel.setBackground(JamaJav.clickedColour);
+        entryPanel.setBackground(JamaJav.clickedColour);
 
         // scroll to the bottom to expose entryPanel
         scrollRectToVisible(
