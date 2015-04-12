@@ -73,6 +73,8 @@ class ToolBar extends JToolBar {
 
         JButton newTrackButton = makeButton(
                 "General", "AddTrack24", "addnewtrack", "Add Track", "Add Track");
+        JButton newDrumTrackButton = makeButton(
+                "General", "AddDrum24", "adddrumtrack", "Add Drum Track", "Dr");
 
         JButton playAllFromTopButton = makeButton(
                 "Media", "PlayAllFromTop24", "playallfromtop", "Play All Tracks from the Top", "Play All f. Top");
@@ -135,6 +137,7 @@ class ToolBar extends JToolBar {
         utilityToolBar.addSeparator();
         utilityToolBar.addSeparator();
         utilityToolBar.add(newTrackButton);
+        utilityToolBar.add(newDrumTrackButton);
         utilityToolBar.addSeparator();
         utilityToolBar.add(concatenateSelectedButton);
         utilityToolBar.add(combineSelectedButton);

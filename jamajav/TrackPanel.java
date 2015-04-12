@@ -157,6 +157,23 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                 addNewTrack();
                 break;
 
+            case ("adddrumtrack") :
+                // stop playing
+                if (!allStopped()) {
+                    allStop();
+                    waitASecond(1000);
+                }
+                // open dialog with a KaraokeEditor
+                final JDialog drumsDialog = new JDialog(parent, "Create Drums Track", true);
+                drumsDialog.setLocationRelativeTo(parent);
+                drumsDialog.getContentPane().setLayout(new BorderLayout());
+                drumsDialog.getContentPane().add(
+                        new DrumsEditor(this), BorderLayout.CENTER);
+                drumsDialog.revalidate();
+                drumsDialog.pack();
+                drumsDialog.setVisible(true);
+                break;
+
             case("playallfromtop") :
                 if (!allStopped()) {
                     allStop();

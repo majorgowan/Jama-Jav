@@ -107,7 +107,7 @@ class Info {
         date = dateFormat.format(d.getTime());
     }
 
-    // copy constructor
+    // copy constructors
     Info(Info in) {
         notes = new ArrayList<String>(0);
         title = "copy of " + in.getTitle();
@@ -118,6 +118,11 @@ class Info {
         Calendar d = Calendar.getInstance();
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         date = dateFormat.format(d.getTime());
+    }
+
+    Info(Info in, String tit) {
+        this(in);
+        title = tit;
     }
 }
 
