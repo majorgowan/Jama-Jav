@@ -5,6 +5,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
+// for formatting numbers:
+import java.text.DecimalFormat;
+
 class TimeLine extends PlainTimeLine {
 
     private int DEFAULT_WIDTH = 250;
@@ -33,15 +36,23 @@ class TimeLine extends PlainTimeLine {
         g.drawLine(0, lineMiddle,
                 getWidth(), lineMiddle);
 
+        DecimalFormat dftenths = new DecimalFormat("0.0");
+
         // draw a vertical line at tickInterval intervals
         g.setFont(tickFont);
         for (int i = 0; i <= runningTime/tickInterval; i++) {
             g.drawLine((int)(factor*i*tickInterval), tickTop,
                     (int)(factor*i*tickInterval), tickTop+tickLength);
-            if (i%2 == 0)
-                g.drawString("" + i*tickInterval,
-                        (int)(factor*i*tickInterval)+1, 
-                        (int)(tickTop-1));
+            if (i%2 == 0) {
+                if (tickInterval < 1.0)
+                    g.drawString(dftenths.format(i*tickInterval),
+                            (int)(factor*i*tickInterval)+1, 
+                            (int)(tickTop-1));
+                else
+                    g.drawString("" + (int)(i*tickInterval),
+                            (int)(factor*i*tickInterval)+1, 
+                            (int)(tickTop-1));
+            }
         }
 
         double rad = 3.5;
@@ -52,7 +63,9 @@ class TimeLine extends PlainTimeLine {
 
     public void setRunningTime(double t) {
         super.setRunningTime(t);
-        if (runningTime < 10)
+        if (runningTime <= 2)
+            tickInterval = 0.2;
+        else if (runningTime < 10.1)
             tickInterval = 1;
         else
             tickInterval = (int)(5*((int)(runningTime/50)+1));

@@ -84,8 +84,12 @@ class ActiveTimeLine extends PlainTimeLine {
             for (int i = 0; i <= runningTime/tickInterval; i++) {
                 g.drawLine((int)(factor*i*tickInterval), lineHeight-tickLength/2,
                         (int)(factor*i*tickInterval), lineHeight+tickLength/2);
-                if (i%2 == 0)
-                    g.drawString("" + i*tickInterval,(int)(factor*i*tickInterval)+1, lineHeight-6);
+                if (i%2 == 0) {
+                    if (tickInterval < 1.0)
+                        g.drawString("" + i*tickInterval,(int)(factor*i*tickInterval)+1, lineHeight-6);
+                    else
+                        g.drawString("" + (int)(i*tickInterval),(int)(factor*i*tickInterval)+1, lineHeight-6);
+                }
             }
             // draw runner
             g.fillOval((int)(factor*runnerPosition-rad), 
@@ -134,7 +138,7 @@ class ActiveTimeLine extends PlainTimeLine {
         if (runningTime < 10)
             tickInterval = 1;
         else
-            tickInterval = (int)(5*((int)(runningTime/100)+1));
+            tickInterval = (double)((int)(5*((int)(runningTime/100)+1)));
     }
 
     ActiveTimeLine() {
@@ -163,7 +167,7 @@ class ActiveTimeLine extends PlainTimeLine {
 
                 // if grabbed the left oval:
                 if ((x > leftOvalLeft) && (x < leftOvalRight) 
-                        && (y > ovalTop) && (y < ovalBottom))
+                    && (y > ovalTop) && (y < ovalBottom))
                 {
                     leftOvalGrabbed = true;
                     // System.out.println("GRABBED LEFT!!!");
@@ -191,10 +195,10 @@ class ActiveTimeLine extends PlainTimeLine {
                 if ((x >= (int)(3*rad)) && (x <= (int)(factor*runningTime-3*rad))) { 
                     if (leftOvalGrabbed) {
                         minTime = Math.max(0.0,
-                                Math.min(((double)(x-3*rad)/factor), maxTime));
+                            Math.min(((double)(x-3*rad)/factor), maxTime));
                     } else if (rightOvalGrabbed) {
                         maxTime = Math.min(runningTime, 
-                                Math.max(minTime, ((double)(x+3*rad)/factor)));
+                            Math.max(minTime, ((double)(x+3*rad)/factor)));
                     }
                     repaint();
                 }

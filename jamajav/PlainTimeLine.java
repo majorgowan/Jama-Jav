@@ -8,7 +8,7 @@ import java.awt.event.*;
 class PlainTimeLine extends JPanel {
 
     protected double runningTime;
-    protected int tickInterval;
+    protected double tickInterval;
     protected double runnerPosition;
 
     public void update(double time) {

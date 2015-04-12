@@ -49,7 +49,8 @@
         </echo>
         <jar jarfile="JamaJav.jar" basedir="." 
             includes="jamajav/*.class,
-            Sounds/*.wav,Images/*.png,
+            Sounds/*.wav,Sounds/Drums/drums.*,
+            Images/*.png,
             Images/Avatars/*.png,
             Images/Avatars/list.txt,
             Icons/**/**/*.gif,

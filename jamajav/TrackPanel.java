@@ -168,7 +168,7 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
                 drumsDialog.setLocationRelativeTo(parent);
                 drumsDialog.getContentPane().setLayout(new BorderLayout());
                 drumsDialog.getContentPane().add(
-                        new DrumsEditor(this), BorderLayout.CENTER);
+                        new DrumsEditor(this, prefs), BorderLayout.CENTER);
                 drumsDialog.revalidate();
                 drumsDialog.pack();
                 drumsDialog.setVisible(true);
@@ -480,7 +480,7 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
         if (tracks.size() > 0) {
             double running = 0.0;
             for (int i = 0; i < tracks.size(); i++)
-                running = Math.max(running, tracks.get(i).getInfo().getRunningTime());
+                running = Math.max(running, tracks.get(i).getTrackData().getRunningTime());
 
             bigTimeLine.setRunningTime(running);
         } else 
