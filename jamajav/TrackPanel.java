@@ -1004,6 +1004,8 @@ class TrackPanel extends JPanel implements ActionListener, Observer {
     }
 
     private void newDoc() {
+        chat.clear();
+        chatPanel.refreshChat();
         karaoke = new Karaoke();
         karaokePanel.reInit(karaoke);
         for (int i = tracks.size()-1; i >= 0; i--) {

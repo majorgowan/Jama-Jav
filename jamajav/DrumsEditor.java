@@ -124,6 +124,12 @@ class DrumsEditor extends JPanel implements ActionListener {
         info.setAvatar(prefs.getAvatar());
         info.setRunningTime(trackData.getRunningTime());
         info.setTitle("Drums");
+        // add notes describing track
+        info.addNote("Period: " + periodField.getText() + " s");
+        for (int i = 0; i < drumLinePanel.size(); i++)
+            info.addNote(" " + drumTypeComboBox.get(i).getSelectedItem() + ": "
+                    + timeField.get(i).getText() + " s, "
+                    + "Vol: " + volumeField.get(i).getText());
         trackData.putInfo(info);
         trackData.setMonitor(new Monitor());
         // add a new track

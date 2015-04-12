@@ -28,10 +28,14 @@ class MenuBar extends JMenuBar {
 
         JMenu fileMenu = new JMenu("File");
         fileMenu.setMnemonic('F');
+        JMenu editMenu = new JMenu("Edit");
+        editMenu.setMnemonic('E');
+        JMenu createMenu = new JMenu("Create");
+        createMenu.setMnemonic('C');
         JMenu playMenu = new JMenu("Play");
         playMenu.setMnemonic('P');
-        JMenu editMenu = new JMenu("Edit");
-        playMenu.setMnemonic('E');
+        JMenu viewMenu = new JMenu("View");
+        viewMenu.setMnemonic('V');
         JMenu helpMenu = new JMenu("Help");
         helpMenu.setMnemonic('H');
 
@@ -47,6 +51,31 @@ class MenuBar extends JMenuBar {
         fileMenu.addSeparator();
         JMenuItem fileExitItem = makeItem(fileMenu, "Exit", "exit", 'X');
 
+        // Edit menu
+        JMenuItem editSelectAllItem = makeItem(editMenu, "Select all", "selectall", 'A');
+        JMenuItem editRemoveSelectedItem = makeItem(editMenu, 
+                "Remove selected tracks", "removeselected", 'R');
+        JMenuItem editMoveSelectedUpItem = makeItem(editMenu, 
+                "Move selected tracks up", "moveselectedup", 'U');
+        JMenuItem editMoveSelectedDownItem = makeItem(editMenu, 
+                "Move selected tracks down", "moveselecteddown", 'D');
+        JMenuItem editConcatenateItem = makeItem(editMenu, 
+                "Concatenate selected tracks", "concatenateselected", 'C');
+        JMenuItem editCombineItem = makeItem(editMenu, 
+                "Combine selected tracks", "combineselected", 'B');
+        editMenu.addSeparator();
+        JMenuItem editKaraokeItem = makeItem(editMenu,
+                "Edit Karaoke file", "editkaraoke", 'O');
+        editMenu.addSeparator();
+        JMenuItem editExportItem = makeItem(editMenu, 
+                "Combine and export selected tracks to WAV file", "exportselected", 'E');
+
+        // Create menu
+        JMenuItem newTrackItem = makeItem(createMenu, "Add new track", "addnewtrack", 'N');
+        JMenuItem playPlayRecordItem = makeItem(createMenu, 
+                "Play selected tracks and record new", "playrecord", 'R');
+        JMenuItem newDrumTrackItem = makeItem(createMenu, "Add drums track", "adddrumtrack", 'D');
+
         // Play menu
         JMenuItem playAllItem = makeItem(playMenu, 
                 "Play interval from all tracks", "playall", 'I');
@@ -58,33 +87,14 @@ class MenuBar extends JMenuBar {
         JMenuItem playPlaySelectedItem = makeItem(playMenu, "Play selected", "playselected", 'P');
         JMenuItem playPauseItem = makeItem(playMenu, "Pause", "pause", 'E');
         JMenuItem playStopItem = makeItem(playMenu, "Stop", "stop", 'S');
-        playMenu.addSeparator();
-        JMenuItem playPlayRecordItem = makeItem(playMenu, 
-                "Play selected tracks and record new", "playrecord", 'R');
 
-        // Edit menu
-        JMenuItem editSelectAllItem = makeItem(editMenu, "Select all", "selectall", 'A');
-        editMenu.addSeparator();
-        JMenuItem editRemoveSelectedItem = makeItem(editMenu, 
-                "Remove selected tracks", "removeselected", 'R');
-        editMenu.addSeparator();
-        JMenuItem editMoveSelectedUpItem = makeItem(editMenu, 
-                "Move selected tracks up", "moveselectedup", 'U');
-        JMenuItem editMoveSelectedDownItem = makeItem(editMenu, 
-                "Move selected tracks down", "moveselecteddown", 'D');
-        editMenu.addSeparator();
-        JMenuItem editConcatenateItem = makeItem(editMenu, 
-                "Concatenate selected tracks", "concatenateselected", 'C');
-        JMenuItem editCombineItem = makeItem(editMenu, 
-                "Combine selected tracks", "combineselected", 'B');
-        editMenu.addSeparator();
-        JMenuItem toggleKaraokeItem = makeItem(editMenu,
-                "Toggle Karaoke Panel", "karaoke", 'K');
-        JMenuItem editKaraokeItem = makeItem(editMenu,
-                "Edit Karaoke file", "editkaraoke", 'O');
-        editMenu.addSeparator();
-        JMenuItem editExportItem = makeItem(editMenu, 
-                "Combine and export selected tracks to WAV file", "exportselected", 'E');
+        // View menu
+        JMenuItem toggleChatItem = makeItem(viewMenu,
+                "Chat window", "chat", 'C');
+        JMenuItem toggleMetronomeItem = makeItem(viewMenu,
+                "Metronome", "showmetronome", 'M');
+        JMenuItem toggleKaraokeItem = makeItem(viewMenu,
+                "Karaoke Panel", "karaoke", 'K');
 
         // Help menu
         JMenuItem helpInstItem = makeItem(helpMenu,"Instructions","instructions", 'I');
@@ -93,7 +103,9 @@ class MenuBar extends JMenuBar {
 
         add(fileMenu);
         add(editMenu);
+        add(createMenu);
         add(playMenu);
+        add(viewMenu);
         add(helpMenu);
     }
 }
