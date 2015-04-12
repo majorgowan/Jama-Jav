@@ -1,0 +1,38 @@
+Metronome: 120 bpMin 4 bpMeas offset 0.0
+KARAOKE BEGIN
+Karaoke lines: 0
+KARAOKE END
+CHAT BEGIN
+Chat lines: 0
+CHAT END
+Tracks: 3
+TRACK_0_INFO_BEGIN
+Bonk
+Major Gowan
+banana
+2015/04/11 23:43:36
+Toronto
+0.20475 seconds
+0 notes
+INFO_END
+Byte_length: 3276
+TRACK_1_INFO_BEGIN
+Shuffle
+Major Gowan
+banana
+2015/04/11 23:43:09
+Toronto
+0.564625 seconds
+0 notes
+INFO_END
+Byte_length: 9034
+TRACK_2_INFO_BEGIN
+Whack
+Major Gowan
+banana
+2015/04/11 23:44:44
+Toronto
+0.23975 seconds
+0 notes
+INFO_END
+Byte_length: 3836
