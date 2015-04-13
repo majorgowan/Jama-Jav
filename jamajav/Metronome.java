@@ -239,7 +239,7 @@ class Metronome extends JPanel implements ActionListener {
         startStopButton.setToolTipText("Start/Stop Metronome");
 
         // checkbox to enable/disable sound
-        soundCheckBox = new JCheckBox("sound enabled", true);
+        soundCheckBox = new JCheckBox("sound enabled", false);
 
         signalLabel.setFont(new Font("SansSerif",Font.BOLD,24));
 

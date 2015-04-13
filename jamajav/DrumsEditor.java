@@ -179,11 +179,17 @@ class DrumsEditor extends JPanel implements ActionListener {
                         timeField.get(newLineNum).getText());
                     if (s < 0) {
                         throw new TimeOutOfRangeException("low");
+                    } else if (s > Double.parseDouble(periodField.getText())) {
+                        throw new TimeOutOfRangeException("high");
                     }
                 } catch (NumberFormatException nfe) {
                     timeField.get(newLineNum).setText("" + timeDefault);
                 } catch (TimeOutOfRangeException toore) {
-                    timeField.get(newLineNum).setText("0.0");
+                    if (toore.getHighLow().equals("low"))
+                        timeField.get(newLineNum).setText("0.0");
+                    else
+                        timeField.get(newLineNum).setText("" +
+                            0.5*Double.parseDouble(periodField.getText()));
                 }
             }
         });
@@ -197,9 +203,9 @@ class DrumsEditor extends JPanel implements ActionListener {
                         throw new TimeOutOfRangeException("low");
                     }
                 } catch (NumberFormatException nfe) {
-                    timeField.get(newLineNum).setText("" + volumeDefault);
+                    volumeField.get(newLineNum).setText("" + volumeDefault);
                 } catch (TimeOutOfRangeException toore) {
-                    timeField.get(newLineNum).setText("0.1");
+                    volumeField.get(newLineNum).setText("0.1");
                 }
             }
         });

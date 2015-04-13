@@ -5,7 +5,7 @@ KARAOKE END
 CHAT BEGIN
 Chat lines: 0
 CHAT END
-Tracks: 3
+Tracks: 5
 TRACK_0_INFO_BEGIN
 Bonk
 Major Gowan
@@ -36,3 +36,23 @@ Toronto
 0 notes
 INFO_END
 Byte_length: 3836
+TRACK_3_INFO_BEGIN
+Short clap
+Major Gowan
+banana
+2015/04/13 13:16:26
+Toronto
+0.1195 seconds
+0 notes
+INFO_END
+Byte_length: 1912
+TRACK_4_INFO_BEGIN
+Clap
+Major Gowan
+banana
+2015/04/13 13:18:50
+null
+0.169625 seconds
+0 notes
+INFO_END
+Byte_length: 2714
