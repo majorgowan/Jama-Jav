@@ -102,7 +102,10 @@ class TrackData {
     }
 
     public double getRunningTime() {
-        return bytesToSeconds(getBytes().length);
+        if (audioData != null)
+            return bytesToSeconds(getBytes().length);
+        else
+            return 0.0;
     }
 
     public Info getInfo() {
