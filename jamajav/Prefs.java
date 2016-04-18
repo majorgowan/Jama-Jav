@@ -126,8 +126,8 @@ class Prefs {
             }
 
         } catch (IOException ie) {
-            System.out.println(ie);
-            ie.printStackTrace();
+            //System.out.println(ie);
+            //ie.printStackTrace();
             System.out.println("No valid preferences file found, using defaults.");
             setDefaults();
         } finally {
@@ -144,7 +144,7 @@ class Prefs {
         try {
             fw = new FileWriter(filename);
 
-            fw.write("Metronome: " 
+            fw.write("Metronome: "
                     + metroset[0] + " bpMin "
                     + metroset[1] + " bpMeas\n\n");
 
@@ -187,5 +187,3 @@ class Prefs {
         avatar = p.getAvatar();
     }
 }
-
-
