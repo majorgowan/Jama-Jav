@@ -1,0 +1,9 @@
+version: '2'
+
+services:
+  jamajav:
+    build: .
+    volumes:
+      - .:/Jama-Jav
+    mem_limit: 1g
+    command: bash -c "cd /Jama-Jav && ant jar"
